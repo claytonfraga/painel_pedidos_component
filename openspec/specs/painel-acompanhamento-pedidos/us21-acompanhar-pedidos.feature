@@ -145,3 +145,8 @@ Funcionalidade: Acompanhar pedidos
     Quando o monitor de SLA executar
     Então o pedido deve receber o label vermelho "Prioridade"
     E ao mudar de estado o label deve desaparecer
+
+  Cenário: 23 - Ordenar cards por tempo no estado
+    Dado que existam vários pedidos na mesma raia
+    Quando o painel for atualizado
+    Então o pedido que está há mais tempo no estado deve aparecer no topo da raia

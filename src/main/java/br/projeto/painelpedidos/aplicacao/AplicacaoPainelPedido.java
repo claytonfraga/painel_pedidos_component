@@ -15,6 +15,8 @@ import br.projeto.painelpedidos.notificacao.NotificacaoNovoPedidoService;
 import br.projeto.painelpedidos.notificacao.RegraHandler;
 import br.projeto.painelpedidos.notificacao.SalvarPedidosHandler;
 import br.projeto.painelpedidos.notificacao.SelecionarFocarHandler;
+import br.projeto.painelpedidos.ordenacao.IOrdenacaoPedidos;
+import br.projeto.painelpedidos.ordenacao.OrdenacaoPorTempoNoEstado;
 import br.projeto.painelpedidos.presenter.PainelPedidoPresenter;
 import br.projeto.painelpedidos.repositorio.IPedidoRepository;
 import br.projeto.painelpedidos.repositorio.PedidoEmMemoriaRepository;
@@ -104,12 +106,13 @@ public class AplicacaoPainelPedido implements IExecucaoAplicacao {
                 configuracao, geradorPedido, aleatoriedadeService);
         IFabricaFiltroPeriodo fabricaFiltroPeriodo = new FabricaFiltroPeriodo();
         IEstrategiaSom estrategiaSom = new SomTomStrategy(880, 200);
+        IOrdenacaoPedidos ordenacaoPedidos = new OrdenacaoPorTempoNoEstado();
 
         IServicoNotificacaoNovoPedido servicoNotificacao =
                 new NotificacaoNovoPedidoService(criarRegrasNotificacao());
         PainelPedidoPresenter painelPedidoPresenter = new PainelPedidoPresenter(
                 painelPedidoView, pedidoRepository, fonteDataPedido,
-                fabricaFiltroPeriodo, estrategiaSom, duracaoNotificacao);
+                fabricaFiltroPeriodo, estrategiaSom, ordenacaoPedidos, duracaoNotificacao);
 
         NovoPedidoObserver novoPedidoObserver = new PainelPedidoNovoPedidoObserver(
                 painelPedidoPresenter, servicoNotificacao);

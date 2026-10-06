@@ -143,6 +143,11 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
   prioridade e atualiza `dataHoraMudancaEstado`).
 - Atualizacoes de tela decorrentes de eventos usam Observer (GoF): abstracao e
   concretas com sufixo `Observer`, em subpacote do elemento observado.
+- Ordenacao: dentro de cada raia, os cards sao ordenados por tempo no estado
+  (`IOrdenacaoPedidos` / `OrdenacaoPorTempoNoEstado`, comparando
+  `dataHoraMudancaEstado` ascendente) - quem esta ha mais tempo no estado fica no
+  topo. A prioridade e por estado: `setEstado` limpa a prioridade e atualiza o
+  timestamp.
 
 ## Simulacao, notificacao e sons
 

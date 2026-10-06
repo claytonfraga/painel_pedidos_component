@@ -319,6 +319,17 @@ observado.
 - **WHEN** o monitor marca pedidos como prioridade
 - **THEN** os observadores notificam e a tela e atualizada
 
+### Requirement: Ordenacao dos cards por tempo no estado
+
+Dentro de cada raia, os cards DEVEM ser ordenados pelo tempo no estado atual
+(quem esta ha mais tempo no estado aparece no topo), usando a abstracao
+`IOrdenacaoPedidos` (Strategy/DIP); a implementacao `OrdenacaoPorTempoNoEstado`
+compara por `dataHoraMudancaEstado` ascendente.
+
+#### Scenario: Pedido mais antigo no estado no topo
+- **WHEN** o painel e atualizado
+- **THEN** em cada raia o pedido ha mais tempo no estado fica no topo da raia
+
 ## Diretrizes visuais
 
 - Borda do card (normal): cinza mais escuro, RGB (176, 181, 189).

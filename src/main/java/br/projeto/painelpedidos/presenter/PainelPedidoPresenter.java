@@ -4,6 +4,7 @@ import br.projeto.painelpedidos.filtro.IFabricaFiltroPeriodo;
 import br.projeto.painelpedidos.filtro.IFiltroPeriodo;
 import br.projeto.painelpedidos.model.Pedido;
 import br.projeto.painelpedidos.notificacao.IAcoesNotificacaoNovoPedido;
+import br.projeto.painelpedidos.ordenacao.IOrdenacaoPedidos;
 import br.projeto.painelpedidos.repositorio.IPedidoRepository;
 import br.projeto.painelpedidos.simulacao.IFonteDataPedido;
 import br.projeto.painelpedidos.sla.observer.IPainelPedidoAtualizador;
@@ -29,7 +30,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +59,7 @@ public class PainelPedidoPresenter implements IAcoesNotificacaoNovoPedido, IPain
     private final IFonteDataPedido fonteDataPedido;
     private final IFabricaFiltroPeriodo fabricaFiltroPeriodo;
     private final IEstrategiaSom estrategiaSom;
+    private final IOrdenacaoPedidos ordenacaoPedidos;
     private final int duracaoNotificacaoSegundos;
 
     private Timer timerNotificacao;
@@ -74,6 +75,7 @@ public class PainelPedidoPresenter implements IAcoesNotificacaoNovoPedido, IPain
             IFonteDataPedido fonteDataPedido,
             IFabricaFiltroPeriodo fabricaFiltroPeriodo,
             IEstrategiaSom estrategiaSom,
+            IOrdenacaoPedidos ordenacaoPedidos,
             int duracaoNotificacaoSegundos) {
 
         this.painelPedidoView = Objects.requireNonNull(painelPedidoView, "painelPedidoView");
@@ -81,6 +83,7 @@ public class PainelPedidoPresenter implements IAcoesNotificacaoNovoPedido, IPain
         this.fonteDataPedido = Objects.requireNonNull(fonteDataPedido, "fonteDataPedido");
         this.fabricaFiltroPeriodo = Objects.requireNonNull(fabricaFiltroPeriodo, "fabricaFiltroPeriodo");
         this.estrategiaSom = Objects.requireNonNull(estrategiaSom, "estrategiaSom");
+        this.ordenacaoPedidos = Objects.requireNonNull(ordenacaoPedidos, "ordenacaoPedidos");
         this.duracaoNotificacaoSegundos = duracaoNotificacaoSegundos;
         this.pedidosPorIdentificador = new LinkedHashMap<>();
         this.cartoesPorIdentificador = new LinkedHashMap<>();
@@ -270,59 +273,50 @@ public class PainelPedidoPresenter implements IAcoesNotificacaoNovoPedido, IPain
 
     public final void atualizarPainel() {
         try {
-            List<Pedido> pedidosConsultados = pedidoRepository.buscarTodos();
-            pedidosConsultados.sort(new Comparator<Pedido>() {
-                @Override
-                public int compare(Pedido primeiro, Pedido segundo) {
-                    return segundo.getDataHora().compareTo(primeiro.getDataHora());
-                }
-            });
-            List<Pedido> pedidosFiltrados = filtrarPedidos(pedidosConsultados);
+            List<Pedido> pedidosFiltrados = filtrarPedidos(pedidoRepository.buscarTodos());
 
             limparColunas();
             pedidosPorIdentificador.clear();
             cartoesPorIdentificador.clear();
 
-            int quantidadeNovo = 0;
-            int quantidadeEmPreparo = 0;
-            int quantidadeProntoParaEntrega = 0;
-            int quantidadeEmRotaDeEntrega = 0;
-            int quantidadeEntregue = 0;
-            int quantidadeCancelado = 0;
+            List<Pedido> pedidosNovo = new ArrayList<>();
+            List<Pedido> pedidosEmPreparo = new ArrayList<>();
+            List<Pedido> pedidosProntoParaEntrega = new ArrayList<>();
+            List<Pedido> pedidosEmRotaDeEntrega = new ArrayList<>();
+            List<Pedido> pedidosEntregue = new ArrayList<>();
+            List<Pedido> pedidosCancelado = new ArrayList<>();
 
             for (Pedido pedido : pedidosFiltrados) {
                 pedidosPorIdentificador.put(pedido.getIdentificador(), pedido);
-                JPanel pnlCartaoPedido = criarCartaoPedido(pedido);
-                cartoesPorIdentificador.put(pedido.getIdentificador(), pnlCartaoPedido);
-
                 if (pedido.estaNovo()) {
-                    painelPedidoView.getPnlPedidosNovo().add(pnlCartaoPedido);
-                    quantidadeNovo++;
+                    pedidosNovo.add(pedido);
                 } else if (pedido.estaEmPreparo()) {
-                    painelPedidoView.getPnlPedidosEmPreparo().add(pnlCartaoPedido);
-                    quantidadeEmPreparo++;
+                    pedidosEmPreparo.add(pedido);
                 } else if (pedido.estaProntoParaEntrega()) {
-                    painelPedidoView.getPnlPedidosProntoParaEntrega().add(pnlCartaoPedido);
-                    quantidadeProntoParaEntrega++;
+                    pedidosProntoParaEntrega.add(pedido);
                 } else if (pedido.estaEmRotaDeEntrega()) {
-                    painelPedidoView.getPnlPedidosEmRotaDeEntrega().add(pnlCartaoPedido);
-                    quantidadeEmRotaDeEntrega++;
+                    pedidosEmRotaDeEntrega.add(pedido);
                 } else if (pedido.estaEntregue()) {
-                    painelPedidoView.getPnlPedidosEntregue().add(pnlCartaoPedido);
-                    quantidadeEntregue++;
+                    pedidosEntregue.add(pedido);
                 } else if (pedido.estaCancelado()) {
-                    painelPedidoView.getPnlPedidosCancelado().add(pnlCartaoPedido);
-                    quantidadeCancelado++;
+                    pedidosCancelado.add(pedido);
                 }
             }
 
+            adicionarCartoes(painelPedidoView.getPnlPedidosNovo(), pedidosNovo);
+            adicionarCartoes(painelPedidoView.getPnlPedidosEmPreparo(), pedidosEmPreparo);
+            adicionarCartoes(painelPedidoView.getPnlPedidosProntoParaEntrega(), pedidosProntoParaEntrega);
+            adicionarCartoes(painelPedidoView.getPnlPedidosEmRotaDeEntrega(), pedidosEmRotaDeEntrega);
+            adicionarCartoes(painelPedidoView.getPnlPedidosEntregue(), pedidosEntregue);
+            adicionarCartoes(painelPedidoView.getPnlPedidosCancelado(), pedidosCancelado);
+
             atualizarTitulosColunas(
-                    quantidadeNovo,
-                    quantidadeEmPreparo,
-                    quantidadeProntoParaEntrega,
-                    quantidadeEmRotaDeEntrega,
-                    quantidadeEntregue,
-                    quantidadeCancelado);
+                    pedidosNovo.size(),
+                    pedidosEmPreparo.size(),
+                    pedidosProntoParaEntrega.size(),
+                    pedidosEmRotaDeEntrega.size(),
+                    pedidosEntregue.size(),
+                    pedidosCancelado.size());
 
             validarSelecaoAposAtualizacao();
             revalidarColunas();
@@ -332,6 +326,15 @@ public class PainelPedidoPresenter implements IAcoesNotificacaoNovoPedido, IPain
                     excecao.getMessage(),
                     "Erro ao atualizar pedidos",
                     JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void adicionarCartoes(JPanel pnlDestino, List<Pedido> pedidos) {
+        pedidos.sort(ordenacaoPedidos);
+        for (Pedido pedido : pedidos) {
+            JPanel pnlCartaoPedido = criarCartaoPedido(pedido);
+            cartoesPorIdentificador.put(pedido.getIdentificador(), pnlCartaoPedido);
+            pnlDestino.add(pnlCartaoPedido);
         }
     }
 
