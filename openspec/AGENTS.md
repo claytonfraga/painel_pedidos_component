@@ -135,8 +135,8 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
 - Simulacao: cria de 1 a N pedidos por ciclo (`SIMULACAO_PEDIDOS_POR_CICLO` no
   `.env`), em intervalo aleatorio (`SIMULACAO_INTERVALO_MINIMO/MAXIMO_SEGUNDOS`).
 - Notificacao usa o **Chain of Responsibility adaptado**: abstracao
-  `RegraChainOfResponsibility` (`seAplica`/`executar`), concretas
-  `Regra...ChainOfResponsibility`, sem referencia entre si; o
+  `RegraHandler` (`seAplica`/`executar`), concretas
+  `Regra...Handler`, sem referencia entre si; o
   `NotificacaoNovoPedidoService` guarda a colecao (`List`) e `processar(...)`
   aciona as regras aplicaveis na ordem. O Presenter implementa
   `IAcoesNotificacaoNovoPedido` (as acoes de UI) e o contexto

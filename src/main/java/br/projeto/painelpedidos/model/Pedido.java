@@ -30,6 +30,8 @@ public class Pedido {
     private LocalDateTime dataHoraPagamento;
     private PedidoState estado;
     private double creditoGerado;
+    private LocalDateTime dataHoraMudancaEstado;
+    private boolean prioridade;
 
     public Pedido(
             String identificador,
@@ -44,6 +46,8 @@ public class Pedido {
         this.enderecoEntrega = validarTextoObrigatorio(enderecoEntrega, "enderecoEntrega");
         this.valorTotal = validarValorTotal(valorTotal);
         this.creditoGerado = 0.0;
+        this.prioridade = false;
+        this.dataHoraMudancaEstado = this.dataHora;
         this.estado = new PedidoNovoState(this);
     }
 
@@ -176,6 +180,28 @@ public class Pedido {
 
     public void setEstado(PedidoState estado) {
         this.estado = Objects.requireNonNull(estado, "estado");
+        this.dataHoraMudancaEstado = LocalDateTime.now();
+        this.prioridade = false;
+    }
+
+    public void marcarPrioridade() {
+        this.prioridade = true;
+    }
+
+    public boolean isPrioridade() {
+        return prioridade;
+    }
+
+    public LocalDateTime getDataHoraMudancaEstado() {
+        return dataHoraMudancaEstado;
+    }
+
+    public String getBairroEntrega() {
+        int separador = enderecoEntrega.lastIndexOf(" - ");
+        if (separador < 0) {
+            return enderecoEntrega;
+        }
+        return enderecoEntrega.substring(separador + 3).trim();
     }
 
     public String getIdentificador() {

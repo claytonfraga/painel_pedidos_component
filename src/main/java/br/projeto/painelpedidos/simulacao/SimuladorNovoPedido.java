@@ -1,6 +1,7 @@
 package br.projeto.painelpedidos.simulacao;
 
 import br.projeto.painelpedidos.model.Pedido;
+import br.projeto.painelpedidos.simulacao.observer.NovoPedidoObserver;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class SimuladorNovoPedido implements ISimuladorNovoPedido {
     private final IGeradorPedido geradorPedido;
     private final IAleatoriedadeService aleatoriedadeService;
     private final Timer timer;
-    private ObservadorNovoPedido observador;
+    private NovoPedidoObserver observador;
 
     public SimuladorNovoPedido(
             ConfiguracaoSimulacao configuracao,
@@ -38,7 +39,7 @@ public class SimuladorNovoPedido implements ISimuladorNovoPedido {
     }
 
     @Override
-    public void iniciar(ObservadorNovoPedido observador) {
+    public void iniciar(NovoPedidoObserver observador) {
         this.observador = Objects.requireNonNull(observador, "observador");
         this.timer.setInitialDelay(intervaloMilissegundos());
         this.timer.start();

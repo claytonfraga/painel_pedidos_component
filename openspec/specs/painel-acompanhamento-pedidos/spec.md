@@ -227,7 +227,7 @@ configuravel (pelo menos 30 segundos), criar de 1 ate N pedidos por ciclo
 ### Requirement: Notificacao de novos pedidos (Chain of Responsibility adaptado)
 
 Ao receber um ou mais pedidos novos, um `NotificacaoNovoPedidoService` processa
-regras `RegraChainOfResponsibility` (cada uma com `seAplica`/`executar`, sem
+regras `RegraHandler` (cada uma com `seAplica`/`executar`, sem
 referencia a outra regra; o Service coordena a ordem) para: salvar, atualizar o
 painel, selecionar/focar o card, alerta sonoro, mensagem e destaque.
 

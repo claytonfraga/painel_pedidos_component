@@ -3,13 +3,10 @@ package br.projeto.painelpedidos.presenter;
 import br.projeto.painelpedidos.filtro.IFabricaFiltroPeriodo;
 import br.projeto.painelpedidos.filtro.IFiltroPeriodo;
 import br.projeto.painelpedidos.model.Pedido;
-import br.projeto.painelpedidos.notificacao.ContextoNotificacaoNovoPedido;
 import br.projeto.painelpedidos.notificacao.IAcoesNotificacaoNovoPedido;
-import br.projeto.painelpedidos.notificacao.IServicoNotificacaoNovoPedido;
 import br.projeto.painelpedidos.repositorio.IPedidoRepository;
 import br.projeto.painelpedidos.simulacao.IFonteDataPedido;
-import br.projeto.painelpedidos.simulacao.ISimuladorNovoPedido;
-import br.projeto.painelpedidos.simulacao.ObservadorNovoPedido;
+import br.projeto.painelpedidos.sla.observer.IPainelPedidoAtualizador;
 import br.projeto.painelpedidos.som.IEstrategiaSom;
 import br.projeto.painelpedidos.view.IPainelPedidoView;
 import java.awt.Color;
@@ -50,7 +47,7 @@ import javax.swing.Timer;
  *
  * @author clayton
  */
-public class PainelPedidoPresenter implements ObservadorNovoPedido, IAcoesNotificacaoNovoPedido {
+public class PainelPedidoPresenter implements IAcoesNotificacaoNovoPedido, IPainelPedidoAtualizador {
 
     private final IPainelPedidoView painelPedidoView;
     private final IPedidoRepository pedidoRepository;
@@ -59,10 +56,8 @@ public class PainelPedidoPresenter implements ObservadorNovoPedido, IAcoesNotifi
     private final NumberFormat formatadorMoeda;
     private final DateTimeFormatter formatadorHora;
     private final DateTimeFormatter formatadorDataHora;
-    private final ISimuladorNovoPedido simuladorNovoPedido;
     private final IFonteDataPedido fonteDataPedido;
     private final IFabricaFiltroPeriodo fabricaFiltroPeriodo;
-    private final IServicoNotificacaoNovoPedido servicoNotificacao;
     private final IEstrategiaSom estrategiaSom;
     private final int duracaoNotificacaoSegundos;
 
@@ -76,19 +71,15 @@ public class PainelPedidoPresenter implements ObservadorNovoPedido, IAcoesNotifi
     public PainelPedidoPresenter(
             IPainelPedidoView painelPedidoView,
             IPedidoRepository pedidoRepository,
-            ISimuladorNovoPedido simuladorNovoPedido,
             IFonteDataPedido fonteDataPedido,
             IFabricaFiltroPeriodo fabricaFiltroPeriodo,
-            IServicoNotificacaoNovoPedido servicoNotificacao,
             IEstrategiaSom estrategiaSom,
             int duracaoNotificacaoSegundos) {
 
         this.painelPedidoView = Objects.requireNonNull(painelPedidoView, "painelPedidoView");
         this.pedidoRepository = Objects.requireNonNull(pedidoRepository, "pedidoRepository");
-        this.simuladorNovoPedido = Objects.requireNonNull(simuladorNovoPedido, "simuladorNovoPedido");
         this.fonteDataPedido = Objects.requireNonNull(fonteDataPedido, "fonteDataPedido");
         this.fabricaFiltroPeriodo = Objects.requireNonNull(fabricaFiltroPeriodo, "fabricaFiltroPeriodo");
-        this.servicoNotificacao = Objects.requireNonNull(servicoNotificacao, "servicoNotificacao");
         this.estrategiaSom = Objects.requireNonNull(estrategiaSom, "estrategiaSom");
         this.duracaoNotificacaoSegundos = duracaoNotificacaoSegundos;
         this.pedidosPorIdentificador = new LinkedHashMap<>();
@@ -104,13 +95,11 @@ public class PainelPedidoPresenter implements ObservadorNovoPedido, IAcoesNotifi
         painelPedidoView.getJanelaPrincipal().setLocationRelativeTo(null);
         atualizarPainel();
         painelPedidoView.getJanelaPrincipal().setVisible(true);
-        simuladorNovoPedido.iniciar(this);
     }
 
     @Override
-    public void receberNovosPedidos(List<Pedido> pedidos) {
-        ContextoNotificacaoNovoPedido contexto = new ContextoNotificacaoNovoPedido(pedidos, this);
-        servicoNotificacao.processar(contexto);
+    public void atualizarPedidos(List<Pedido> pedidos) {
+        atualizarPainel();
     }
 
     @Override
@@ -481,6 +470,11 @@ public class PainelPedidoPresenter implements ObservadorNovoPedido, IAcoesNotifi
         restricoes.gridy++;
         pnlCartaoPedido.add(criarRotuloStatus(pedido), restricoes);
 
+        if (pedido.isPrioridade()) {
+            restricoes.gridy++;
+            pnlCartaoPedido.add(criarRotuloPrioridade(), restricoes);
+        }
+
         if (pedido.estaCancelado()) {
             restricoes.gridy++;
             pnlCartaoPedido.add(criarRotuloCredito(pedido), restricoes);
@@ -562,6 +556,16 @@ public class PainelPedidoPresenter implements ObservadorNovoPedido, IAcoesNotifi
                 : new Color(245, 245, 245));
         lblCredito.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
         return lblCredito;
+    }
+
+    private JLabel criarRotuloPrioridade() {
+        JLabel lblPrioridade = new JLabel("Prioridade");
+        lblPrioridade.setOpaque(true);
+        lblPrioridade.setBackground(new Color(200, 0, 0));
+        lblPrioridade.setForeground(Color.WHITE);
+        lblPrioridade.setFont(lblPrioridade.getFont().deriveFont(Font.BOLD));
+        lblPrioridade.setBorder(BorderFactory.createEmptyBorder(3, 6, 3, 6));
+        return lblPrioridade;
     }
 
     private JButton criarBotaoAcaoPrincipal(Pedido pedido) {

@@ -71,7 +71,7 @@ as regras de negocio BR12 e BR13.
   some apos o tempo configurado; os cards novos piscam por esse tempo.
 - Ate N pedidos por ciclo (`SIMULACAO_PEDIDOS_POR_CICLO`). A notificacao usa o
   Chain of Responsibility adaptado (`NotificacaoNovoPedidoService` +
-  `Regra...ChainOfResponsibility`).
+  `Regra...Handler`).
 - SOLID: `ISimuladorNovoPedido`/`ObservadorNovoPedido` (o Presenter e observador),
   `IGeradorPedido`, `IRelogioService` e `IAleatoriedadeService` como abstracoes;
   `CatalogoPedido` compartilha os dados entre seeder e gerador.

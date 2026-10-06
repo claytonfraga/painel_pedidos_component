@@ -42,7 +42,8 @@ public class PedidoSeeder {
         List<String> formasPagamento = catalogoPedido.getFormasPagamento();
 
         String identificador = String.valueOf(3001 + indice);
-        LocalDateTime dataHora = calcularDataHora(indice);
+        int variacao = indice % 6;
+        LocalDateTime dataHora = variacao == 0 ? calcularDataHoraNovo(indice) : calcularDataHora(indice);
         String nome = nomes.get(indice % nomes.size()) + " "
                 + sobrenomes.get((indice / nomes.size()) % sobrenomes.size());
         String endereco = "Rua " + logradouros.get(indice % logradouros.size())
@@ -52,7 +53,18 @@ public class PedidoSeeder {
 
         Pedido pedido = new Pedido(identificador, dataHora, nome, endereco, valor);
         aplicarSituacao(pedido, indice, formaPagamento);
+        if (variacao == 0 && indice % 20 == 0) {
+            pedido.marcarPrioridade();
+        }
         return pedido;
+    }
+
+    private LocalDateTime calcularDataHoraNovo(int indice) {
+        int minutos = indice % 20 == 0 ? 6 + indice % 5 : indice % 4;
+        return dataReferencia
+                .minusMinutes(minutos)
+                .withSecond(0)
+                .withNano(0);
     }
 
     private LocalDateTime calcularDataHora(int indice) {

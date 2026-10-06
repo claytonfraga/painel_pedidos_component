@@ -6,7 +6,7 @@ import br.projeto.painelpedidos.model.Pedido;
  *
  * @author clayton
  */
-public class MensagemUmPedidoChainOfResponsibility implements RegraChainOfResponsibility {
+public class MensagemUmPedidoHandler implements RegraHandler {
 
     @Override
     public boolean seAplica(ContextoNotificacaoNovoPedido contexto) {

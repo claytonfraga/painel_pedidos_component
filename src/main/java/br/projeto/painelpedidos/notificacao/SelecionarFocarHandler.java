@@ -4,15 +4,15 @@ package br.projeto.painelpedidos.notificacao;
  *
  * @author clayton
  */
-public class AtualizarPainelChainOfResponsibility implements RegraChainOfResponsibility {
+public class SelecionarFocarHandler implements RegraHandler {
 
     @Override
     public boolean seAplica(ContextoNotificacaoNovoPedido contexto) {
-        return true;
+        return !contexto.getPedidos().isEmpty();
     }
 
     @Override
     public void executar(ContextoNotificacaoNovoPedido contexto) {
-        contexto.getAcoes().atualizarPainel();
+        contexto.getAcoes().selecionarFocar(contexto.getPedidos().get(0));
     }
 }

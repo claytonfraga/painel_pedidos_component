@@ -4,15 +4,15 @@ package br.projeto.painelpedidos.notificacao;
  *
  * @author clayton
  */
-public class SalvarPedidosChainOfResponsibility implements RegraChainOfResponsibility {
+public class DestaquePedidosHandler implements RegraHandler {
 
     @Override
     public boolean seAplica(ContextoNotificacaoNovoPedido contexto) {
-        return true;
+        return !contexto.getPedidos().isEmpty();
     }
 
     @Override
     public void executar(ContextoNotificacaoNovoPedido contexto) {
-        contexto.getAcoes().salvarPedidos(contexto.getPedidos());
+        contexto.getAcoes().destacarPedidos(contexto.getPedidos());
     }
 }

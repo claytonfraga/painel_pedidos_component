@@ -4,7 +4,7 @@ package br.projeto.painelpedidos.notificacao;
  *
  * @author clayton
  */
-public class AlertaSonoroChainOfResponsibility implements RegraChainOfResponsibility {
+public class AtualizarPainelHandler implements RegraHandler {
 
     @Override
     public boolean seAplica(ContextoNotificacaoNovoPedido contexto) {
@@ -13,6 +13,6 @@ public class AlertaSonoroChainOfResponsibility implements RegraChainOfResponsibi
 
     @Override
     public void executar(ContextoNotificacaoNovoPedido contexto) {
-        contexto.getAcoes().emitirAlertaSonoro();
+        contexto.getAcoes().atualizarPainel();
     }
 }

@@ -4,7 +4,7 @@ package br.projeto.painelpedidos.notificacao;
  *
  * @author clayton
  */
-public interface RegraChainOfResponsibility {
+public interface RegraHandler {
 
     boolean seAplica(ContextoNotificacaoNovoPedido contexto);
 

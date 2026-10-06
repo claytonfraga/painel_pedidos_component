@@ -9,15 +9,15 @@ import java.util.Objects;
  */
 public class NotificacaoNovoPedidoService implements IServicoNotificacaoNovoPedido {
 
-    private final List<RegraChainOfResponsibility> regras;
+    private final List<RegraHandler> regras;
 
-    public NotificacaoNovoPedidoService(List<RegraChainOfResponsibility> regras) {
+    public NotificacaoNovoPedidoService(List<RegraHandler> regras) {
         this.regras = Objects.requireNonNull(regras, "regras");
     }
 
     @Override
     public void processar(ContextoNotificacaoNovoPedido contexto) {
-        for (RegraChainOfResponsibility regra : regras) {
+        for (RegraHandler regra : regras) {
             if (regra.seAplica(contexto)) {
                 regra.executar(contexto);
             }
