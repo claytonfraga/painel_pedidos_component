@@ -130,6 +130,20 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
 - Ao adicionar dependencia, declarar o motivo, o escopo e a alternativa
   rejeitada neste arquivo.
 
+## Prioridade por SLA e Observer
+
+- SLA por estado: Novo `SLA_NOVO_MINUTOS` (5), Em preparo `SLA_EM_PREPARO_MINUTOS`
+  (20), Pronto para entrega e Em rota de entrega pela media de entrega por bairro
+  (`SLA_ENTREGA_BAIRRO_MINUTOS`, inicia em 10 e e ajustada a cada entrega);
+  Entregue e Cancelado nao tem SLA.
+- Mecanismo: listener periodico
+  (`AgendadorMonitorSla`) opera o CoR adaptado (`MonitorSlaService` +
+  `RegraSla*Handler`), marcando `pedido.marcarPrioridade()`.
+- A prioridade some quando o pedido muda de estado (`setEstado` limpa a
+  prioridade e atualiza `dataHoraMudancaEstado`).
+- Atualizacoes de tela decorrentes de eventos usam Observer (GoF): abstracao e
+  concretas com sufixo `Observer`, em subpacote do elemento observado.
+
 ## Simulacao, notificacao e sons
 
 - Simulacao: cria de 1 a N pedidos por ciclo (`SIMULACAO_PEDIDOS_POR_CICLO` no

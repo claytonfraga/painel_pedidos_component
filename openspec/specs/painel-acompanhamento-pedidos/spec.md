@@ -293,6 +293,32 @@ pelo mecanismo de simulacao DEVE ser criado naquela data, via `IFonteDataPedido`
 - **THEN** o novo pedido e criado com a data selecionada
 - **AND** com os filtros padrao, o novo pedido e criado na data atual
 
+### Requirement: Prioridade por SLA (Chain of Responsibility adaptado)
+
+Cada pedido tem um tempo maximo na situacao (SLA): Novo 5 min
+(`SLA_NOVO_MINUTOS`), Em preparo 20 min (`SLA_EM_PREPARO_MINUTOS`), Pronto para
+entrega e Em rota de entrega usam a media de entrega por bairro (inicia em
+`SLA_ENTREGA_BAIRRO_MINUTOS`, ajustada a cada entrega); Entregue e Cancelado nao
+tem SLA. Um listener periodico (`AgendadorMonitorSla`) opera regras
+`RegraSla*Handler` (CoR adaptado, orquestrado por `MonitorSlaService`) e marca o
+pedido com label vermelho "Prioridade", que some quando o pedido muda de estado.
+
+#### Scenario: Pedido Novo excede 5 minutos
+- **WHEN** um pedido Novo fica mais de 5 minutos sem mudar de estado
+- **THEN** ele recebe o label vermelho "Prioridade"
+- **AND** o label some quando o pedido passa para outro estado
+
+### Requirement: Atualizacoes de tela por Observer (GoF)
+
+As atualizacoes de tela decorrentes de eventos (novos pedidos e mudanca de
+prioridade por SLA) DEVEM usar o padrao Observer: a abstracao e as classes
+concretas de observador usam o sufixo `Observer`, em subpacote do elemento
+observado.
+
+#### Scenario: Atualizar tela ao priorizar
+- **WHEN** o monitor marca pedidos como prioridade
+- **THEN** os observadores notificam e a tela e atualizada
+
 ## Diretrizes visuais
 
 - Borda do card (normal): cinza mais escuro, RGB (176, 181, 189).

@@ -139,3 +139,9 @@ Funcionalidade: Acompanhar pedidos
     E o label laranja de destaque deve mostrar "Novo Pedido #id" ou "N novos pedidos"
     E os cards dos novos pedidos devem piscar por SIMULACAO_MENSAGEM_SEGUNDOS
     E após esse tempo o label deve desaparecer e o realce dos cards ser removido
+
+  Cenário: 22 - Priorizar pedido que excede o SLA
+    Dado que exista um pedido Novo há mais de 5 minutos sem mudança de estado
+    Quando o monitor de SLA executar
+    Então o pedido deve receber o label vermelho "Prioridade"
+    E ao mudar de estado o label deve desaparecer
