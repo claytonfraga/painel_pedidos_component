@@ -2,7 +2,11 @@
 
 Diagramas de maquina de estados finita (UML) para cada elemento do sistema que
 usa o padrao **State** ou que possui estados (mesmo sem usar o padrao hoje).
-Fonte: codigo implementado (78 classes). Diagramas em Mermaid `stateDiagram-v2`.
+Fonte: codigo implementado (72 classes). Diagramas em Mermaid `stateDiagram-v2`.
+
+Documentos relacionados: requisitos em [`spec.md`](./spec.md); padroes de projeto
+e diagramas de classe UML, com as referencias ABNT, em [`design.md`](./design.md);
+cenarios em `us21..us25*.feature` nesta pasta.
 
 Indice:
 1. `Pedido` (usa GoF State)

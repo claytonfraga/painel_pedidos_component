@@ -121,10 +121,11 @@ as regras de negocio BR12 e BR13.
 
 ## Dominio
 
-O `Pedido` reaproveita a base do delivery (`Cliente`, `Item`,
-`CupomDescontoEntrega`, `CupomDescontoPedido`, taxa de entrega) e acrescenta as
-informacoes exigidas pela tela: identificador, data e hora, endereco de entrega,
-forma de pagamento, data e hora do pagamento e credito gerado.
+O `Pedido` concentra os dados exigidos pela tela: identificador, data e hora,
+nome do cliente, endereco de entrega, valor total, forma de pagamento, data e
+hora do pagamento, situacao, credito gerado, prioridade e tempo no estado
+(`dataHoraMudancaEstado`). O que a tela nao usa (itens, cupons, taxa de entrega,
+cliente detalhado) foi removido.
 
 ### Ciclo de vida (GoF State)
 

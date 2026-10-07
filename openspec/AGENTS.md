@@ -143,11 +143,11 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
   prioridade e atualiza `dataHoraMudancaEstado`).
 - Atualizacoes de tela decorrentes de eventos usam Observer (GoF): abstracao e
   concretas com sufixo `Observer`, em subpacote do elemento observado.
-- Ordenacao: dentro de cada raia os cards sao ordenados por
-  `IOrdenacaoPedidos` / `OrdenacaoPedidoPorPrioridadeEPosicao`: prioridade
-  primeiro (qualquer raia); na raia Novo o mais recente no topo; nas demais, quem
-  esta ha mais tempo no estado. A prioridade e por estado: `setEstado` limpa a
-  prioridade e atualiza o timestamp.
+- Ordenacao em fila (FIFO): `IOrdenacaoPedidos` /
+  `OrdenacaoPedidoPorPrioridadeETempoNoEstado`: prioridade primeiro; em seguida,
+  quem esta ha mais tempo no estado (que chegou primeiro) no topo, para ser
+  atendido primeiro. A prioridade e por estado: `setEstado` limpa a prioridade e
+  atualiza o timestamp.
 
 ## Simulacao, notificacao e sons
 
@@ -160,8 +160,8 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
   aciona as regras aplicaveis na ordem. O Presenter implementa
   `IAcoesNotificacaoNovoPedido` (as acoes de UI) e o contexto
   `ContextoNotificacaoNovoPedido` carrega pedidos + acoes.
-- Som usa **Strategy**: `IEstrategiaSom` com `SomTomStrategy` (tom audivel) e
-  `SomToolkitStrategy` (`Toolkit.beep`); o Presenter depende da abstracao.
+- Som usa **Strategy**: `IEstrategiaSom`, implementada por `SomTomStrategy` (tom
+  audivel gerado); o Presenter depende da abstracao.
 - O label de notificacao e um card pequeno laranja escuro (RGB 194,88,0) com
   texto branco em negrito; os cards novos piscam por `SIMULACAO_MENSAGEM_SEGUNDOS`.
 
@@ -270,8 +270,7 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
 ## Convencao de nomenclatura de padroes
 
 - `State`, `Decorator`, `Builder`, `Service`, `Repository` sao sufixos.
-- Modelos de dados puros usam apenas o conceito de dominio (ex.: `Pedido`,
-  `Cliente`, `Item`).
+- Modelos de dados puros usam apenas o conceito de dominio (ex.: `Pedido`).
 - Nomes de classes sempre no SINGULAR (ex.: `PainelPedidoPresenter`, nao
   `PainelPedidosPresenter`; `IPainelPedidoView`; `AplicacaoPainelPedido`).
 - Toda interface (abstracao) Java DEVE comecar com `I` (ex.: `IPedidoRepository`,

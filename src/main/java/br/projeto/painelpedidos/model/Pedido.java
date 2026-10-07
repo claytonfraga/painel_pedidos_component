@@ -1,12 +1,8 @@
 package br.projeto.painelpedidos.model;
 
-import br.projeto.painelpedidos.configuracao.ConfiguracaoService;
 import br.projeto.painelpedidos.state.PedidoNovoState;
 import br.projeto.painelpedidos.state.PedidoState;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,17 +11,12 @@ import java.util.Objects;
  */
 public class Pedido {
 
-    private final ConfiguracaoService configuracaoService = new ConfiguracaoService();
-    private double taxaEntrega = configuracaoService.getTaxaEntregaPadrao();
-    private final List<Item> itens = new ArrayList<>();
-    private final Cliente cliente;
-    private final List<CupomDescontoEntrega> cuponsDescontoEntrega = new ArrayList<>();
-    private CupomDescontoPedido cupomPedidoAplicado;
-
     private final String identificador;
     private final LocalDateTime dataHora;
+    private final String nomeCliente;
     private final String enderecoEntrega;
     private final double valorTotal;
+
     private String formaPagamento;
     private LocalDateTime dataHoraPagamento;
     private PedidoState estado;
@@ -42,7 +33,7 @@ public class Pedido {
 
         this.identificador = validarTextoObrigatorio(identificador, "identificador");
         this.dataHora = Objects.requireNonNull(dataHora, "dataHora");
-        this.cliente = new Cliente(nomeCliente, "Nao informado", 0.0, enderecoEntrega, "Nao informado", "Nao informado");
+        this.nomeCliente = validarTextoObrigatorio(nomeCliente, "nomeCliente");
         this.enderecoEntrega = validarTextoObrigatorio(enderecoEntrega, "enderecoEntrega");
         this.valorTotal = validarValorTotal(valorTotal);
         this.creditoGerado = 0.0;
@@ -84,66 +75,7 @@ public class Pedido {
         if (!estado.ehCancelado()) {
             throw new RuntimeException("Nao e possivel copiar um pedido " + estado.getNome());
         }
-        return new Pedido(novoIdentificador, novaDataHora, getNomeCliente(), enderecoEntrega, valorTotal);
-    }
-
-    public void adicionarItem(Item objeto) {
-        if (objeto == null) {
-            throw new IllegalArgumentException("Item do pedido deve ser informado");
-        }
-        itens.add(objeto);
-    }
-
-    public double getValorPedido() {
-        double valor = 0;
-        for (Item item : itens) {
-            valor += item.getValorTotal();
-        }
-        return valor;
-    }
-
-    public double getTaxaEntrega() {
-        return taxaEntrega;
-    }
-
-    public double getTotalDescontosTaxaEntrega() {
-        double desconto = 0;
-        for (CupomDescontoEntrega cupom : cuponsDescontoEntrega) {
-            desconto += cupom.getValorDesconto();
-        }
-        return desconto;
-    }
-
-    public void adicionarCupomDescontoEntrega(CupomDescontoEntrega cupom) {
-        if (cupom == null) {
-            throw new IllegalArgumentException("Cupom de desconto da entrega deve ser informado");
-        }
-        if (cupom.getValorDesconto() < 0) {
-            throw new IllegalArgumentException("Desconto na taxa de entrega nao pode ser negativo");
-        }
-
-        double totalDescontosAposAdicionar = getTotalDescontosTaxaEntrega() + cupom.getValorDesconto();
-        if (totalDescontosAposAdicionar > taxaEntrega) {
-            throw new IllegalStateException(
-                    "Desconto total na taxa de entrega nao pode ultrapassar " + taxaEntrega);
-        }
-        cuponsDescontoEntrega.add(cupom);
-    }
-
-    public double getTaxaEntregaComDesconto() {
-        double taxaComDesconto = taxaEntrega - getTotalDescontosTaxaEntrega();
-        if (taxaComDesconto < 0) {
-            return 0;
-        }
-        return taxaComDesconto;
-    }
-
-    public double calcularValorTotal() {
-        double valorCalculado = getValorPedido() + getTaxaEntregaComDesconto();
-        if (cupomPedidoAplicado != null) {
-            valorCalculado = valorCalculado - valorCalculado * cupomPedidoAplicado.getPercentualDesconto();
-        }
-        return valorCalculado;
+        return new Pedido(novoIdentificador, novaDataHora, nomeCliente, enderecoEntrega, valorTotal);
     }
 
     public boolean isPagamentoRegistrado() {
@@ -172,10 +104,6 @@ public class Pedido {
 
     public boolean estaCancelado() {
         return estado.ehCancelado();
-    }
-
-    public PedidoState getEstado() {
-        return estado;
     }
 
     public void setEstado(PedidoState estado) {
@@ -212,16 +140,8 @@ public class Pedido {
         return dataHora;
     }
 
-    public Cliente getCliente() {
-        return cliente;
-    }
-
     public String getNomeCliente() {
-        return cliente.getNome();
-    }
-
-    public List<Item> getItens() {
-        return Collections.unmodifiableList(itens);
+        return nomeCliente;
     }
 
     public String getEnderecoEntrega() {
@@ -268,13 +188,14 @@ public class Pedido {
         return "Pedido{"
                 + "identificador=" + identificador
                 + ", dataHora=" + dataHora
-                + ", cliente=" + cliente
+                + ", nomeCliente=" + nomeCliente
                 + ", enderecoEntrega=" + enderecoEntrega
                 + ", valorTotal=" + valorTotal
                 + ", formaPagamento=" + formaPagamento
                 + ", dataHoraPagamento=" + dataHoraPagamento
                 + ", situacao=" + getSituacao()
                 + ", creditoGerado=" + creditoGerado
+                + ", prioridade=" + prioridade
                 + "}";
     }
 }

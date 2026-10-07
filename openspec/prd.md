@@ -1,6 +1,6 @@
 # PRD - Painel de Acompanhamento de Pedidos (MVP Passive View)
 
-> Status: implementado. Documento derivado do codigo efetivo (78 classes).
+> Status: implementado. Documento derivado do codigo efetivo (72 classes).
 > Fontes normativas: `specs/painel-acompanhamento-pedidos/spec.md` e os
 > `*.feature` da mesma pasta.
 
@@ -9,7 +9,7 @@
 Aplicacao desktop (Swing) que permite ao atendente acompanhar e conduzir os
 pedidos do delivery por etapas operacionais, cancelar com credito, criar um novo
 pedido a partir de um cancelado, filtrar por periodo/data, receber pedidos
-simulados em tempo real e priorizar/ordenar os pedidos por prioridade e posicao.
+simulados em tempo real e priorizar/ordenar os pedidos em fila.
 
 ## 2. Contexto e problema
 
@@ -24,7 +24,7 @@ simulados em tempo real e priorizar/ordenar os pedidos por prioridade e posicao.
 - Painel com 6 colunas de situacao e acoes por estado (US21).
 - Busca, filtro por periodo padrao e por data especifica (US21, US22).
 - Simulacao de novos pedidos com alerta sonoro, foco, mensagem e destaque (US23).
-- Prioridade por SLA e ordenacao por prioridade e posicao na raia (US24).
+- Prioridade por SLA e ordenacao em fila (FIFO) por tempo no estado (US24).
 - Instancia unica da aplicacao (US25).
 
 **Fora:**
@@ -67,9 +67,9 @@ destaque piscante por tempo configuravel.
 
 ### US24 - Prioridade, SLA e ordenacao (`@US24-001`..`007`)
 SLA por estado (Novo, Em preparo, Pronto, Em rota); label vermelho "Prioridade"
-removido ao mudar de estado; ~5% dos Novo do seeder ja priorizados; ordenacao por
-prioridade e posicao (prioridade no topo em qualquer raia; na raia Novo o mais
-recente no topo; nas demais o mais antigo no estado).
+removido ao mudar de estado; ~5% dos Novo do seeder ja priorizados; ordenacao em
+fila: prioridade no topo; e o pedido ha mais tempo no estado (que chegou
+primeiro) no topo, para ser atendido primeiro.
 
 ### US25 - Instancia unica (`@US25-001`)
 Singleton thread-safe + trava de arquivo impedem a segunda abertura.
@@ -108,11 +108,9 @@ Se ausente, valem os defaults do codigo (`.env.example` documenta).
 ## 9. Riscos e limitacoes
 
 - Sem persistencia: os dados se perdem ao fechar (aceito no POC).
-- A media de entrega por bairro **inicia** em `SLA_ENTREGA_BAIRRO_MINUTOS`; existe
-  `ITempoEntregaService.registrarEntrega(...)`, mas **nada o chama ainda** (ajuste
-  automatico nao esta ativo).
-- `SomToolkitStrategy` e uma alternativa de Strategy; a composicao usa
-  `SomTomStrategy`.
+- A media de entrega por bairro usa o valor inicial
+  `SLA_ENTREGA_BAIRRO_MINUTOS`; o ajuste por entregas concluidas nao faz parte do
+  escopo entregue.
 
 ## 10. Rastreabilidade
 

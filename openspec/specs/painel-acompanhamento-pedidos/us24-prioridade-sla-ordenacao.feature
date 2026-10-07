@@ -45,9 +45,8 @@ Funcionalidade: Priorizar e ordenar pedidos por tempo no estado
     Então cerca de 5% desses pedidos Novo devem já estar marcados como Prioridade
 
   @US24-007
-  Cenário: Ordenar os cards por prioridade e posicao na raia
+  Cenário: Ordenar os cards por prioridade e tempo no estado (fila FIFO)
     Dado que existam vários pedidos na mesma raia
     Quando o painel for atualizado
-    Então os pedidos com Prioridade devem aparecer acima dos demais em qualquer raia
-    E na raia Novo o pedido mais recente deve aparecer no topo
-    E nas demais raias o pedido há mais tempo no estado deve aparecer no topo
+    Então os pedidos com Prioridade devem aparecer acima dos demais
+    E dentro de cada raia o pedido há mais tempo no estado (o que chegou primeiro) deve aparecer no topo

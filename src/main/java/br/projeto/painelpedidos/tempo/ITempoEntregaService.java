@@ -9,6 +9,4 @@ import java.time.Duration;
 public interface ITempoEntregaService {
 
     Duration tempoMedioEntrega(String bairro);
-
-    void registrarEntrega(String bairro, Duration duracao);
 }
