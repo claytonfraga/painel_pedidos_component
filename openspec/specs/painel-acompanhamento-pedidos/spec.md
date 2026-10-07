@@ -3,16 +3,34 @@
 ## Purpose
 
 Definir o comportamento do Painel de Acompanhamento de Pedidos do delivery
-(US21), permitindo que o atendente acompanhe e atualize os pedidos pelas etapas
-operacionais das regras BR12 e BR13, incluindo cancelamento com credito e
-criacao de novo pedido a partir de um pedido cancelado.
+(US21 a US25): acompanhar e atualizar os pedidos pelas etapas operacionais das
+regras BR12 e BR13 (incluindo cancelamento com credito e criacao de novo pedido
+a partir de um pedido cancelado), filtrar por periodo/data, simular novos
+pedidos com notificacao, priorizar/ordenar por tempo no estado e executar a
+aplicacao uma unica vez.
 
 ## Fonte da verdade
 
 - Este documento e normativo (o que e por que).
-- O arquivo Gherkin desta capability e a fonte da verdade testavel:
-  [`us21-acompanhar-pedidos.feature`](./us21-acompanhar-pedidos.feature).
-- Todo cenario deste `spec.md` deve existir no `.feature` e vice-versa.
+- Os arquivos Gherkin desta capability sao a fonte da verdade testavel, um por
+  historia de usuario, indexados abaixo.
+- Todo cenario deste `spec.md` deve existir no `.feature` correspondente e
+  vice-versa.
+
+## Historias de usuario e cenarios
+
+| Historia | Arquivo `.feature` | Cenarios | Fontes (codigo) |
+|---|---|---|---|
+| US21 - Acompanhar pedidos | [`us21-acompanhar-pedidos.feature`](./us21-acompanhar-pedidos.feature) | `@US21-001` a `@US21-016` | `presenter`, `model`, `state` |
+| US22 - Filtrar por periodo e data | [`us22-filtro-periodo-data.feature`](./us22-filtro-periodo-data.feature) | `@US22-001` a `@US22-003` | `filtro`, `FonteDataPedido` |
+| US23 - Simular novos pedidos | [`us23-simulacao-novos-pedidos.feature`](./us23-simulacao-novos-pedidos.feature) | `@US23-001` a `@US23-004` | `simulacao`, `notificacao`, `som` |
+| US24 - Prioridade, SLA e ordenacao | [`us24-prioridade-sla-ordenacao.feature`](./us24-prioridade-sla-ordenacao.feature) | `@US24-001` a `@US24-007` | `sla`, `tempo`, `ordenacao`, `seeder` |
+| US25 - Instancia unica da aplicacao | [`us25-instancia-unica.feature`](./us25-instancia-unica.feature) | `@US25-001` | `aplicacao` |
+
+Tags de nivel de funcionalidade: `@us21 @painel @mvp`, `@us22 @filtro @periodo`,
+`@us23 @simulacao @notificacao`, `@us24 @sla @prioridade @ordenacao`,
+`@us25 @singleton @instancia-unica`. Cada cenario tem o identificador
+`@US<nn>-<seq>`.
 
 ## Glossario e regras de negocio
 
