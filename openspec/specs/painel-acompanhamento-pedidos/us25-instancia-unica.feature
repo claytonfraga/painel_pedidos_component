@@ -12,3 +12,4 @@ Funcionalidade: Executar a aplicação uma única vez
     Dado que a aplicação já esteja aberta
     Quando ocorrer uma segunda tentativa de abertura
     Então uma nova instância não deve ser iniciada
+    E o Singleton (InstanciaUnicaAplicacao) e a trava de arquivo devem impedir a segunda execução

@@ -21,9 +21,9 @@ aplicacao uma unica vez.
 
 | Historia | Arquivo `.feature` | Cenarios | Fontes (codigo) |
 |---|---|---|---|
-| US21 - Acompanhar pedidos | [`us21-acompanhar-pedidos.feature`](./us21-acompanhar-pedidos.feature) | `@US21-001` a `@US21-016` | `presenter`, `model`, `state` |
-| US22 - Filtrar por periodo e data | [`us22-filtro-periodo-data.feature`](./us22-filtro-periodo-data.feature) | `@US22-001` a `@US22-003` | `filtro`, `FonteDataPedido` |
-| US23 - Simular novos pedidos | [`us23-simulacao-novos-pedidos.feature`](./us23-simulacao-novos-pedidos.feature) | `@US23-001` a `@US23-004` | `simulacao`, `notificacao`, `som` |
+| US21 - Acompanhar pedidos | [`us21-acompanhar-pedidos.feature`](./us21-acompanhar-pedidos.feature) | `@US21-001` a `@US21-018` | `presenter`, `model`, `state` |
+| US22 - Filtrar por periodo e data | [`us22-filtro-periodo-data.feature`](./us22-filtro-periodo-data.feature) | `@US22-001` a `@US22-004` | `filtro`, `FonteDataPedido` |
+| US23 - Simular novos pedidos | [`us23-simulacao-novos-pedidos.feature`](./us23-simulacao-novos-pedidos.feature) | `@US23-001` a `@US23-005` | `simulacao`, `notificacao`, `som` |
 | US24 - Prioridade, SLA e ordenacao | [`us24-prioridade-sla-ordenacao.feature`](./us24-prioridade-sla-ordenacao.feature) | `@US24-001` a `@US24-007` | `sla`, `tempo`, `ordenacao`, `seeder` |
 | US25 - Instancia unica da aplicacao | [`us25-instancia-unica.feature`](./us25-instancia-unica.feature) | `@US25-001` | `aplicacao` |
 

@@ -8,30 +8,36 @@ Funcionalidade: Simular recebimento de novos pedidos
   Para saber, em tempo real, que um cliente fez um pedido
 
   @US23-001
-  Cenário: Simular novo pedido enquanto a aplicação está aberta
+  Cenário: Simular um novo pedido enquanto a aplicação está aberta
     Dado que a aplicação esteja aberta
-    Quando transcorrer o intervalo aleatório configurado (mínimo de 30 segundos)
-    Então um novo pedido deve ser criado na situação Novo
-    E um alerta sonoro deve ser emitido
-    E o foco deve ir para o card do novo pedido
-    E o label de destaque deve exibir "Novo Pedido #numero"
+    Quando transcorrer o intervalo aleatório configurado (mínimo SIMULACAO_INTERVALO_MINIMO_SEGUNDOS)
+    Então de 1 a N pedidos (SIMULACAO_PEDIDOS_POR_CICLO) devem ser criados na situação Novo
+    E os pedidos devem ser salvos e exibidos no painel
 
   @US23-002
-  Cenário: Notificar lote de novos pedidos
-    Dado que o simulador crie de 1 a N pedidos (SIMULACAO_PEDIDOS_POR_CICLO) no mesmo ciclo
-    Quando os novos pedidos forem recebidos
-    Então todos devem ser salvos e exibidos
-    E o label de destaque deve exibir "Novo Pedido #id" (um) ou "N novos pedidos" (vários)
+  Cenário: Notificar e destacar os novos pedidos
+    Dado que um ou mais pedidos novos foram recebidos
+    Então um alerta sonoro deve ser emitido pela estratégia IEstrategiaSom
+    E o foco deve ir para o card do primeiro novo pedido
+    E os cards dos novos pedidos devem piscar por SIMULACAO_MENSAGEM_SEGUNDOS
 
   @US23-003
-  Cenário: Destacar com efeito acende-apaga os cards novos
-    Dado que um ou mais pedidos novos chegaram
-    Quando o destaque for iniciado
-    Então os cards dos novos pedidos devem piscar por SIMULACAO_MENSAGEM_SEGUNDOS
-    E ao final o realce deve ser removido e o label de destaque deve desaparecer
+  Cenário: Mensagem por quantidade de pedidos novos
+    Dado um único pedido novo
+    Então o label de destaque deve exibir "Novo Pedido #número"
+    Dado mais de um pedido novo no mesmo ciclo
+    Então o label de destaque deve exibir a quantidade seguida de "novos pedidos"
 
   @US23-004
-  Cenário: Emitir alerta sonoro pela estratégia configurada
-    Dado que chegaram novos pedidos
-    Quando o alerta for acionado
-    Então o som deve ser emitido pela estratégia IEstrategiaSom (Strategy) configurada
+  Cenário: Sumir com o label e o destaque após o tempo configurado
+    Dado que o label de destaque foi exibido e os cards estão piscando
+    Quando transcorrer SIMULACAO_MENSAGEM_SEGUNDOS
+    Então o label deve desaparecer
+    E o realce dos cards deve ser removido, reaplicando a seleção corrente
+
+  @US23-005
+  Cenário: Executar a notificação via Chain of Responsibility adaptado
+    Dado um lote de novos pedidos
+    Quando a notificação for processada
+    Então as regras (Handlers) aplicáveis devem ser executadas na ordem definida pelo NotificacaoNovoPedidoService
+    E as atualizações de tela devem ocorrer via Observer

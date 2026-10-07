@@ -8,21 +8,28 @@ Funcionalidade: Filtrar pedidos por período e data específica
   Para visualizar apenas o intervalo efetivamente desejado
 
   @US22-001
-  Cenário: Filtrar pedidos por data específica
-    Dado que eu esteja no Painel de Acompanhamento de Pedidos
-    Quando eu selecionar "Data específica"
-    Então o datepicker deve ser exibido
-    Quando eu selecionar a data no datepicker e atualizar o painel
-    Então devem permanecer visíveis apenas os pedidos daquela data
+  Cenário: Exibir o datepicker apenas quando necessário
+    Dado que eu esteja no painel
+    Então o campo de data deve ficar oculto
+    Quando eu selecionar "Data específica" no período
+    Então o campo de data (datepicker JSpinner) deve ser exibido
+    E ao selecionar outro período o campo de data deve ser ocultado
 
   @US22-002
-  Cenário: Criar novo pedido simulado na data selecionada
+  Cenário: Filtrar pedidos por data específica
+    Dado que "Data específica" esteja selecionada e uma data esteja escolhida no datepicker
+    Quando eu clicar em Atualizar painel
+    Então devem permanecer visíveis apenas os pedidos daquela data
+    E a busca por número/cliente deve ser respeitada
+
+  @US22-003
+  Cenário: Criar novo pedido simulado na data específica
     Dado que "Data específica" esteja selecionada com uma data
     Quando o simulador criar um novo pedido
     Então o novo pedido deve ser criado com a data selecionada
 
-  @US22-003
+  @US22-004
   Cenário: Criar novo pedido a partir de Cancelado usa a data do período
-    Dado um pedido Cancelado e um período selecionado
+    Dado um pedido Cancelado e o período selecionado (data atual ou data específica)
     Quando eu acionar Criar novo pedido
-    Então o novo pedido deve ser criado com a data do período selecionado (data atual ou data específica)
+    Então o novo pedido deve ser criado com a data do período selecionado

@@ -8,21 +8,21 @@ Funcionalidade: Priorizar e ordenar pedidos por tempo no estado
   Para atender primeiro o que está atrasado
 
   @US24-001
-  Cenário: Priorizar pedido Novo que excede 5 minutos
-    Dado que exista um pedido Novo há mais de SLA_NOVO_MINUTOS (5) sem mudança de estado
+  Cenário: Priorizar pedido Novo que ultrapassa o tempo
+    Dado que exista um pedido Novo há mais de SLA_NOVO_MINUTOS sem mudança de estado
     Quando o monitor de SLA executar
     Então o pedido deve receber o label vermelho "Prioridade"
 
   @US24-002
-  Cenário: Priorizar pedido Em preparo que excede 20 minutos
-    Dado que exista um pedido Em preparo há mais de SLA_EM_PREPARO_MINUTOS (20) sem mudança de estado
+  Cenário: Priorizar pedido Em preparo que ultrapassa o tempo
+    Dado que exista um pedido Em preparo há mais de SLA_EM_PREPARO_MINUTOS sem mudança de estado
     Quando o monitor de SLA executar
     Então o pedido deve receber o label vermelho "Prioridade"
 
   @US24-003
-  Cenário: Priorizar pedido Pronto ou Em rota que excede a média do bairro
+  Cenário: Priorizar pedido Pronto ou Em rota acima da média do bairro
     Dado que exista um pedido Pronto para entrega ou Em rota de entrega
-    E que a média de entrega do bairro (iniciando em SLA_ENTREGA_BAIRRO_MINUTOS) foi ultrapassada
+    E que o tempo no estado ultrapassou a média de entrega do bairro (inicia em SLA_ENTREGA_BAIRRO_MINUTOS)
     Quando o monitor de SLA executar
     Então o pedido deve receber o label vermelho "Prioridade"
 
@@ -33,19 +33,19 @@ Funcionalidade: Priorizar e ordenar pedidos por tempo no estado
     Então nenhum label de Prioridade deve ser aplicado
 
   @US24-005
-  Cenário: Remover prioridade ao mudar de estado
+  Cenário: Remover a prioridade ao mudar de estado
     Dado um pedido marcado como Prioridade
     Quando o pedido mudar para outro estado
     Então o label vermelho "Prioridade" deve desaparecer
 
   @US24-006
   Cenário: Iniciar parte dos pedidos Novo do seeder já priorizados
-    Dado que o seeder gera pedidos Novo
+    Dado que o seeder gera pedidos na situação Novo
     Quando o painel abrir
-    Então cerca de 5% desses pedidos Novo já devem estar marcados como Prioridade
+    Então cerca de 5% desses pedidos Novo devem já estar marcados como Prioridade
 
   @US24-007
-  Cenário: Ordenar cards por tempo no estado dentro da raia
+  Cenário: Ordenar os cards por tempo no estado dentro da raia
     Dado que existam vários pedidos na mesma raia
     Quando o painel for atualizado
     Então o pedido que está há mais tempo no estado deve aparecer no topo da raia
