@@ -13,6 +13,7 @@ openspec/
 │   └── painel-acompanhamento-pedidos/
 │       ├── spec.md           # especificacao normativa da capacidade
 │       ├── design.md         # design tecnico (como)
+│       ├── state-machines.md # maquinas de estado UML por elemento
 │       └── us21..us25*.feature  # cenarios Gherkin (fonte testavel)
 └── changes/
     └── archive/
@@ -25,7 +26,8 @@ openspec/
 2. `specs/painel-acompanhamento-pedidos/spec.md` - comportamento normativo.
 3. `specs/painel-acompanhamento-pedidos/*.feature` - cenarios testaveis (Gherkin).
 4. `specs/painel-acompanhamento-pedidos/design.md` - design tecnico.
-5. `AGENTS.md` - regras e convencoes obrigatorias.
+5. `specs/painel-acompanhamento-pedidos/state-machines.md` - maquinas de estado UML (State e estados implicitos).
+6. `AGENTS.md` - regras e convencoes obrigatorias.
 
 ## Historias de usuario
 

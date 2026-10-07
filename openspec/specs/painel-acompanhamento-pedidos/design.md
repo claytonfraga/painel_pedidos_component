@@ -74,6 +74,9 @@ classDiagram
 
 ## 4. Padroes aplicados
 
+- Maquinas de estado UML de cada elemento com estados (GoF State e estados
+  implicitos): [`state-machines.md`](./state-machines.md).
+
 - **State** (`state`): `PedidoState` abstrata com `protected Pedido pedido`,
   operacoes default que lancam `RuntimeException`, e estados concretos
   `Pedido<...>State` que validam pre-condicoes no construtor e transicionam via

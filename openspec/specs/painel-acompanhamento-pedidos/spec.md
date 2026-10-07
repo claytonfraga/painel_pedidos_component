@@ -16,6 +16,9 @@ aplicacao uma unica vez.
   historia de usuario, indexados abaixo.
 - Todo cenario deste `spec.md` deve existir no `.feature` correspondente e
   vice-versa.
+- As maquinas de estado UML (UML finite state machines) de cada elemento com
+  estados, incluindo o GoF State do `Pedido`, estao em
+  [`state-machines.md`](./state-machines.md).
 
 ## Historias de usuario e cenarios
 
