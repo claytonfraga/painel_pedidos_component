@@ -107,12 +107,16 @@ as regras de negocio BR12 e BR13.
 
 ## Fonte da verdade
 
+- Visao geral: `openspec/README.md`; produto: `openspec/prd.md`.
 - `openspec/specs/**` e os arquivos `.feature` associados sao a fonte da verdade
-  do comportamento do sistema.
+  do comportamento do sistema. O design tecnico fica em
+  `openspec/specs/**/design.md`.
 - Cada `.feature` fica na pasta da capacidade correspondente e e indexado no
   `spec.md` da mesma pasta.
-- A historia de usuario de referencia e a US21 (Acompanhar pedidos), com as
-  regras BR12, BR13 e o fluxo de pagamento US23.
+- Historias de usuario: US21 (Acompanhar pedidos), US22 (Filtro por periodo e
+  data), US23 (Simular novos pedidos), US24 (Prioridade, SLA e ordenacao) e
+  US25 (Instancia unica), com as regras BR12, BR13 e o fluxo de pagamento US23.
+- As changes concluidas ficam em `openspec/changes/archive/`.
 
 ## Dominio
 
