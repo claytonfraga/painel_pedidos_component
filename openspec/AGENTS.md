@@ -136,9 +136,11 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
   (20), Pronto para entrega e Em rota de entrega pela media de entrega por bairro
   (`SLA_ENTREGA_BAIRRO_MINUTOS`, inicia em 10 e e ajustada a cada entrega);
   Entregue e Cancelado nao tem SLA.
-- Mecanismo: listener periodico
-  (`AgendadorMonitorSla`) opera o CoR adaptado (`MonitorSlaService` +
-  `RegraSla*Handler`), marcando `pedido.marcarPrioridade()`.
+- Mecanismo: listener periodico (`AgendadorMonitorSla`) opera o CoR adaptado
+  (`MonitorSlaService` + `RegraSla*Handler`), marcando
+  `pedido.marcarPrioridade()`. O monitor avalia logo apos a abertura (delay
+  inicial de 500 ms) e repete a cada `SLA_MONITOR_INTERVALO_SEGUNDOS`; assim,
+  pedidos que ja ultrapassaram o SLA sao marcados assim que a tela abre.
 - A prioridade some quando o pedido muda de estado (`setEstado` limpa a
   prioridade e atualiza `dataHoraMudancaEstado`).
 - Atualizacoes de tela decorrentes de eventos usam Observer (GoF): abstracao e

@@ -36,6 +36,7 @@ public class AgendadorMonitorSla {
                 executarMonitoramento();
             }
         });
+        this.timer.setInitialDelay(500);
     }
 
     public void iniciar() {

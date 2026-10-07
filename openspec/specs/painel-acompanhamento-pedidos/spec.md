@@ -129,7 +129,9 @@ com filtros padrao, a data atual. Cenarios: `@US22-003`, `@US22-004`.
 ### Requirement: Prioridade por SLA
 Tempo maximo por estado (Novo, Em preparo, Pronto, Em rota); Entregue e Cancelado
 sem SLA; marca o pedido com label vermelho "Prioridade", removido ao mudar de
-estado. Cenarios: `@US24-001` a `@US24-006`.
+estado. O monitor avalia logo apos a abertura e a cada
+`SLA_MONITOR_INTERVALO_SEGUNDOS`, de modo que pedidos ja vencidos sejam marcados
+assim que a tela abre. Cenarios: `@US24-001` a `@US24-006`.
 
 ### Requirement: Ordenacao dos cards (prioridade e fila FIFO)
 A raia e uma **fila**: o pedido ha mais tempo no estado (que chegou primeiro) fica
