@@ -9,7 +9,7 @@
 Aplicacao desktop (Swing) que permite ao atendente acompanhar e conduzir os
 pedidos do delivery por etapas operacionais, cancelar com credito, criar um novo
 pedido a partir de um cancelado, filtrar por periodo/data, receber pedidos
-simulados em tempo real e priorizar/ordenar pelo tempo no estado.
+simulados em tempo real e priorizar/ordenar os pedidos por prioridade e posicao.
 
 ## 2. Contexto e problema
 
@@ -24,7 +24,7 @@ simulados em tempo real e priorizar/ordenar pelo tempo no estado.
 - Painel com 6 colunas de situacao e acoes por estado (US21).
 - Busca, filtro por periodo padrao e por data especifica (US21, US22).
 - Simulacao de novos pedidos com alerta sonoro, foco, mensagem e destaque (US23).
-- Prioridade por SLA e ordenacao por tempo no estado (US24).
+- Prioridade por SLA e ordenacao por prioridade e posicao na raia (US24).
 - Instancia unica da aplicacao (US25).
 
 **Fora:**
@@ -68,7 +68,8 @@ destaque piscante por tempo configuravel.
 ### US24 - Prioridade, SLA e ordenacao (`@US24-001`..`007`)
 SLA por estado (Novo, Em preparo, Pronto, Em rota); label vermelho "Prioridade"
 removido ao mudar de estado; ~5% dos Novo do seeder ja priorizados; ordenacao por
-tempo no estado (mais antigo no topo da raia).
+prioridade e posicao (prioridade no topo em qualquer raia; na raia Novo o mais
+recente no topo; nas demais o mais antigo no estado).
 
 ### US25 - Instancia unica (`@US25-001`)
 Singleton thread-safe + trava de arquivo impedem a segunda abertura.

@@ -84,7 +84,7 @@ classDiagram
 - **Strategy**:
   - Filtro de periodo (`filtro`): `IFiltroPeriodo` + `IFabricaFiltroPeriodo`.
   - Som (`som`): `IEstrategiaSom` (`SomTomStrategy` / `SomToolkitStrategy`).
-  - Ordenacao (`ordenacao`): `IOrdenacaoPedidos` (`OrdenacaoPorTempoNoEstado`).
+  - Ordenacao (`ordenacao`): `IOrdenacaoPedidos` (`OrdenacaoPedidoPorPrioridadeEPosicao`).
   - Tempo/aleatoriedade (`simulacao`): `IRelogioService`, `IAleatoriedadeService`.
 - **Chain of Responsibility adaptado** (`notificacao`, `sla`): uma abstracao
   `Regra...Handler` (`seAplica`/`executar`), concretas `...Handler` sem
@@ -224,8 +224,10 @@ interface ITravaInstanciaUnica { boolean adquirir(); }
    `Objects.requireNonNull`.
 7. **Persistencia em memoria** atras de `IPedidoRepository` (troca futura por
    banco custa uma implementacao).
-8. **Ordenacao por tempo no estado** dentro de cada raia (`dataHoraMudancaEstado`
-   ascendente); prioridade e por estado (limpa em `setEstado`).
+8. **Ordenacao** dentro de cada raia por `OrdenacaoPedidoPorPrioridadeEPosicao`:
+   prioridade primeiro (qualquer raia); na raia Novo o mais recente no topo; nas
+   demais, quem esta ha mais tempo no estado. Prioridade e por estado (limpa em
+   `setEstado`).
 
 ## 9. Rastreabilidade de padroes
 
@@ -234,7 +236,7 @@ interface ITravaInstanciaUnica { boolean adquirir(); }
 | State | `state` | `PedidoState` | `Pedido*State` | `Pedido` (contexto) |
 | Strategy (filtro) | `filtro` | `IFiltroPeriodo` | `Filtro*` | `IFabricaFiltroPeriodo` |
 | Strategy (som) | `som` | `IEstrategiaSom` | `SomTomStrategy`, `SomToolkitStrategy` | composicao |
-| Strategy (ordenacao) | `ordenacao` | `IOrdenacaoPedidos` | `OrdenacaoPorTempoNoEstado` | composicao |
+| Strategy (ordenacao) | `ordenacao` | `IOrdenacaoPedidos` | `OrdenacaoPedidoPorPrioridadeEPosicao` | composicao |
 | CoR adaptado | `notificacao` | `RegraHandler` | `*Handler` | `NotificacaoNovoPedidoService` |
 | CoR adaptado | `sla` | `RegraSlaHandler` | `RegraSla*Handler` | `MonitorSlaService` |
 | Observer | `simulacao.observer` | `NovoPedidoObserver` | `PainelPedidoNovoPedidoObserver` | `SimuladorNovoPedido` |

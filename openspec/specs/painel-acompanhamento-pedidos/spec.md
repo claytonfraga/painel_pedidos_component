@@ -340,16 +340,23 @@ observado.
 - **WHEN** o monitor marca pedidos como prioridade
 - **THEN** os observadores notificam e a tela e atualizada
 
-### Requirement: Ordenacao dos cards por tempo no estado
+### Requirement: Ordenacao dos cards (prioridade e posicao na raia)
 
-Dentro de cada raia, os cards DEVEM ser ordenados pelo tempo no estado atual
-(quem esta ha mais tempo no estado aparece no topo), usando a abstracao
-`IOrdenacaoPedidos` (Strategy/DIP); a implementacao `OrdenacaoPorTempoNoEstado`
-compara por `dataHoraMudancaEstado` ascendente.
+A ordenacao usa a abstracao `IOrdenacaoPedidos` (Strategy/DIP), implementada por
+`OrdenacaoPedidoPorPrioridadeEPosicao`. Regras, nesta ordem de precedencia:
 
-#### Scenario: Pedido mais antigo no estado no topo
+1. Pedidos com Prioridade (SLA) vem primeiro, em qualquer raia.
+2. Na raia Novo, os pedidos mais recentes vem primeiro (topo da pilha).
+3. Nas demais raias, quem esta ha mais tempo no estado vem primeiro.
+
+#### Scenario: Pedido Novo no topo da raia Novo
 - **WHEN** o painel e atualizado
-- **THEN** em cada raia o pedido ha mais tempo no estado fica no topo da raia
+- **THEN** na raia Novo o pedido mais recente aparece no topo
+- **AND** um pedido com Prioridade aparece acima dos demais
+
+#### Scenario: Mais antigo no estado nas demais raias
+- **WHEN** o painel e atualizado
+- **THEN** nas raias diferentes de Novo o pedido ha mais tempo no estado fica no topo
 
 ## Diretrizes visuais
 
