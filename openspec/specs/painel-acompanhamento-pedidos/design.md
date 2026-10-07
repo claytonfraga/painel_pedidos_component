@@ -238,3 +238,23 @@ interface ITravaInstanciaUnica { boolean adquirir(); }
 | Observer | `sla.observer` | `PrioridadeObserver` | `PainelPedidoPrioridadeObserver` | `MonitorSlaService` |
 | Adapter | `configuracao` | - | `LeitorEnv` (sobre dotenv) | composicao |
 | Singleton | `aplicacao` | `ITravaInstanciaUnica` | `InstanciaUnicaAplicacao`, `TravaInstanciaUnicaArquivo` | `AplicacaoPainelPedido` |
+
+## 10. Dados de exemplo (seed) e persistencia
+
+Decisao registrada (change `2026-10-06-painel-pedidos-mvp`, design completo em
+`changes/archive/2026-10-06-painel-pedidos-mvp/design.md`):
+
+- **Seeder dedicado** (`seeder.PedidoSeeder`): recebe a quantidade e uma data de
+  referencia e gera o dataset de forma **deterministica** (sem `Random` nem
+  relogio do sistema), conduzindo as **transicoes do dominio** (nunca define a
+  situacao por string) nas seis situacoes e com datas em meses/dias variados.
+  Cerca de 5% dos pedidos Novo iniciam priorizados.
+- **Repositorio so persiste** (`repositorio.PedidoEmMemoriaRepository`): recebe a
+  lista pronta no construtor e nao cria pedidos; `gerarProximoIdentificador`
+  deriva do maior numero.
+- **Persistencia em memoria** atras de `IPedidoRepository` (DIP): trocar por um
+  banco custa apenas uma nova implementacao. Alternativa **H2 (JDBC, sem Spring)**
+  so vence se houver exigencia de banco real ou persistencia entre execucoes - o
+  que nao e o caso deste POC.
+- **Configuracao por `.env`** (`SEED_QUANTIDADE`, etc.), lida por
+  `configuracao.LeitorEnv` (Adapter do dotenv, unica dependencia de runtime).

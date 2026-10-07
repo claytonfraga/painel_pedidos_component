@@ -58,7 +58,8 @@ as regras de negocio BR12 e BR13.
 - Gera os pedidos nas seis situacoes e em meses/dias do mes variados, conduzindo
   as transicoes do dominio (nunca define a situacao por string).
 - Persistencia em memoria atras de `IPedidoRepository`; um banco (H2) so se for
-  exigencia de entrega (ver `.design/pedido-seeder.md`).
+  exigencia de entrega (ver
+  `changes/archive/2026-10-06-painel-pedidos-mvp/design.md`).
 
 ## Simulacao de novo pedido
 
