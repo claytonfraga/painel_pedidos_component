@@ -38,6 +38,8 @@ import br.projeto.painelpedidos.view.PainelPedidoPanel;
 import br.projeto.painelpedidos.view.PainelPedidoView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -57,9 +59,16 @@ import java.util.Objects;
  * <p>O componente NAO define Look and Feel: essa e uma decisao da aplicacao
  * cliente, que deve configura-lo antes de iniciar o painel.</p>
  *
+ * <p>O componente <b>possui</b> a instancia unica: {@link #iniciar()} adquire a
+ * trava antes de criar a janela e, nao conseguindo, devolve <code>false</code>
+ * sem abrir nada; {@link #encerrar()} libera a trava. A trava e a fonte unica da
+ * verdade (nao ha flag "ja aberto" em memoria), entao fechar e reabrir no mesmo
+ * processo volta a abrir. O consumidor nao configura trava, caminho nem
+ * singleton.</p>
+ *
  * @author clayton
  */
-public final class PainelPedidoFacade implements IExecucaoAplicacao {
+public final class PainelPedidoFacade {
 
     private final IPedidoRepository pedidoRepository;
     private final ConfiguracaoPainelPedido configuracao;
@@ -75,6 +84,7 @@ public final class PainelPedidoFacade implements IExecucaoAplicacao {
     private ICriarNovoPedidoListener criarNovoPedidoListener;
     private PainelPedidoView janela;
     private AgendadorMonitorSlaService agendadorMonitorSla;
+    private ITravaInstanciaUnica travaInstanciaUnica;
 
     public PainelPedidoFacade(
             IPedidoRepository pedidoRepository,
@@ -121,13 +131,15 @@ public final class PainelPedidoFacade implements IExecucaoAplicacao {
         this.painelPedidoPresenter.setCriarNovoPedidoListener(criarNovoPedidoListener);
     }
 
-    @Override
-    public void executar() {
-        iniciar();
-    }
-
-    public void iniciar() {
+    public boolean iniciar() {
         validarAcoesObrigatorias();
+
+        ITravaInstanciaUnica trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadrao());
+        if (!trava.adquirir()) {
+            return false;
+        }
+        this.travaInstanciaUnica = trava;
+
         janela = new PainelPedidoView(painelPedido, configuracao.getTituloJanela());
         painelPedido.getBtnFechar().addActionListener(new ActionListener() {
             @Override
@@ -138,6 +150,7 @@ public final class PainelPedidoFacade implements IExecucaoAplicacao {
         painelPedidoPresenter.iniciar();
         janela.setVisible(true);
         iniciarMonitorSla();
+        return true;
     }
 
     public void receberNovosPedidos(List<PedidoAbstract> pedidos) {
@@ -151,6 +164,14 @@ public final class PainelPedidoFacade implements IExecucaoAplicacao {
         if (janela != null) {
             janela.dispose();
         }
+        if (travaInstanciaUnica != null) {
+            travaInstanciaUnica.liberar();
+            this.travaInstanciaUnica = null;
+        }
+    }
+
+    private Path caminhoTravaPadrao() {
+        return Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock");
     }
 
     private void iniciarMonitorSla() {
