@@ -5,16 +5,13 @@ import br.projeto.exemplo.listener.ConfirmacaoPagamentoListener;
 import br.projeto.exemplo.listener.CriarNovoPedidoListener;
 import br.projeto.exemplo.listener.VisualizacaoPedidoListener;
 import br.projeto.exemplo.repositorio.PedidoEmMemoriaRepository;
-import br.projeto.painelpedidos.aplicacao.InstanciaUnicaAplicacao;
 import br.projeto.painelpedidos.aplicacao.PainelPedidoFacade;
-import br.projeto.painelpedidos.aplicacao.TravaInstanciaUnicaArquivo;
 import br.projeto.painelpedidos.configuracao.ConfiguracaoPainelPedido;
 import br.projeto.painelpedidos.configuracao.LeitorConfiguracaoPainelPedido;
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import br.projeto.painelpedidos.repositorio.IPedidoRepository;
 import br.projeto.painelpedidos.som.SomTomStrategy;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.swing.UIManager;
@@ -23,7 +20,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 /**
  * Projeto da atividade: monta o componente sobre uma origem de dados e uma
  * configuracao, e o executa. Demonstra a integracao minima esperada de qualquer
- * sistema de delivery.
+ * sistema de delivery - a instancia unica e responsabilidade do componente, que
+ * apenas sinaliza a recusa.
  *
  * @author clayton
  */
@@ -45,11 +43,7 @@ public final class AplicacaoPainelPedido {
         painelPedido.setConfirmarPagamentoListener(new ConfirmacaoPagamentoListener());
         painelPedido.setCriarNovoPedidoListener(new CriarNovoPedidoListener(repositorio));
 
-        boolean iniciada = InstanciaUnicaAplicacao.getInstance().iniciar(
-                painelPedido,
-                new TravaInstanciaUnicaArquivo(
-                        Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock")));
-        if (!iniciada) {
+        if (!painelPedido.iniciar()) {
             System.out.println("O Painel de Acompanhamento de Pedidos ja esta aberto.");
         }
     }
