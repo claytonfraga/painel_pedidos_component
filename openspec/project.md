@@ -1,148 +1,118 @@
-# Painel de Acompanhamento de Pedidos (MVP Passive View)
+# Painel de Acompanhamento de Pedidos - Componente Reutilizavel
 
 ## Contexto
 
-Aplicacao desktop Swing que apresenta o Painel de Acompanhamento de Pedidos do
+Biblioteca Java (Swing) que apresenta o Painel de Acompanhamento de Pedidos de um
 delivery, organizado em seis colunas de situacao (Novo, Em preparo, Pronto para
 entrega, Em rota de entrega, Entregue e Cancelado), com busca por numero do
 pedido ou nome do cliente, filtro por periodo e acoes de transicao condicionadas
 as regras de negocio BR12 e BR13.
 
+O projeto deixa de ser uma aplicacao autonoma e passa a ser um **componente
+reutilizavel**: e consumido como dependencia Maven por qualquer sistema de
+delivery, que implementa as portas de dados e executa o painel. Nao ha
+simulacao, geracao de pedidos, seed nem dados mockados.
+
 ## Arquitetura
 
-- Padrao de apresentacao adotado: **MVP (Model-View-Presenter), variante Passive
-  View**, conforme o material de referencia indexado em
-  `openspec/references/Model-View-Presenter.md`.
-- A View e abstraida por `IPainelPedidoView`; o Presenter depende dessa
-  abstracao e nao conhece a implementacao concreta.
-- A `PainelPedidoView` (concretizacao da interface) nao conhece o Model, apenas
-  expoe componentes e permanece passiva quanto ao fluxo.
+- Padrao de apresentacao: **MVP (Model-View-Presenter), variante Passive View**.
+- A View e abstraida por `IPainelPedidoView` e materializada por
+  `PainelPedidoPanel` (`JPanel` embedavel) e `PainelPedidoView` (`JFrame`
+  invólucro). A apresentacao nao depende de uma janela.
 - A `PainelPedidoPresenter` coordena: configura os listeners, le a View, aciona
-  o Model/Repository e instrui a View sobre como atualizar a apresentacao.
-- O Model (`Pedido`) concentra estado e as regras de transicao de situacao.
-- O repositorio em memoria (`PedidoEmMemoriaRepository`) implementa a interface
-  `IPedidoRepository`.
-- A composicao das dependencias (View concreta + servico/repositorio + Presenter)
-  ocorre no ponto de entrada (`aplicacao`), como em `AplicacaoPrincipal` do
-  material de referencia.
-- Interface grafica em Swing.
+  o Model/Repository e instrui a View sobre como atualizar.
+- O Model nao possui classe concreta: e a classe abstrata `PedidoAbstract`, que
+  carrega os dados essenciais do painel e a maquina de estados (GoF State). O
+  sistema consumidor a estende e implementa `criarCopia`. As acoes de visualizar
+  pedido e confirmar pagamento sao listeners obrigatorios do cliente.
+- A porta de dados e `IPedidoRepository`, implementada pelo consumidor.
+- Novos pedidos entram por empurrao: o consumidor chama
+  `PainelPedidoFacade.receberNovosPedidos(List<PedidoAbstract>)` (GoF Observer).
+- A fachada `PainelPedidoFacade` e o ponto de entrada do componente: compoe a View, a
+  Presenter, o repositorio, as estrategias e os agendadores, e executa o painel.
+- Interface grafica em Swing; modulo de exemplo demonstra a integracao.
+
+## Modulos Maven
+
+- `painel-pedidos-parent`: agregador (packaging `pom`), Java 21 (bytecode
+  `--release 21`), enforcer `[21,)` (Maven pode rodar em JDK 21 ou superior).
+- `painel-pedidos`: a biblioteca. maven-shade embute as dependencias; o jar
+  publicado contem tudo (dotenv incluso).
+- `exemplo`: consumidor de demonstracao (depende de `painel-pedidos`), com
+  repositorio em memoria, dados de exemplo estaticos e `painel_pedidos.env`.
 
 ## Material de referencia (indexado)
 
-- `openspec/references/Model-View-Presenter.md` - documento de referencia do
-  padrao MVP (Potel, 1996; Fowler, 2006; Vreca, 2023; Zhang e Luo, 2010; Alles et
-  al., 2006), incluindo a variante Passive View e o exemplo de login.
-- Indice em `openspec/references/README.md`.
+- `references/Model-View-Presenter.md` - documento de referencia do padrao MVP
+  (Potel, 1996; Fowler, 2006; Vreca, 2023; Zhang e Luo, 2010; Alles et al.,
+  2006), incluindo a variante Passive View.
 
-## Adaptacoes do padrao neste projeto
+## Ciclo de vida (GoF State)
 
-- O material de referencia usa `ActionListener` anonimo no Presenter; este projeto
-  segue esse padrao: listeners anonimos no ponto de uso (sem criar classes de
-  listener e sem lambda).
-- O material mantem `JOptionPane` no Presenter (variante principal). Este projeto
-  adota essa variante; a alternativa com abstracao `ExibidorMensagem` fica
-  registrada como evolucao possivel para testabilidade.
-- A View concreta e criada e injetada pelo ponto de entrada (`aplicacao`), e o
-  Presenter recebe a abstracao `IPainelPedidoView` por construtor.
-
-## Dados de exemplo (seed)
-
-- O seed vive em `br.projeto.painelpedidos.seeder.PedidoSeeder`, separado do
-  repositorio (SRP). O repositorio nao cria pedidos: recebe a lista pronta.
-- O `PedidoSeeder` e deterministico: recebe a quantidade e uma data de referencia
-  e deriva todas as datas/valores dela, sem `Random` nem relogio do sistema.
-- A quantidade vem do arquivo `.env` na raiz do projeto (chave
-  `SEED_QUANTIDADE`, ex.: 1000), lida por `configuracao/LeitorEnv`, um Adapter
-  que encapsula a biblioteca dotenv (`io.github.cdimascio:dotenv-java`); nenhuma
-  outra classe conhece a biblioteca. O ponto de entrada injeta o valor.
-- Gera os pedidos nas seis situacoes e em meses/dias do mes variados, conduzindo
-  as transicoes do dominio (nunca define a situacao por string).
-- Persistencia em memoria atras de `IPedidoRepository`; um banco (H2) so se for
-  exigencia de entrega (ver
-  `changes/archive/2026-10-06-painel-pedidos-mvp/design.md`).
-
-## Simulacao de novo pedido
-
-- Com a aplicacao aberta, um simulador cria pedidos em intervalos aleatorios
-  (minimo configuravel, >= 30s), simulando clientes.
-- Configuracao no `.env`: `SIMULACAO_INTERVALO_MINIMO_SEGUNDOS`,
-  `SIMULACAO_INTERVALO_MAXIMO_SEGUNDOS` e `SIMULACAO_MENSAGEM_SEGUNDOS`.
-- Ao criar: alerta sonoro (Strategy `IEstrategiaSom`), foco no card e label
-  "Novo Pedido #<numero>" (card pequeno laranja escuro, texto branco negrito) que
-  some apos o tempo configurado; os cards novos piscam por esse tempo.
-- Ate N pedidos por ciclo (`SIMULACAO_PEDIDOS_POR_CICLO`). A notificacao usa o
-  Chain of Responsibility adaptado (`NotificacaoNovoPedidoService` +
-  `Regra...Handler`).
-- SOLID: `ISimuladorNovoPedido`/`ObservadorNovoPedido` (o Presenter e observador),
-  `IGeradorPedido`, `IRelogioService` e `IAleatoriedadeService` como abstracoes;
-  `CatalogoPedido` compartilha os dados entre seeder e gerador.
-
-## Instancia unica (Singleton)
-
-- A aplicacao abre apenas uma vez: `InstanciaUnicaAplicacao` e um Singleton
-  thread-safe (double-checked locking), ponto unico de criacao/execucao.
-- A composicao fica em `AplicacaoPainelPedido` (unico `main`), que implementa
-  `IExecucaoAplicacao`; a trava entre processos e `ITravaInstanciaUnica`
-  (`FileLock`). DIP/OCP/SRP preservados.
-
-## Filtro de periodo e data
-
-- Periodo: filtros padrao (Hoje, ultimos 7, ultimos 30, todos) ou data especifica
-  via datepicker `spnData` (`JSpinner` com `SpinnerDateModel`), exibido somente
-  quando "Data especifica" esta selecionada.
-- Abstracoes: `IFiltroPeriodo` (+ `FiltroHoje`, `FiltroUltimos7Dias`,
-  `FiltroUltimos30Dias`, `FiltroTodos`, `FiltroDataEspecifica`) e
-  `IFabricaFiltroPeriodo` (`FabricaFiltroPeriodo`).
-- Data do novo pedido simulado: `IFonteDataPedido` (`FonteDataPedido`), atualizada
-  pelo Presenter; quando "Data especifica" esta ativa, o pedido e criado na data
-  escolhida, senao na data atual.
-
-## Tecnologia
-
-- Java 21 (`maven.compiler.release` = 21), Maven 3.9.x, encoding UTF-8.
-- Sem `maven-enforcer-plugin`: a compilacao usa `release 21`, permitindo que o
-  Maven rode sobre JDK mais novo (ex.: NetBeans com JDK 25).
-- Pacote raiz `br.projeto`; dominio em `br.projeto.painelpedidos.model`.
-- Layout de camadas: `model`, `repositorio`, `presenter`, `view`,
-  `aplicacao`, `configuracao`.
-
-## Fonte da verdade
-
-- Visao geral: `openspec/README.md`; produto: `openspec/prd.md`.
-- `openspec/specs/**` e os arquivos `.feature` associados sao a fonte da verdade
-  do comportamento do sistema. O design tecnico fica em
-  `openspec/specs/**/design.md`.
-- Cada `.feature` fica na pasta da capacidade correspondente e e indexado no
-  `spec.md` da mesma pasta.
-- Historias de usuario: US21 (Acompanhar pedidos), US22 (Filtro por periodo e
-  data), US23 (Simular novos pedidos), US24 (Prioridade, SLA e ordenacao) e
-  US25 (Instancia unica), com as regras BR12, BR13 e o fluxo de pagamento US23.
-- As changes concluidas ficam em `openspec/changes/archive/`.
-
-## Dominio
-
-O `Pedido` concentra os dados exigidos pela tela: identificador, data e hora,
-nome do cliente, endereco de entrega, valor total, forma de pagamento, data e
-hora do pagamento, situacao, credito gerado, prioridade e tempo no estado
-(`dataHoraMudancaEstado`). O que a tela nao usa (itens, cupons, taxa de entrega,
-cliente detalhado) foi removido.
-
-### Ciclo de vida (GoF State)
-
-O estado do pedido e modelado com GoF State no estilo do exemplo `Porta`:
-- `br.projeto.painelpedidos.state.PedidoState` (abstrata) mantem `protected final
-  Pedido pedido` e operacoes default que lancam `RuntimeException`.
+- `state/PedidoState` (abstrata) mantem `protected final Pedido pedido` e
+  operacoes default que lancam `RuntimeException`.
 - Estados concretos `PedidoNovoState`, `PedidoEmPreparoState`,
   `PedidoProntoParaEntregaState`, `PedidoEmRotaDeEntregaState`,
   `PedidoEntregueState`, `PedidoCanceladoState` sobrescrevem as operacoes
   permitidas e transicionam com `pedido.setEstado(new PedidoProximoState(pedido))`.
-- Cada estado valida pre-condicoes no proprio construtor; se nao atendidas, lanca
-  excecao e a transicao nao ocorre. `PedidoCanceladoState` calcula o credito no
-  construtor.
-- `Pedido` e o contexto: `estado = new PedidoNovoState(this)`, delega as operacoes
-  e expoe `getEstado()`/`setEstado(PedidoState)`.
-- A cadeia: Novo -> Em preparo (apos pagamento) -> Pronto para entrega ->
-  Em rota de entrega -> Entregue; qualquer estado nao cancelado pode ir para
-  Cancelado. Cancelado nao retorna.
-- O repositorio em memoria semeia 40 pedidos exercitando essas transicoes, sem
-  conhecer strings de situacao.
+- Cada estado valida pre-condicoes no proprio construtor; se nao atendidas,
+  lanca excecao e a transicao nao ocorre. `PedidoCanceladoState` calcula o
+  credito no construtor.
+- `Pedido` e o contexto: `estado = new PedidoNovoState(this)`, delega as
+  operacoes e expoe `getEstado()`/`setEstado(PedidoState)`.
+
+## Ingestao de novos pedidos (empurrao, substitui a simulacao)
+
+- O consumidor **empurra** os novos pedidos: chama
+  `PainelPedidoFacade.receberNovosPedidos(List<PedidoAbstract>)` quando chega um
+  pedido no sistema dele. Aceita um ou varios.
+- GoF Observer: o consumidor e o sujeito/fonte do evento e o componente e o
+  observador (`NovoPedidoObserver`), que dispara a cadeia de notificacao
+  (`NotificacaoNovoPedidoService` + `RegraHandler`).
+- Nenhum pedido e gerado, sorteado, semeado nem lido automaticamente pelo
+  componente.
+
+## Configuracao (`painel_pedidos.env`)
+
+O arquivo e **obrigatorio**; as quatro chaves de SLA por estado tambem.
+Chaves: `SLA_NOVO_MINUTOS`, `SLA_EM_PREPARO_MINUTOS`,
+`SLA_PRONTO_PARA_ENTREGA_MINUTOS`, `SLA_EM_ROTA_DE_ENTREGA_MINUTOS`,
+`SLA_MONITOR_INTERVALO_SEGUNDOS`, `NOTIFICACAO_DURACAO_SEGUNDOS`, `SOM_ATIVO`,
+`TITULO_JANELA`. Lidas por
+`LeitorConfiguracaoPainelPedido` (Adapter sobre dotenv). Ausentes, valem os
+defaults do codigo (documentados em `painel_pedidos.env.example`).
+
+## Instancia unica (Singleton, opcional)
+
+- `InstanciaUnicaAplicacao` e um Singleton thread-safe (double-checked locking),
+  ponto unico de criacao/execucao; a trava entre processos e
+  `ITravaInstanciaUnica` (`FileLock`).
+- O consumidor decide usar: `InstanciaUnicaAplicacao.getInstance().iniciar(painelPedidos, trava)`.
+  O exemplo demonstra esse caminho.
+
+## Filtro de periodo e data
+
+- `IFiltroPeriodo` (+ `FiltroHoje`, `FiltroSemana`, `FiltroMes`,
+  `FiltroCompleto`, `FiltroDataEspecifica`) e `IFabricaFiltroPeriodo`
+  (`FabricaFiltroPeriodo`).
+- Data do novo pedido: `IFonteDataPedido` (`FonteDataPedido`), atualizada pela
+  Presenter; quando "Data especifica" esta ativa, o pedido e criado na data
+  escolhida, senao na data atual. O relogio e injetado (`IRelogioService`).
+
+## Tecnologia
+
+- Java 21 (`maven.compiler.release` = 21), Maven 3.9.x, encoding UTF-8.
+- Multi-modulo; `maven-shade-plugin` para o jar com dependencias.
+- Testes: JUnit Jupiter + Hamcrest (Surefire); sem Failsafe por enquanto.
+- Pacote raiz `br.projeto`; dominio em `br.projeto.painelpedidos.model`.
+
+## Fonte da verdade
+
+- Visao geral: `openspec/README.md`; produto: `openspec/prd.md`.
+- `openspec/specs/**` e os `.feature` sao a fonte da verdade do comportamento.
+- Design tecnico: `openspec/specs/**/design.md`.
+- Historias: US21 (Acompanhar), US22 (Filtro), US24 (Prioridade/SLA/ordenacao),
+  US25 (Instancia unica), US26 (Ingestao sem simulacao) e US27 (Componente
+  reutilizavel).
+- Mudancas concluidas em `openspec/changes/archive/`; a mudanca deste componente
+  em `openspec/changes/archive/2026-10-11-componente-reutilizavel/`.

@@ -1,5 +1,5 @@
 # language: pt
-# Fontes: src/main/java/br/projeto/painelpedidos/sla; src/main/java/br/projeto/painelpedidos/tempo; src/main/java/br/projeto/painelpedidos/ordenacao; src/main/java/br/projeto/painelpedidos/seeder/PedidoSeeder.java
+# Fontes: painel-pedidos/src/main/java/br/projeto/painelpedidos/sla; painel-pedidos/src/main/java/br/projeto/painelpedidos/tempo; painel-pedidos/src/main/java/br/projeto/painelpedidos/ordenacao
 @us24 @sla @prioridade @ordenacao
 Funcionalidade: Priorizar e ordenar pedidos por tempo no estado
 
@@ -9,20 +9,20 @@ Funcionalidade: Priorizar e ordenar pedidos por tempo no estado
 
   @US24-001
   Cenário: Priorizar pedido Novo que ultrapassa o tempo
-    Dado que exista um pedido Novo há mais de SLA_NOVO_MINUTOS sem mudança de estado
+    Dado que exista um pedido Novo há mais que o tempo máximo configurado para a situação, sem mudança de estado
     Quando o monitor de SLA executar
     Então o pedido deve receber o label vermelho "Prioridade"
 
   @US24-002
   Cenário: Priorizar pedido Em preparo que ultrapassa o tempo
-    Dado que exista um pedido Em preparo há mais de SLA_EM_PREPARO_MINUTOS sem mudança de estado
+    Dado que exista um pedido Em preparo há mais que o tempo máximo configurado para a situação, sem mudança de estado
     Quando o monitor de SLA executar
     Então o pedido deve receber o label vermelho "Prioridade"
 
   @US24-003
-  Cenário: Priorizar pedido Pronto ou Em rota acima da média do bairro
+  Cenário: Priorizar pedido Pronto ou Em rota acima do SLA do estado
     Dado que exista um pedido Pronto para entrega ou Em rota de entrega
-    E que o tempo no estado ultrapassou a média de entrega do bairro (inicia em SLA_ENTREGA_BAIRRO_MINUTOS)
+    E que o tempo no estado ultrapassou o tempo máximo configurado para a situação
     Quando o monitor de SLA executar
     Então o pedido deve receber o label vermelho "Prioridade"
 
@@ -37,12 +37,6 @@ Funcionalidade: Priorizar e ordenar pedidos por tempo no estado
     Dado um pedido marcado como Prioridade
     Quando o pedido mudar para outro estado
     Então o label vermelho "Prioridade" deve desaparecer
-
-  @US24-006
-  Cenário: Iniciar parte dos pedidos Novo do seeder já priorizados
-    Dado que o seeder gera pedidos na situação Novo
-    Quando o painel abrir
-    Então cerca de 5% desses pedidos Novo devem já estar marcados como Prioridade
 
   @US24-007
   Cenário: Ordenar os cards por prioridade e tempo no estado (fila FIFO)

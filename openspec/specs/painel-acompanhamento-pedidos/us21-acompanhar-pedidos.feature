@@ -1,5 +1,5 @@
 # language: pt
-# Fontes: src/main/java/br/projeto/painelpedidos/presenter/PainelPedidoPresenter.java; src/main/java/br/projeto/painelpedidos/model/Pedido.java; src/main/java/br/projeto/painelpedidos/state
+# Fontes: painel-pedidos/src/main/java/br/projeto/painelpedidos/presenter/PainelPedidoPresenter.java; painel-pedidos/src/main/java/br/projeto/painelpedidos/model/Pedido.java; painel-pedidos/src/main/java/br/projeto/painelpedidos/state
 @us21 @painel @mvp
 Funcionalidade: Acompanhar pedidos
 

@@ -1,5 +1,5 @@
 # language: pt
-# Fontes: src/main/java/br/projeto/painelpedidos/filtro; src/main/java/br/projeto/painelpedidos/simulacao/FonteDataPedido.java; src/main/java/br/projeto/painelpedidos/presenter/PainelPedidoPresenter.java
+# Fontes: painel-pedidos/src/main/java/br/projeto/painelpedidos/filtro; painel-pedidos/src/main/java/br/projeto/painelpedidos/tempo/FonteDataPedido.java; painel-pedidos/src/main/java/br/projeto/painelpedidos/presenter/PainelPedidoPresenter.java
 @us22 @filtro @periodo
 Funcionalidade: Filtrar pedidos por período e data específica
 
@@ -12,7 +12,7 @@ Funcionalidade: Filtrar pedidos por período e data específica
     Dado que eu esteja no painel
     Então o campo de data deve ficar oculto
     Quando eu selecionar "Data específica" no período
-    Então o campo de data (datepicker JSpinner) deve ser exibido
+    Então o campo de data (datepicker) deve ser exibido
     E ao selecionar outro período o campo de data deve ser ocultado
 
   @US22-002
@@ -23,9 +23,9 @@ Funcionalidade: Filtrar pedidos por período e data específica
     E a busca por número/cliente deve ser respeitada
 
   @US22-003
-  Cenário: Criar novo pedido simulado na data específica
+  Cenário: Novo pedido recebido na data específica
     Dado que "Data específica" esteja selecionada com uma data
-    Quando o simulador criar um novo pedido
+    Quando um novo pedido for recebido (leitura periódica ou empurrão)
     Então o novo pedido deve ser criado com a data selecionada
 
   @US22-004

@@ -103,28 +103,7 @@ Rotulo adicional ortogonal: "Prioridade" (vermelho) quando `pedido.isPrioridade(
 
 ---
 
-## 3. `SimuladorNovoPedido` (nao usa State)
-
-Elemento: `simulacao.SimuladorNovoPedido` (usa `javax.swing.Timer`). Estados
-implicitos controlados por `iniciar(...)`/`parar()`.
-
-```mermaid
-stateDiagram-v2
-    [*] --> Parado
-    Parado --> Executando : iniciar(observador)
-    Executando --> Executando : tick / gera 1..N pedidos, notifica e reagenda
-    Executando --> Parado : parar()
-```
-
-- **Parado**: sem Timer ativo.
-- **Executando**: Timer agendado; a cada disparo cria de 1 a
-  `SIMULACAO_PEDIDOS_POR_CICLO` pedidos e notifica o `NovoPedidoObserver`.
-- Nao usa o padrao State (apenas Timer + observador); candidato a refatoracao se
-  surgirem mais estados (ex.: pausado, erro).
-
----
-
-## 4. `InstanciaUnicaAplicacao` (nao usa State)
+## 3. `InstanciaUnicaAplicacao` (nao usa State)
 
 Elemento: `aplicacao.InstanciaUnicaAplicacao` (Singleton thread-safe com flag
 `iniciada` e travamento por `synchronized`).
@@ -145,7 +124,7 @@ stateDiagram-v2
 
 ---
 
-## 5. `TravaInstanciaUnicaArquivo` (nao usa State)
+## 4. `TravaInstanciaUnicaArquivo` (nao usa State)
 
 Elemento: `aplicacao.TravaInstanciaUnicaArquivo` (implementa
 `ITravaInstanciaUnica` via `FileLock`).
@@ -164,7 +143,7 @@ stateDiagram-v2
 
 ---
 
-## 6. `PainelPedidoPresenter` - estados de interface (nao usa State)
+## 5. `PainelPedidoPresenter` - estados de interface (nao usa State)
 
 Elemento: `presenter.PainelPedidoPresenter`. Varios estados de interface
 controlados por campos/Timers (nao pelo padrao State).
