@@ -7,11 +7,16 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import br.projeto.painelpedidos.configuracao.ConfiguracaoPainelPedido;
+import br.projeto.painelpedidos.listener.ConfirmarPagamentoListenerFake;
+import br.projeto.painelpedidos.listener.CriarNovoPedidoListenerFake;
+import br.projeto.painelpedidos.listener.VisualizarPedidoListenerFake;
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import br.projeto.painelpedidos.model.PedidoDeTeste;
 import br.projeto.painelpedidos.repositorio.PedidoRepositoryFake;
 import br.projeto.painelpedidos.som.SomSilenciosoStrategy;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -77,6 +82,24 @@ public final class PainelPedidoFacadeTest {
         assertThrows(IllegalStateException.class, iniciar);
     }
 
+    @Test
+    public void segundaAberturaComATravaPadraoRetidaERecusadaSemAbrirJanela() {
+        // given: a trava padrao do componente ja retida por outra execucao
+        ITravaInstanciaUnica trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadraoDoComponente());
+        assertThat(trava.adquirir(), is(true));
+        PainelPedidoFacade painelPedido = criarPainelComListeners(new PedidoRepositoryFake());
+
+        try {
+            // when: tenta-se abrir o painel
+            boolean iniciada = painelPedido.iniciar();
+
+            // then: nada e aberto e a recusa e sinalizada
+            assertThat(iniciada, is(false));
+        } finally {
+            trava.liberar();
+        }
+    }
+
     private PedidoAbstract criarPedido(String identificador) {
         return new PedidoDeTeste(identificador, LocalDateTime.of(2026, 1, 10, 12, 0),
                 "Ana Souza", "Rua das Flores, 120 - Centro", 42.90);
@@ -85,6 +108,19 @@ public final class PainelPedidoFacadeTest {
     private PainelPedidoFacade criarPainel(PedidoRepositoryFake repositorio) {
         return new PainelPedidoFacade(repositorio, criarConfiguracao(),
                 new SomSilenciosoStrategy(), new RelogioServiceSistema());
+    }
+
+    private PainelPedidoFacade criarPainelComListeners(PedidoRepositoryFake repositorio) {
+        PainelPedidoFacade painelPedido = criarPainel(repositorio);
+        painelPedido.setVisualizarPedidoListener(new VisualizarPedidoListenerFake());
+        painelPedido.setConfirmarPagamentoListener(new ConfirmarPagamentoListenerFake());
+        painelPedido.setCriarNovoPedidoListener(new CriarNovoPedidoListenerFake(repositorio, 0));
+        return painelPedido;
+    }
+
+    private Path caminhoTravaPadraoDoComponente() {
+        // espelha o caminho padrao do componente; se ele mudar, este teste falha.
+        return Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock");
     }
 
     private ConfiguracaoPainelPedido criarConfiguracao() {

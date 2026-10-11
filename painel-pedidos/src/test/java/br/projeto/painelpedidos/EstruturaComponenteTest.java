@@ -74,6 +74,17 @@ public final class EstruturaComponenteTest {
     }
 
     @Test
+    public void instanciaUnicaEPossuidaPeloComponente() {
+        // given: o componente compilado
+
+        // when: procura-se pelo involucro de execucao e pelo singleton
+
+        // then: nenhum deles existe (a fachada aplica a instancia unica)
+        afirmarClasseAusente("br.projeto.painelpedidos.aplicacao.IExecucaoAplicacao");
+        afirmarClasseAusente("br.projeto.painelpedidos.aplicacao.InstanciaUnicaAplicacao");
+    }
+
+    @Test
     public void modeloDePedidoEAbstrato() throws ClassNotFoundException {
         // given: o componente compilado
 
