@@ -1,0 +1,28 @@
+package br.projeto.painelpedidos.filtro;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+/**
+ *
+ * @author clayton
+ */
+public final class FiltroDataEspecifica implements IFiltroPeriodo {
+
+    private final LocalDate data;
+
+    public FiltroDataEspecifica(LocalDate data) {
+        this.data = Objects.requireNonNull(data, "data");
+    }
+
+    @Override
+    public boolean aceita(LocalDateTime dataHora, LocalDate hoje) {
+        return dataHora.toLocalDate().equals(data);
+    }
+
+    @Override
+    public LocalDate getDataParaNovoPedido() {
+        return data;
+    }
+}
