@@ -10,6 +10,9 @@ bin/
 *.nar
 *.exec
 
+# Documentacao gerada (print do painel pelo teste headless)
+docs/
+
 # Maven
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
@@ -23,8 +26,8 @@ release.properties
 
 # Environment / secrets
 .env
-*.env
-!.env.example
+/painel_pedidos.env
+!painel_pedidos.env.example
 
 # Logs
 *.log
