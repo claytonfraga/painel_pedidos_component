@@ -50,8 +50,8 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
 - NAO use `implements Runnable`; sem `SwingUtilities.invokeLater`.
 - NAO use `java.math.BigDecimal`; use `double` para valores monetarios.
 - NAO use `java.util.Optional`; use retorno direto.
-- NAO use atributos estaticos, incluindo constantes `public static final`. UNICA
-  EXCECAO: o padrao Singleton thread-safe (`InstanciaUnicaAplicacao`).
+- NAO use atributos estaticos, incluindo constantes `public static final`. O
+  projeto nao tem nenhum campo estatico.
 - Listeners com classes anonimas no ponto de uso; nao criar arquivos de listener.
 - NAO criar classes internas/anonimas para outros fins alem de listeners (em
   testes, classes anonimas de `Executable` para `assertThrows` sao permitidas).
@@ -200,11 +200,19 @@ A View nao possui setters publicos.
 - A data do novo pedido vem de `IFonteDataPedido`, sincronizada com o periodo
   selecionado.
 
-## Instancia unica (opcional)
+## Instancia unica
 
-- `InstanciaUnicaAplicacao` (Singleton thread-safe) + `ITravaInstanciaUnica`
-  (`FileLock`). `PainelPedidoFacade` implementa `IExecucaoAplicacao`; o consumidor
-  decide usar.
+- O COMPONENTE possui a trava de instancia unica; o consumidor nao configura
+  trava, caminho nem singleton.
+- `PainelPedidoFacade.iniciar()` adquire a trava antes de criar a janela e
+  devolve `boolean` (`false` = nada foi aberto). `encerrar()` libera a trava.
+- A trava e a fonte unica da verdade: a fachada NAO guarda flag "ja aberto"; o
+  defeito antigo era o singleton de JVM nunca resetar.
+- Trava padrao: `TravaInstanciaUnicaArquivo` sobre um arquivo em
+  `java.io.tmpdir`; "ja travado" (`tryLock()==null` ou
+  `OverlappingFileLockException`) e recusa, nunca excecao.
+- O arquivo de trava NUNCA e apagado: apaga-lo e o que quebra a exclusao.
+- A mensagem ao usuario e do consumidor (o componente apenas sinaliza).
 
 ## Build e distribuicao
 

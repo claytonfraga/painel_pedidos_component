@@ -103,9 +103,10 @@ codigo) e copia pedidos do seeder com novo numero e a data atual.
 - Arquitetura **MVP Passive View**; a View e passiva e a Presenter coordena.
 - Padroes: **State**, **Strategy** (filtro, som, ordenacao), **Chain of
   Responsibility adaptado**, **Observer** (ingestao e atualizacoes),
-  **Adapter** (dotenv), **Singleton** (instancia unica).
+  **Adapter** (dotenv). A instancia unica e do componente (trava de arquivo),
+  nao um Singleton do consumidor.
 - Restricoes de codigo: sem lambda, Stream, `enum`, `instanceof`, `Runnable`;
-  sem atributos estaticos (excecao: Singleton); excecoes unchecked;
+  sem atributos estaticos; excecoes unchecked;
   `Objects.requireNonNull`; classes no singular; interfaces com prefixo `I`.
 - Configuracao por `painel_pedidos.env` (encapsulado em
   `LeitorConfiguracaoPainelPedido`).
@@ -145,7 +146,7 @@ SLAs por estado sao obrigatorios), `SLA_MONITOR_INTERVALO_SEGUNDOS`,
 | US21 | us21-acompanhar-pedidos | `PainelPedidoPresenter`, `Pedido`, `Pedido*State`, `IPedidoRepository`, `IPainelPedidoView`, `PainelPedidoPanel` |
 | US22 | us22-filtro-periodo-data | `IFiltroPeriodo`/`Filtro*`, `IFabricaFiltroPeriodo`, `IFonteDataPedido` |
 | US24 | us24-prioridade-sla-ordenacao | `MonitorSlaService`, `RegraSlaEstadoHandler`, `AgendadorMonitorSlaService`, `PrioridadeObserver`, `IOrdenacaoPedido` |
-| US25 | nao-funcional | `InstanciaUnicaAplicacao`, `ITravaInstanciaUnica` |
+| US25 | us25-instancia-unica | `PainelPedidoFacade`, `ITravaInstanciaUnica`, `TravaInstanciaUnicaArquivo` |
 | US26 | us26-ingestao-novos-pedidos | `PainelPedidoFacade.receberNovosPedidos`, `PainelPedidoNovoPedidoObserver`, `NotificacaoNovoPedidoService`, `RegraHandler`+`*Handler`, `IEstrategiaSom` |
 | US27 | nao-funcional | `PainelPedidoFacade`, `ConfiguracaoPainelPedido`, `LeitorConfiguracaoPainelPedido`, `PainelPedidoView` |
 | US28 | us28-acoes-do-cliente | `PedidoAbstract`, `IVisualizarPedidoListener`, `IConfirmarPagamentoListener`, `PainelPedidoFacade` |

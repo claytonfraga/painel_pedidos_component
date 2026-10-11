@@ -155,6 +155,9 @@ painelPedido.setCriarNovoPedidoListener(new MeuCriadorDePedido());
 painelPedido.iniciar();
 ```
 
+`iniciar()` devolve `boolean`: devolve `false` quando já existe um painel aberto
+(instância única é responsabilidade do componente).
+
 O botão **Fechar** encerra apenas a janela do painel; o componente não encerra a
 sua aplicação.
 
@@ -163,13 +166,12 @@ sua aplicação.
 Use `PainelPedidoPanel` (`JPanel`) com um `PainelPedidoPresenter`; a classe
 `PainelPedidoView` é apenas um `JFrame` invólucro.
 
-### Instância única (opcional)
+### Instância única (do componente)
 
-```java
-InstanciaUnicaAplicacao.getInstance().iniciar(
-    painelPedido,
-    new TravaInstanciaUnicaArquivo(Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock")));
-```
+O componente cuida disso sozinho: `iniciar()` adquire uma trava de arquivo antes
+de criar a janela e devolve `false` quando já há um painel aberto, sem abrir nada;
+`encerrar()` libera a trava. Não há trava, caminho nem singleton para o consumidor
+configurar.
 
 ## Convenções
 

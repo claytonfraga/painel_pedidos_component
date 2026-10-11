@@ -126,8 +126,15 @@ Cenarios: `@US27-002`.
 Prioridade primeiro; dentro da raia, `dataHoraMudancaEstado` ascendente.
 Cenarios: `@US24-007`.
 
-### Requirement: Painel aberto uma unica vez (opcional)
-Uma execucao por JVM e uma instancia por processo. Cenarios: `@US25-001`.
+### Requirement: Painel aberto uma unica vez
+O componente possui a trava de instancia unica e a aplica sozinho ao iniciar:
+`iniciar()` adquire a trava antes de criar a janela e, nao conseguindo, devolve
+`false` sem abrir nada (nem janela, nem SLA, nem observer). `encerrar()` libera a
+trava, de modo que fechar e reabrir no mesmo processo volta a abrir. A trava e um
+arquivo fornecido pelo componente e o arquivo nunca e apagado. O consumidor nao
+configura trava, caminho nem singleton; informar o usuario da recusa e do
+consumidor.
+Cenarios: `@US25-001` a `@US25-004`.
 
 ### Requirement: Atualizacoes de tela por Observer
 Novos pedidos (empurrados pelo consumidor) e prioridade usam Observer. Cenarios:

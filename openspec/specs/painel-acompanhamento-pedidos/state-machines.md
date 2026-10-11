@@ -11,16 +11,14 @@ cenarios em `us21..us25*.feature` nesta pasta.
 Indice:
 1. `Pedido` (usa GoF State)
 2. Status derivado do card (`Pedido` + pagamento)
-3. `SimuladorNovoPedido` (estados implicitos; nao usa State)
-4. `InstanciaUnicaAplicacao` (estados implicitos; nao usa State)
-5. `TravaInstanciaUnicaArquivo` (estados implicitos; nao usa State)
-6. `PainelPedidoPresenter` - estados de interface (selecao, destaque, botao, label)
+3. `TravaInstanciaUnicaArquivo` (estados implicitos; nao usa State)
+4. `PainelPedidoPresenter` - estados de interface (selecao, destaque, botao, label)
 
 ---
 
 ## 1. `Pedido` (GoF State)
 
-Elemento: `model.Pedido` (contexto) + `state.PedidoState` e concretos
+Elemento: `model.PedidoAbstract` (contexto) + `state.PedidoState` e concretos
 `PedidoNovoState`, `PedidoEmPreparoState`, `PedidoProntoParaEntregaState`,
 `PedidoEmRotaDeEntregaState`, `PedidoEntregueState`, `PedidoCanceladoState`.
 
@@ -103,52 +101,40 @@ Rotulo adicional ortogonal: "Prioridade" (vermelho) quando `pedido.isPrioridade(
 
 ---
 
-## 3. `InstanciaUnicaAplicacao` (nao usa State)
-
-Elemento: `aplicacao.InstanciaUnicaAplicacao` (Singleton thread-safe com flag
-`iniciada` e travamento por `synchronized`).
-
-```mermaid
-stateDiagram-v2
-    [*] --> NaoIniciada
-    NaoIniciada --> Iniciada : iniciar(app, trava) [trava adquirida]
-    NaoIniciada --> NaoIniciada : iniciar(...) [trava indisponivel]
-    Iniciada --> Iniciada : iniciar(...) [ja iniciada -> retorna false]
-    Iniciada --> [*]
-```
-
-- **NaoIniciada**: ainda nao executou a aplicacao.
-- **Iniciada**: aplicacao executada uma vez; novas tentativas retornam `false`.
-- Nao usa o padrao State (flag booleana); poderia virar State se houvesse mais
-  situacoes (ex.: encerrando).
-
----
-
-## 4. `TravaInstanciaUnicaArquivo` (nao usa State)
+## 3. `TravaInstanciaUnicaArquivo` (nao usa State)
 
 Elemento: `aplicacao.TravaInstanciaUnicaArquivo` (implementa
-`ITravaInstanciaUnica` via `FileLock`).
+`ITravaInstanciaUnica` via `FileLock`), possuida por `aplicacao.PainelPedidoFacade`
+(adquire ao iniciar, libera ao encerrar).
 
 ```mermaid
 stateDiagram-v2
     [*] --> Livre
     Livre --> Travada : adquirir() [tryLock != null]
-    Livre --> Livre : adquirir() [tryLock == null]
-    Travada --> [*]
+    Livre --> Livre : adquirir() [tryLock == null ou OverlappingFileLockException]
+    Travada --> Travada : adquirir() [ja travada nesta instancia -> false]
+    Travada --> Livre : liberar() [fecha o canal; o arquivo permanece]
+    Livre --> [*]
 ```
 
-- **Livre**: nenhum processo detem a trava.
-- **Travada**: esta instancia detem a trava de arquivo (impede outra instancia).
-- Nao usa o padrao State (resultado de `tryLock`).
+- **Livre**: nenhum processo detem a trava; a abertura do painel e concedida.
+- **Travada**: esta instancia detem a trava de arquivo; a abertura e recusada
+  (`iniciar()` devolve `false`) e **nada** e aberto (nem janela, nem SLA, nem
+  observer).
+- `liberar()` fecha o canal - a trava cede - e **nao apaga o arquivo**: apaga-lo e
+  o que quebraria a exclusao. Fechar e reabrir no mesmo processo volta a abrir
+  porque a fachada nao guarda flag "ja aberto" em memoria: a trava e a fonte
+  unica da verdade.
+- Nao usa o padrao State (resultado de `tryLock`/`close`).
 
 ---
 
-## 5. `PainelPedidoPresenter` - estados de interface (nao usa State)
+## 4. `PainelPedidoPresenter` - estados de interface (nao usa State)
 
 Elemento: `presenter.PainelPedidoPresenter`. Varios estados de interface
 controlados por campos/Timers (nao pelo padrao State).
 
-### 6.1 Selecao de pedido
+### 4.1 Selecao de pedido
 
 ```mermaid
 stateDiagram-v2
@@ -158,7 +144,7 @@ stateDiagram-v2
     PedidoSelecionado --> NenhumSelecionado : limparSelecao (apos atualizar sem o pedido)
 ```
 
-### 6.2 Destaque piscante dos novos pedidos (`destaqueAceso`)
+### 4.2 Destaque piscante dos novos pedidos (`destaqueAceso`)
 
 ```mermaid
 stateDiagram-v2
@@ -166,11 +152,11 @@ stateDiagram-v2
     Apagado --> Aceso : destacarPedidos(pedidos)
     Aceso --> Apagado : tick (500ms)
     Apagado --> Aceso : tick (500ms)
-    Aceso --> Apagado : fim (SIMULACAO_MENSAGEM_SEGUNDOS)
+    Aceso --> Apagado : fim (NOTIFICACAO_DURACAO_SEGUNDOS)
     Apagado --> [*] : fim
 ```
 
-### 6.3 Botao "Executar acao" (visivel/habilitado)
+### 4.3 Botao "Executar acao" (visivel/habilitado)
 
 ```mermaid
 stateDiagram-v2
@@ -179,14 +165,14 @@ stateDiagram-v2
     VisivelHabilitado --> Invisivel : selecionar Entregue ou limpar selecao
 ```
 
-### 6.4 Label de notificacao ("Novo Pedido #id" / "N novos pedidos")
+### 4.4 Label de notificacao ("Novo Pedido #id" / "N novos pedidos")
 
 ```mermaid
 stateDiagram-v2
     [*] --> Oculto
     Oculto --> Visivel : exibirMensagem(texto)
     Visivel --> Visivel : exibirMensagem(texto) (reinicia o tempo)
-    Visivel --> Oculto : fim (SIMULACAO_MENSAGEM_SEGUNDOS)
+    Visivel --> Oculto : fim (NOTIFICACAO_DURACAO_SEGUNDOS)
 ```
 
 - Nenhum desses usa o padrao State (campos booleanos/Timers). Sao estados de

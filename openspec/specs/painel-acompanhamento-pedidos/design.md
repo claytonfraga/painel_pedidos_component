@@ -221,32 +221,29 @@ Apenas o leitor conhece `Dotenv`; o restante depende de
 `ConfiguracaoPainelPedido`. E a inversao de dependencia e a Lei de Demeter
 (MARTIN, 2003).
 
-## 7. Singleton (instancia unica do painel, opcional)
+## 7. Instancia unica do painel (trava de arquivo)
 
-A abertura unica usa um **Singleton** thread-safe (GAMMA et al., 2000) com trava
-de arquivo, oferecido ao consumidor como capacidade opcional (Figura 7).
+A abertura unica e **possuida pelo componente**: a fachada adquire uma trava de
+arquivo ao iniciar e a libera ao encerrar (Figura 7). Nao ha mais Singleton - o
+Singleton de JVM nunca resetava e impedia reabrir o painel no mesmo processo.
 
 ```mermaid
 classDiagram
-    class InstanciaUnicaAplicacao {
-      -static volatile InstanciaUnicaAplicacao instancia
-      -boolean iniciada
-      +getInstance() InstanciaUnicaAplicacao
-      +iniciar(app, trava) boolean
+    class PainelPedidoFacade {
+      +iniciar() boolean
+      +encerrar()
     }
-    class IExecucaoAplicacao { <<interface>> }
     class ITravaInstanciaUnica { <<interface>> }
     class TravaInstanciaUnicaArquivo
-    InstanciaUnicaAplicacao --> IExecucaoAplicacao
-    InstanciaUnicaAplicacao --> ITravaInstanciaUnica
+    PainelPedidoFacade --> ITravaInstanciaUnica
     ITravaInstanciaUnica <|.. TravaInstanciaUnicaArquivo
 ```
 
-**Figura 7 - Singleton de instancia unica com trava de arquivo.**
+**Figura 7 - A fachada possui a trava de instancia unica.**
 
-`PainelPedidoFacade` implementa `IExecucaoAplicacao`, de modo que
-`InstanciaUnicaAplicacao.getInstance().iniciar(painelPedidos, trava)` executa o
-painel uma unica vez. O Singleton e o unico ponto com `static` no componente.
+`PainelPedidoFacade.iniciar()` adquire a trava antes de criar a janela e devolve
+`false` quando ela ja esta tomada (sem abrir janela, SLA ou observer);
+`encerrar()` libera. O componente nao possui nenhum campo `static`.
 
 ## 8. Empacotamento e distribuicao
 
@@ -260,8 +257,8 @@ painel uma unica vez. O Singleton e o unico ponto com `static` no componente.
 ## 9. Restricoes transversais
 
 As restricoes de linguagem e estilo (sem lambda, Stream, `enum`, `instanceof`,
-`Runnable`, `BigDecimal`, `Optional`; sem atributos estaticos exceto o
-Singleton; excecoes unchecked; nomenclatura) estao em [`AGENTS.md`](../../AGENTS.md)
+`Runnable`, `BigDecimal`, `Optional`; sem atributos estaticos; excecoes
+unchecked; nomenclatura) estao em [`AGENTS.md`](../../AGENTS.md)
 e nao sao repetidas aqui.
 
 ## Referencias

@@ -82,13 +82,15 @@ Chaves: `SLA_NOVO_MINUTOS`, `SLA_EM_PREPARO_MINUTOS`,
 `LeitorConfiguracaoPainelPedido` (Adapter sobre dotenv). Ausentes, valem os
 defaults do codigo (documentados em `painel_pedidos.env.example`).
 
-## Instancia unica (Singleton, opcional)
+## Instancia unica (do componente)
 
-- `InstanciaUnicaAplicacao` e um Singleton thread-safe (double-checked locking),
-  ponto unico de criacao/execucao; a trava entre processos e
-  `ITravaInstanciaUnica` (`FileLock`).
-- O consumidor decide usar: `InstanciaUnicaAplicacao.getInstance().iniciar(painelPedidos, trava)`.
-  O exemplo demonstra esse caminho.
+- O componente **possui** a instancia unica; o consumidor nao configura trava,
+  caminho nem singleton.
+- `PainelPedidoFacade.iniciar()` adquire uma trava de arquivo
+  (`TravaInstanciaUnicaArquivo`, via `FileLock`) antes de criar a janela e
+  devolve `boolean` (`false` = nada foi aberto); `encerrar()` libera a trava.
+- A trava e a fonte unica da verdade (nao ha flag "ja aberto" em memoria); o
+  arquivo nunca e apagado.
 
 ## Filtro de periodo e data
 

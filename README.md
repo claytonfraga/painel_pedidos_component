@@ -215,27 +215,27 @@ PainelPedidoFacade painelPedido = new PainelPedidoFacade(
 painelPedido.setVisualizarPedidoListener(minhaTelaDePedido);   // obrigatório
 painelPedido.setConfirmarPagamentoListener(meuPagamento);      // obrigatório
 painelPedido.setCriarNovoPedidoListener(meuCriadorDePedido);   // obrigatório
-painelPedido.iniciar();
+
+if (!painelPedido.iniciar()) {
+    System.out.println("O painel ja esta aberto.");
+}
 ```
 
 O construtor da fachada é **único** e exige repositório, configuração, estratégia
 de som e relógio (use os defaults `SomTomStrategy` e `RelogioServiceSistema`).
 
-Métodos da fachada: `iniciar()`, `receberNovosPedidos(List<PedidoAbstract>)`,
-`encerrar()`, `setVisualizarPedidoListener(...)`,
-`setConfirmarPagamentoListener(...)`, `setCriarNovoPedidoListener(...)`.
+Métodos da fachada: `iniciar()` (devolve `boolean`),
+`receberNovosPedidos(List<PedidoAbstract>)`, `encerrar()`,
+`setVisualizarPedidoListener(...)`, `setConfirmarPagamentoListener(...)`,
+`setCriarNovoPedidoListener(...)`.
 
-### 4.2 Instância única (opcional)
+### 4.2 Instância única (do componente)
 
-Envolva com `InstanciaUnicaAplicacao` (Singleton + trava de arquivo entre
-processos):
-
-```java
-InstanciaUnicaAplicacao.getInstance().iniciar(
-    painelPedido,
-    new TravaInstanciaUnicaArquivo(
-        Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock")));
-```
+O componente cuida disso sozinho: `iniciar()` adquire uma trava de arquivo antes
+de criar a janela e devolve `false` quando já há um painel aberto, **sem abrir
+nada**. `encerrar()` libera a trava, então fechar e reabrir volta a funcionar. O
+consumidor não configura trava, caminho nem singleton; a mensagem ao usuário é
+sua (o componente apenas sinaliza).
 
 ### 4.3 Embutir em uma aplicação Swing existente
 
@@ -295,10 +295,9 @@ public class MeuMain {
         painelPedido.setConfirmarPagamentoListener(new MeuPagamento());
         painelPedido.setCriarNovoPedidoListener(new MeuCriadorDePedido());
 
-        InstanciaUnicaAplicacao.getInstance().iniciar(
-                painelPedido,
-                new TravaInstanciaUnicaArquivo(
-                        Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock")));
+        if (!painelPedido.iniciar()) {
+            System.out.println("O painel ja esta aberto.");
+        }
     }
 }
 ```
