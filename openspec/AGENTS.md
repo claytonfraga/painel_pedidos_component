@@ -250,6 +250,14 @@ A View nao possui setters publicos.
   trava, caminho nem singleton.
 - `PainelPedidoFacade.iniciar()` adquire a trava antes de criar a janela e
   devolve `boolean` (`false` = nada foi aberto). `encerrar()` libera a trava.
+- A recusa NAO e obrigacao tecnica de tratar (Java permite ignorar o retorno),
+  mas quem a engole deixa o app "nao fazendo nada" na segunda execucao. No
+  `exemplo` ela e sinalizada com `System.out.println`, porque o exemplo roda por
+  console (`exec-maven-plugin`/IDE); nao trocar por dialogo sem mudar a forma de
+  lancamento.
+- `System.out.println` e o canal permitido de um modulo de demonstracao (o
+  `main` do `exemplo`); em classe que nao e ponto de entrada, use o dialogo do
+  componente.
 - A trava e a fonte unica da verdade: a fachada NAO guarda flag "ja aberto"; o
   defeito antigo era o singleton de JVM nunca resetar.
 - Trava padrao: `TravaInstanciaUnicaArquivo` sobre um arquivo em
