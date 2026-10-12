@@ -103,9 +103,9 @@ Rotulo adicional ortogonal: "Prioridade" (vermelho) quando `pedido.isPrioridade(
 
 ## 3. `TravaInstanciaUnicaArquivo` (nao usa State)
 
-Elemento: `aplicacao.TravaInstanciaUnicaArquivo` (implementa
-`ITravaInstanciaUnica` via `FileLock`), possuida por `aplicacao.PainelPedidoFacade`
-(adquire ao iniciar, libera ao encerrar).
+Elemento: `aplicacao.TravaInstanciaUnicaArquivo` (detalhe interno do componente,
+via `FileLock`), possuida por `aplicacao.PainelPedidoFacade` (adquire ao iniciar,
+libera ao encerrar).
 
 ```mermaid
 stateDiagram-v2

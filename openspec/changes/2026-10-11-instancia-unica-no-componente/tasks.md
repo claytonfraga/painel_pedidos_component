@@ -9,7 +9,8 @@
 
 ## 2. Trava
 
-- [x] `ITravaInstanciaUnica.liberar()`.
+- [x] Remover `ITravaInstanciaUnica` (interface de implementacao unica, sem ponto
+      de injecao); a trava vira detalhe interno do componente.
 - [x] `TravaInstanciaUnicaArquivo`: guardar o canal; `liberar()` fecha o canal
       (o arquivo permanece); `tryLock()==null` e `OverlappingFileLockException`
       resultam em `false`, sem excecao.

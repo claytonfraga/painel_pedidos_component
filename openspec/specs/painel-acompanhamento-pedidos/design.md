@@ -233,17 +233,16 @@ classDiagram
       +iniciar() boolean
       +encerrar()
     }
-    class ITravaInstanciaUnica { <<interface>> }
     class TravaInstanciaUnicaArquivo
-    PainelPedidoFacade --> ITravaInstanciaUnica
-    ITravaInstanciaUnica <|.. TravaInstanciaUnicaArquivo
+    PainelPedidoFacade --> TravaInstanciaUnicaArquivo : possui
 ```
 
 **Figura 7 - A fachada possui a trava de instancia unica.**
 
 `PainelPedidoFacade.iniciar()` adquire a trava antes de criar a janela e devolve
 `false` quando ela ja esta tomada (sem abrir janela, SLA ou observer);
-`encerrar()` libera. O componente nao possui nenhum campo `static`.
+`encerrar()` libera. A trava e detalhe interno (package-private): nao e porta nem
+ponto de extensao. O componente nao possui nenhum campo `static`.
 
 ## 8. Empacotamento e distribuicao
 

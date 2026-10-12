@@ -211,6 +211,8 @@ A View nao possui setters publicos.
 - Trava padrao: `TravaInstanciaUnicaArquivo` sobre um arquivo em
   `java.io.tmpdir`; "ja travado" (`tryLock()==null` ou
   `OverlappingFileLockException`) e recusa, nunca excecao.
+- A trava e detalhe interno (package-private): NAO e porta nem ponto de extensao;
+  nao recrie interface para ela sem um consumidor que a implemente.
 - O arquivo de trava NUNCA e apagado: apaga-lo e o que quebra a exclusao.
 - A mensagem ao usuario e do consumidor (o componente apenas sinaliza).
 

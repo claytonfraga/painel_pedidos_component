@@ -146,7 +146,7 @@ SLAs por estado sao obrigatorios), `SLA_MONITOR_INTERVALO_SEGUNDOS`,
 | US21 | us21-acompanhar-pedidos | `PainelPedidoPresenter`, `Pedido`, `Pedido*State`, `IPedidoRepository`, `IPainelPedidoView`, `PainelPedidoPanel` |
 | US22 | us22-filtro-periodo-data | `IFiltroPeriodo`/`Filtro*`, `IFabricaFiltroPeriodo`, `IFonteDataPedido` |
 | US24 | us24-prioridade-sla-ordenacao | `MonitorSlaService`, `RegraSlaEstadoHandler`, `AgendadorMonitorSlaService`, `PrioridadeObserver`, `IOrdenacaoPedido` |
-| US25 | us25-instancia-unica | `PainelPedidoFacade`, `ITravaInstanciaUnica`, `TravaInstanciaUnicaArquivo` |
+| US25 | us25-instancia-unica | `PainelPedidoFacade`, `TravaInstanciaUnicaArquivo` |
 | US26 | us26-ingestao-novos-pedidos | `PainelPedidoFacade.receberNovosPedidos`, `PainelPedidoNovoPedidoObserver`, `NotificacaoNovoPedidoService`, `RegraHandler`+`*Handler`, `IEstrategiaSom` |
 | US27 | nao-funcional | `PainelPedidoFacade`, `ConfiguracaoPainelPedido`, `LeitorConfiguracaoPainelPedido`, `PainelPedidoView` |
 | US28 | us28-acoes-do-cliente | `PedidoAbstract`, `IVisualizarPedidoListener`, `IConfirmarPagamentoListener`, `PainelPedidoFacade` |
