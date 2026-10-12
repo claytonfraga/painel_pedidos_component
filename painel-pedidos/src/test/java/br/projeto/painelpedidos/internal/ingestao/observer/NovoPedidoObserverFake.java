@@ -5,27 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Fake de {@link NovoPedidoObserver} para os testes: registra os pedidos que
+ * recebeu, para assercao de roteamento.
  *
  * @author clayton
  */
 public final class NovoPedidoObserverFake implements NovoPedidoObserver {
 
-    private final List<List<PedidoAbstract>> lotes;
-
-    public NovoPedidoObserverFake() {
-        this.lotes = new ArrayList<>();
-    }
+    private final List<PedidoAbstract> recebidos = new ArrayList<>();
 
     @Override
     public void receberNovosPedidos(List<PedidoAbstract> pedidos) {
-        lotes.add(new ArrayList<>(pedidos));
+        recebidos.addAll(pedidos);
     }
 
-    public int quantidadeChamadas() {
-        return lotes.size();
-    }
-
-    public List<PedidoAbstract> ultimoLote() {
-        return lotes.get(lotes.size() - 1);
+    public List<PedidoAbstract> getRecebidos() {
+        return new ArrayList<>(recebidos);
     }
 }

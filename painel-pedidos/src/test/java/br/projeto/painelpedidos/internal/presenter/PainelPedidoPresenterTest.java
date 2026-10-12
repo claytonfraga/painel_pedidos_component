@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import br.projeto.painelpedidos.internal.ingestao.observer.NovoPedidoObserverFake;
 import br.projeto.painelpedidos.internal.filtro.FabricaFiltroPeriodo;
 import br.projeto.painelpedidos.listener.ConfirmarPagamentoListenerFake;
 import br.projeto.painelpedidos.listener.CriarNovoPedidoListenerFake;
@@ -122,18 +123,41 @@ public final class PainelPedidoPresenterTest {
     }
 
     @Test
-    public void criarNovoPedidoComListenerPersisteOsPedidos() {
-        // given: uma origem de dados com um pedido e um listener funcional que copia 1
+    public void criarNovoPedidoComListenerRoteiaPelaMesmaNotificacao() {
+        // given: uma origem de dados com um pedido, um listener funcional que copia 1
+        // e o observador que a fachada liga em producao
         PedidoRepositoryFake repositorio = new PedidoRepositoryFake();
         repositorio.salvar(criarPedido(repositorio.gerarProximoIdentificador()));
         PainelPedidoPresenter presenter = criarPresenter(repositorio);
         presenter.setCriarNovoPedidoListener(new CriarNovoPedidoListenerFake(repositorio, 1));
+        NovoPedidoObserverFake observador = new NovoPedidoObserverFake();
+        presenter.setNovoPedidoObserver(observador);
 
         // when: aciona-se "Novo Pedido"
         presenter.criarNovoPedido();
 
-        // then: a origem de dados passa a ter o original + a copia
-        assertThat(repositorio.buscarTodos(), hasSize(2));
+        // then: o pedido criado entra pela MESMA notificacao do empurrao - e a
+        // cadeia (salvar, atualizar, focar, som, mensagem, destaque) que decide
+        assertThat(observador.getRecebidos(), hasSize(1));
+    }
+
+    @Test
+    public void criarNovoPedidoSemObservadorLancaExcecao() {
+        // given: uma Presenter com o listener mas sem o observador ligado
+        PedidoRepositoryFake repositorio = new PedidoRepositoryFake();
+        PainelPedidoPresenter presenter = criarPresenter(repositorio);
+        presenter.setCriarNovoPedidoListener(new CriarNovoPedidoListenerFake(repositorio, 0));
+
+        // when: aciona-se "Novo Pedido"
+        Executable criar = new Executable() {
+            @Override
+            public void execute() {
+                presenter.criarNovoPedido();
+            }
+        };
+
+        // then: uma excecao orientando informar o observador e lancada
+        assertThrows(IllegalStateException.class, criar);
     }
 
     @Test
