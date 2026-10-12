@@ -45,6 +45,11 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
 
 - NAO use lambda.
 - NAO use Stream API (nem `Comparator.comparing`, nem method references).
+- `for` com contador SOMENTE quando o contador for necessario: o indice e usado
+  no corpo (posicao, `buffer[2 * i]`), o laco percorre uma contagem e nao uma
+  colecao, ou o proprio valor do contador e o conteudo. Ao percorrer uma colecao
+  sem precisar do indice, use o **for-each** (`for (Tipo item : colecao)`), sem
+  lambda e sem Stream.
 - NAO use `enum`.
 - NAO use `instanceof`.
 - NAO use `implements Runnable`; sem `SwingUtilities.invokeLater`.
