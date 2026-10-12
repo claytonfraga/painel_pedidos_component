@@ -202,6 +202,17 @@ IDENTIFICADOR_APLICACAO=meu-sistema-de-delivery
 Não quer o arquivo no diretório de trabalho? Aponte o diretório no construtor:
 `new LeitorConfiguracaoPainelPedido(diretorio, "painel_pedidos.env").ler()`.
 
+### Contrato público
+
+São API apenas estes tipos: `PainelPedidoFacade`, `PedidoAbstract`,
+`IPedidoRepository`, `ConfiguracaoPainelPedido`,
+`LeitorConfiguracaoPainelPedido`, os três listeners, `IEstrategiaSom`,
+`SomTomStrategy`, `IRelogioService`, `RelogioServiceSistema`,
+`IPainelPedidoView` e `PainelPedidoPanel`. Todo o resto vive sob
+`br.projeto.painelpedidos.internal.*` e pode mudar entre versões — a lista é
+fixada por teste (`ContratoPublicoTest`), que falha nomeando o tipo que entrar
+ou sair.
+
 ## 4. Executando
 
 ### 4.1 Fachada `PainelPedidoFacade`
