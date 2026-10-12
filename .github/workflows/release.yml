@@ -10,8 +10,10 @@ permissions:
 
 jobs:
   publicar:
-    name: Verifica, empacota e publica a release
+    name: Verifica, publica o componente e valida o exemplo contra o publicado
     runs-on: ubuntu-latest
+    outputs:
+      versao: ${{ steps.versoes.outputs.versao }}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,10 +24,16 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Alinhar a versao do pom com a tag
-        run: mvn -B -q versions:set -DnewVersion="${GITHUB_REF_NAME#v}" -DgenerateBackupPoms=false
+      - name: Definir a versao (a da tag)
+        id: versoes
+        run: echo "versao=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Alinhar a versao do componente com a tag
+        working-directory: painel-pedidos
+        run: mvn -B -q versions:set -DnewVersion="${{ steps.versoes.outputs.versao }}" -DgenerateBackupPoms=false
 
       - name: Gate de qualidade antes de publicar
+        working-directory: painel-pedidos
         run: mvn -U clean verify
 
       - name: Publicar a release com o jar do componente
@@ -36,3 +44,62 @@ jobs:
             painel-pedidos/target/painel-pedidos-*.jar \
             --title "${GITHUB_REF_NAME}" \
             --generate-notes
+
+      - name: Aguardar o artefato resolver no JitPack
+        run: |
+          URL="https://jitpack.io/com/github/${GITHUB_REPOSITORY_OWNER}/painel_pedidos_component/painel-pedidos/${{ steps.versoes.outputs.versao }}/painel-pedidos-${{ steps.versoes.outputs.versao }}.pom"
+          for tentativa in $(seq 1 30); do
+            CODIGO="$(curl -s -o /dev/null -w '%{http_code}' "${URL}" --max-time 60)"
+            echo "Tentativa ${tentativa}: HTTP ${CODIGO}"
+            if [ "${CODIGO}" = "200" ]; then
+              echo "Artefato publicado: ${URL}"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "O artefato ${URL} nao resolveu a tempo."
+          exit 1
+
+      - name: Apontar o exemplo para a versao publicada e verificar
+        run: |
+          mvn -B -q -f exemplo/pom.xml versions:set-property \
+            -Dproperty=painel-pedidos.version \
+            -DnewVersion="${{ steps.versoes.outputs.versao }}" \
+            -DgenerateBackupPoms=false
+          cd exemplo && mvn -U clean verify
+
+  atualizar-exemplo:
+    name: Registrar a versao publicada no exemplo
+    needs: publicar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Atualizar a propriedade painel-pedidos.version
+        run: |
+          mvn -B -q -f exemplo/pom.xml versions:set-property \
+            -Dproperty=painel-pedidos.version \
+            -DnewVersion="${{ needs.publicar.outputs.versao }}" \
+            -DgenerateBackupPoms=false
+
+      - name: Commitar e empurrar quando houver mudanca
+        run: |
+          if git diff --quiet -- exemplo/pom.xml; then
+            echo "A versao do exemplo ja estava em ${{ needs.publicar.outputs.versao }}."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add exemplo/pom.xml
+          git commit -m "build: consome a versao ${{ needs.publicar.outputs.versao }} do componente"
+          git push origin main

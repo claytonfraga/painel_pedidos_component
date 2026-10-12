@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  verificar:
-    name: Gate de qualidade (unitarios, integracao e enforcer)
+  componente:
+    name: Gate do componente (unitarios, integracao e enforcer)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,13 +21,52 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: mvn -U clean verify
+      - name: mvn -U clean verify (componente)
+        working-directory: painel-pedidos
         run: mvn -U clean verify
 
       - name: Guardar relatorios quando falhar
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: relatorios-de-teste
-          path: '**/target/*-reports/**'
+          name: relatorios-de-teste-do-componente
+          path: 'painel-pedidos/target/*-reports/**'
           if-no-files-found: ignore
+
+  exemplo:
+    name: Gate do exemplo (consome o artefato publicado)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Ler a versao publicada que o exemplo consome
+        id: alvo
+        run: |
+          VERSAO="$(mvn -B -q -f exemplo help:evaluate -Dexpression=painel-pedidos.version -DforceStdout)"
+          echo "versao=${VERSAO}" >> "$GITHUB_OUTPUT"
+          echo "Versao do componente consumida pelo exemplo: ${VERSAO}"
+
+      - name: Conferir se o artefato publicado existe
+        id: artefato
+        run: |
+          URL="https://jitpack.io/com/github/claytonfraga/painel_pedidos_component/painel-pedidos/${{ steps.alvo.outputs.versao }}/painel-pedidos-${{ steps.alvo.outputs.versao }}.pom"
+          CODIGO="$(curl -s -o /dev/null -w '%{http_code}' "${URL}" --max-time 60)"
+          echo "artefato ${{ steps.alvo.outputs.versao }}: HTTP ${CODIGO}"
+          echo "codigo=${CODIGO}" >> "$GITHUB_OUTPUT"
+
+      - name: mvn -U clean verify (exemplo)
+        if: steps.artefato.outputs.codigo == '200'
+        working-directory: exemplo
+        run: mvn -U clean verify
+
+      - name: Avisar quando o artefato publicado ainda nao resolve
+        if: steps.artefato.outputs.codigo != '200'
+        run: |
+          echo "::warning::O artefato ${{ steps.alvo.outputs.versao }} ainda nao resolve no JitPack (HTTP ${{ steps.artefato.outputs.codigo }}). O build do exemplo sera verificado no release, quando a versao existir."

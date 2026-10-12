@@ -47,8 +47,9 @@ mockados no componente — os dados e as telas são sempre seus.
   pedido *ultrapassa* o limite (seção 5).
 - **O contrato público tem 14 tipos**; o resto vive sob `internal` e pode mudar
   entre versões (seção 3, "Contrato público").
-- **Há um consumidor completo para copiar**: o módulo [`exemplo`](exemplo/) faz
-  tudo isso e roda (seção 6).
+- **Há um consumidor completo para copiar**: o projeto [`exemplo`](exemplo/) faz
+  tudo isso e roda (seção 6). Ele é um projeto independente que depende do
+  componente pelo JitPack — o mesmo caminho que o seu sistema vai usar.
 
 ## Requisitos
 
@@ -59,8 +60,8 @@ mockados no componente — os dados e as telas são sempre seus.
 ## 1. Adicione a dependência
 
 O componente é publicado no [JitPack](https://jitpack.io) a partir das tags do
-repositório. Use as coordenadas abaixo - e troque `v1.0.1` pela versão que
-quiser:
+repositório. As coordenadas abaixo usam o autor de referência; **troque o
+usuário pelas suas** (veja a seção 1.1) e a versão pela que quiser:
 
 ```xml
 <repositories>
@@ -71,7 +72,7 @@ quiser:
 </repositories>
 
 <dependency>
-    <groupId>com.github.claytonfraga.painel_pedidos_component</groupId>
+    <groupId>com.github.SEU-USUARIO.painel_pedidos_component</groupId>
     <artifactId>painel-pedidos</artifactId>
     <version>v1.0.1</version>
 </dependency>
@@ -82,8 +83,34 @@ O jar de `painel-pedidos` **já contém todas as dependências** (é empacotado 
 constrói **no primeiro pedido**, então a primeira resolução pode demorar um
 pouco mais.
 
-**Uso local** (antes de publicar): a partir da raiz do projeto do componente,
-rode `mvn -U clean install` e dependa de `br.projeto:painel-pedidos:1.0.0`.
+**Uso local** (antes de publicar): dentro de `painel-pedidos/`, rode
+`mvn -U clean install` e dependa de `br.projeto:painel-pedidos:1.0.0` - o
+`groupId` de desenvolvimento. No JitPack o `groupId` publicado é
+`com.github.<usuario>.<repositorio>`.
+
+### 1.1 Publique o seu próprio componente (template)
+
+Este repositório é um **template**: cada pessoa publica o seu componente, na
+própria conta do GitHub, e aponta o exemplo para ele. O ponto único de autoria é
+um par de propriedades no [`exemplo/pom.xml`](exemplo/pom.xml):
+
+```xml
+<painel-pedidos.groupId>com.github.SEU-USUARIO.painel_pedidos_component</painel-pedidos.groupId>
+<painel-pedidos.version>v1.0.1</painel-pedidos.version>
+```
+
+1. Faça um fork (ou clone) do repositório no **seu** GitHub, mantendo-o público.
+2. Crie a sua tag e uma Release: `git tag v1.0.1 && git push origin v1.0.1`. O
+   workflow de release alinha a versão, verifica e publica a Release; o JitPack
+   constrói o artefato **no primeiro pedido**.
+3. Troque as duas propriedades acima para `com.github.<seu-usuario>.<seu-repo>` e
+   a sua versão. Pronto: o `exemplo` passa a resolver o **seu** artefato.
+
+> O build do JitPack pode falhar na primeira tentativa com **HTTP 429** (limite
+> de requisições do Maven Central, compartilhado pela infraestrutura do JitPack);
+> é transitório - reenvie a Release/tag e ele conclui. Se preferir não depender do
+> JitPack, instale o jar localmente: `mvn -U clean install` dentro de
+> `painel-pedidos/` e dependa de `br.projeto:painel-pedidos:1.0.0`.
 
 ## 2. O que o seu projeto implementa
 
@@ -360,32 +387,34 @@ public class MeuMain {
 }
 ```
 
-Há um consumidor de referência no módulo [`exemplo`](exemplo/) (repositório em
-memória, seeder determinístico e `painel_pedidos.env`):
+Há um consumidor de referência no projeto [`exemplo`](exemplo/) (repositório em
+memória, seeder determinístico e `painel_pedidos.env`). Ele é um projeto Maven
+independente que depende do componente **pelo JitPack**, na versão declarada na
+propriedade `painel-pedidos.version` do `exemplo/pom.xml`:
 
 ```bash
+cd exemplo
 mvn -U clean verify
-java -jar exemplo/target/exemplo-painel-pedidos-1.0.0.jar
+java -jar target/exemplo-painel-pedidos-1.0.0.jar
 ```
 
-## 7. Módulos, build e testes
+## 7. Projetos, build e testes
 
-| Módulo | Papel |
-|---|---|
-| `painel-pedidos-parent` | Agregador Maven |
-| `painel-pedidos` | O componente (biblioteca, jar com todas as dependências) |
-| `exemplo` | Consumidor de demonstração |
+São **dois projetos Maven independentes**, cada um com o próprio `pom.xml`:
 
-Rode a partir da **raiz** (o `pom.xml` agregador constrói os três módulos):
+| Projeto | Papel | Como construir |
+|---|---|---|
+| `painel-pedidos/` | O componente (biblioteca, jar com todas as dependências) | `cd painel-pedidos && mvn -U clean verify` |
+| `exemplo/` | Consumidor de demonstração, que depende do componente publicado no JitPack | `cd exemplo && mvn -U clean verify` |
 
-```bash
-mvn -U clean verify
-mvn -U clean install   # instala parent + painel-pedidos no repositório local
-```
+Não há `pom.xml` agregador na raiz: cada projeto é construído dentro do seu
+diretório. O `exemplo` é, por isso, um **teste vivo da publicação** — ele resolve
+o artefato do JitPack como qualquer consumidor faria, então uma quebra na
+publicação aparece como falha no build do exemplo.
 
-Para construir o módulo `exemplo` **isolado** (ex.: abrindo só ele no NetBeans),
-o `painel-pedidos` precisa estar instalado (`mvn -U clean install` na raiz) ou
-publicado no JitPack. Mais simples: abra/construa o projeto pela raiz.
+O exemplo consome a versão publicada; para trocá-la, edite a propriedade
+`painel-pedidos.version` em `exemplo/pom.xml` (o workflow de release faz isso
+sozinho a cada nova tag).
 
 A suíte (JUnit Jupiter + Hamcrest) cobre o ciclo de vida, a configuração, a
 ingestão (empurrão), a fachada, os listeners e a maximização, além de garantir a
@@ -395,8 +424,8 @@ ausência de simulação/dados mockados e da leitura automática de novos pedido
 
 - **`clean` falha com "Failed to delete ...\target\..."**: algum processo segura
   a pasta. Feche o NetBeans e instâncias do painel em execução, pause o OneDrive
-  (se o projeto estiver em `Downloads`) e rode o build a partir da raiz. Também
-  pode apagar manualmente: `rmdir /s /q target` (dentro do módulo).
+  (se o projeto estiver em `Downloads`) e rode o build dentro do projeto. Também
+  pode apagar manualmente: `rmdir /s /q target` (dentro do projeto).
 - **`ClassNotFoundException` ao rodar pelo NetBeans**: a configuração de "Run"
   guardou um nome de classe antigo. Rode o arquivo com a classe `main` correta ou
   use `java -jar` (o `Main-Class` do jar está correto).
@@ -405,7 +434,7 @@ ausência de simulação/dados mockados e da leitura automática de novos pedido
 
 ## 9. Documentação
 
-Este README cobre o uso do componente. O módulo
+Este README cobre o uso do componente. O projeto
 [`painel-pedidos/README.md`](painel-pedidos/README.md) traz o mesmo guia de forma
-mais enxuta, e o módulo [`exemplo`](exemplo/) é um consumidor completo - a melhor
+mais enxuta, e o projeto [`exemplo`](exemplo/) é um consumidor completo - a melhor
 referência para copiar.

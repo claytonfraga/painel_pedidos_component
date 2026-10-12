@@ -19,14 +19,15 @@ que você implementa.
 </repositories>
 
 <dependency>
-    <groupId>com.github.claytonfraga.painel_pedidos_component</groupId>
+    <groupId>com.github.SEU-USUARIO.painel_pedidos_component</groupId>
     <artifactId>painel-pedidos</artifactId>
-    <version><tag></version>
+    <version><versao></version>
 </dependency>
 ```
 
-O jar já contém as dependências (maven-shade). Para uso local:
-`mvn -U clean install` e depois `br.projeto:painel-pedidos:1.0.0`.
+O jar já contém as dependências (maven-shade). Este projeto é independente: para
+uso local, rode `mvn -U clean install` dentro de `painel-pedidos/` e depois
+dependa de `br.projeto:painel-pedidos:1.0.0`.
 
 ## 2. Estenda `PedidoAbstract`
 
