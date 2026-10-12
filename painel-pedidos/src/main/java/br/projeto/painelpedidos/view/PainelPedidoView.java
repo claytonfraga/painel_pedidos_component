@@ -74,6 +74,12 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
 
     public PainelPedidoView() {
         initComponents();
+        configurarSpinnerDeData();
+    }
+
+    private void configurarSpinnerDeData() {
+        spnData.setModel(new javax.swing.SpinnerDateModel());
+        spnData.setEditor(new JSpinner.DateEditor(spnData, "dd/MM/yyyy"));
     }
 
     @SuppressWarnings("unchecked")
@@ -102,8 +108,7 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         lblData.setVisible(false);
         pnlFiltros.add(lblData);
 
-        spnData = new JSpinner(new javax.swing.SpinnerDateModel());
-        spnData.setEditor(new JSpinner.DateEditor(spnData, "dd/MM/yyyy"));
+        spnData = new JSpinner();
         spnData.setPreferredSize(new Dimension(120, 28));
         spnData.setVisible(false);
         pnlFiltros.add(spnData);
