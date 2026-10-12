@@ -26,11 +26,9 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -56,9 +54,8 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
     private final IPedidoRepository pedidoRepository;
     private final Map<String, PedidoAbstract> pedidosPorIdentificador;
     private final Map<String, JPanel> cartoesPorIdentificador;
-    private final NumberFormat formatadorMoeda;
-    private final DateTimeFormatter formatadorHora;
-    private final DateTimeFormatter formatadorDataHora;
+    private final FormatacaoDePedido formatacao;
+    private final ApresentacaoDoPedido apresentacao;
     private final IFonteDataPedido fonteDataPedido;
     private final IFabricaFiltroPeriodo fabricaFiltroPeriodo;
     private final IEstrategiaSom estrategiaSom;
@@ -99,9 +96,8 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         this.duracaoNotificacaoSegundos = duracaoNotificacaoSegundos;
         this.pedidosPorIdentificador = new LinkedHashMap<>();
         this.cartoesPorIdentificador = new LinkedHashMap<>();
-        this.formatadorMoeda = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
-        this.formatadorHora = DateTimeFormatter.ofPattern("HH:mm");
-        this.formatadorDataHora = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+        this.formatacao = new FormatacaoDePedido();
+        this.apresentacao = new ApresentacaoDoPedido();
 
         configurarPeriodos();
         configurarListeners();
@@ -243,12 +239,9 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
 
     private void configurarPeriodos() {
         painelPedidoView.getCmbPeriodo().removeAllItems();
-        painelPedidoView.getCmbPeriodo().addItem(
-                "Hoje (" + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
-        painelPedidoView.getCmbPeriodo().addItem("Últimos 7 dias");
-        painelPedidoView.getCmbPeriodo().addItem("Últimos 30 dias");
-        painelPedidoView.getCmbPeriodo().addItem("Todos");
-        painelPedidoView.getCmbPeriodo().addItem("Data específica");
+        for (String rotulo : fabricaFiltroPeriodo.rotulos(LocalDate.now())) {
+            painelPedidoView.getCmbPeriodo().addItem(rotulo);
+        }
         painelPedidoView.getCmbPeriodo().setSelectedIndex(0);
     }
 
@@ -460,7 +453,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         JPanel pnlCabecalho = new JPanel(new java.awt.BorderLayout());
         pnlCabecalho.setOpaque(false);
 
-        JButton btnSelecionarPedido = new JButton(formatarIdentificador(pedido.getIdentificador()));
+        JButton btnSelecionarPedido = new JButton(formatacao.identificador(pedido.getIdentificador()));
         btnSelecionarPedido.setBorderPainted(false);
         btnSelecionarPedido.setContentAreaFilled(false);
         btnSelecionarPedido.setFocusPainted(false);
@@ -474,7 +467,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
             }
         });
 
-        JLabel lblHorario = new JLabel(formatarHorario(pedido.getDataHora()));
+        JLabel lblHorario = new JLabel(formatacao.horario(pedido.getDataHora()));
         pnlCabecalho.add(btnSelecionarPedido, java.awt.BorderLayout.CENTER);
         pnlCabecalho.add(lblHorario, java.awt.BorderLayout.EAST);
         pnlCartaoPedido.add(pnlCabecalho, restricoes);
@@ -490,8 +483,8 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         restricoes.gridy++;
         JPanel pnlValorPagamento = new JPanel(new java.awt.BorderLayout());
         pnlValorPagamento.setOpaque(false);
-        JLabel lblValor = criarRotulo(formatarValorMonetario(pedido.getValorTotal()), true);
-        JLabel lblPagamento = criarRotulo(formatarFormaPagamento(pedido), false);
+        JLabel lblValor = criarRotulo(formatacao.valorMonetario(pedido.getValorTotal()), true);
+        JLabel lblPagamento = criarRotulo(formatacao.formaPagamento(pedido), false);
         pnlValorPagamento.add(lblValor, java.awt.BorderLayout.WEST);
         pnlValorPagamento.add(lblPagamento, java.awt.BorderLayout.EAST);
         pnlCartaoPedido.add(pnlValorPagamento, restricoes);
@@ -553,31 +546,17 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
     }
 
     private JLabel criarRotuloStatus(PedidoAbstract pedido) {
-        JLabel lblStatus;
-
-        if (pedido.estaCancelado()) {
-            lblStatus = criarRotulo("Pedido cancelado", false);
-            lblStatus.setBackground(new Color(245, 245, 245));
-        } else if (pedido.isPagamentoRegistrado()) {
-            lblStatus = criarRotulo("Pagamento confirmado", false);
-            lblStatus.setBackground(new Color(224, 245, 224));
-        } else {
-            lblStatus = criarRotulo("Aguardando pagamento", false);
-            lblStatus.setBackground(new Color(255, 244, 196));
-        }
-
+        JLabel lblStatus = criarRotulo(apresentacao.textoDoStatus(pedido), false);
+        lblStatus.setBackground(apresentacao.corDeFundoDoStatus(pedido));
         lblStatus.setOpaque(true);
         lblStatus.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
         return lblStatus;
     }
 
     private JLabel criarRotuloCredito(PedidoAbstract pedido) {
-        double creditoGerado = pedido.getCreditoGerado();
-        boolean possuiCredito = creditoGerado > 0;
-        String textoCredito = possuiCredito
-                ? "Crédito gerado ao cliente: " + formatarValorMonetario(creditoGerado)
-                : "Sem crédito gerado";
-
+        boolean possuiCredito = apresentacao.possuiCreditoGerado(pedido);
+        String textoCredito = apresentacao.textoDoCredito(
+                pedido, formatacao.valorMonetario(pedido.getCreditoGerado()));
         JLabel lblCredito = criarRotulo(textoCredito, possuiCredito);
         lblCredito.setOpaque(true);
         lblCredito.setBackground(possuiCredito
@@ -604,7 +583,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
             return btnPedidoFinalizado;
         }
 
-        JButton btnAcaoPrincipal = new JButton(obterTextoAcaoPrincipal(pedido));
+        JButton btnAcaoPrincipal = new JButton(apresentacao.textoDaAcaoPrincipal(pedido));
         btnAcaoPrincipal.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evento) {
@@ -628,12 +607,12 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         }
 
         painelPedidoView.getLblPedidoSelecionado().setText(
-                formatarIdentificador(pedidoSelecionado.getIdentificador())
+                formatacao.identificador(pedidoSelecionado.getIdentificador())
                 + " - " + pedidoSelecionado.getNomeCliente()
                 + " - " + pedidoSelecionado.getSituacao());
         painelPedidoView.getBtnVisualizarPedido().setEnabled(true);
         boolean possuiAcao = possuiAcaoPrincipalExecutavel(pedidoSelecionado);
-        painelPedidoView.getBtnExecutarAcao().setText(obterTextoAcaoPrincipal(pedidoSelecionado));
+        painelPedidoView.getBtnExecutarAcao().setText(apresentacao.textoDaAcaoPrincipal(pedidoSelecionado));
         painelPedidoView.getBtnExecutarAcao().setVisible(possuiAcao);
         painelPedidoView.getBtnExecutarAcao().setEnabled(possuiAcao);
         painelPedidoView.getPainelPrincipal().revalidate();
@@ -662,33 +641,15 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         pnlCartao.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(37, 99, 235), 2),
                 BorderFactory.createEmptyBorder(7, 7, 7, 7)));
-        pnlCartao.setBackground(corFundoTituloRaia(identificador));
+        pnlCartao.setBackground(corDeFundoDaRaia(identificador));
     }
 
-    private Color corFundoTituloRaia(String identificador) {
+    private Color corDeFundoDaRaia(String identificador) {
         PedidoAbstract pedido = pedidosPorIdentificador.get(identificador);
         if (pedido == null) {
             return Color.WHITE;
         }
-        if (pedido.estaNovo()) {
-            return new Color(232, 239, 247);
-        }
-        if (pedido.estaEmPreparo()) {
-            return new Color(218, 236, 252);
-        }
-        if (pedido.estaProntoParaEntrega()) {
-            return new Color(255, 242, 196);
-        }
-        if (pedido.estaEmRotaDeEntrega()) {
-            return new Color(252, 228, 209);
-        }
-        if (pedido.estaEntregue()) {
-            return new Color(222, 242, 222);
-        }
-        if (pedido.estaCancelado()) {
-            return new Color(249, 221, 221);
-        }
-        return Color.WHITE;
+        return apresentacao.corDeFundoDaRaia(pedido);
     }
 
     private void executarAcaoSelecionada() {
@@ -767,7 +728,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         int resposta = JOptionPane.showConfirmDialog(
                 painelPedidoView.getPainelPrincipal(),
                 "Confirma o cancelamento do pedido "
-                + formatarIdentificador(pedidoSelecionado.getIdentificador()) + "?",
+                + formatacao.identificador(pedidoSelecionado.getIdentificador()) + "?",
                 "Cancelar pedido",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
@@ -825,25 +786,6 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
             return null;
         }
         return pedidosPorIdentificador.get(identificadorPedidoSelecionado);
-    }
-
-    private String obterTextoAcaoPrincipal(PedidoAbstract pedido) {
-        if (pedido.estaNovo()) {
-            return "Confirmar pagamento";
-        }
-        if (pedido.estaEmPreparo()) {
-            return "Pronto pra entrega";
-        }
-        if (pedido.estaProntoParaEntrega()) {
-            return "Sair pra entrega";
-        }
-        if (pedido.estaEmRotaDeEntrega()) {
-            return "Entregue";
-        }
-        if (pedido.estaCancelado()) {
-            return "Criar novo pedido";
-        }
-        return "Executar ação";
     }
 
     private boolean possuiAcaoPrincipalExecutavel(PedidoAbstract pedido) {
@@ -905,34 +847,6 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         painelPedidoView.getPnlPedidosEntregue().revalidate();
         painelPedidoView.getPnlPedidosCancelado().revalidate();
         painelPedidoView.getPainelPrincipal().repaint();
-    }
-
-    private String formatarIdentificador(String identificador) {
-        return identificador.startsWith("#") ? identificador : "#" + identificador;
-    }
-
-    private String formatarHorario(LocalDateTime dataHora) {
-        LocalDate dataPedido = dataHora.toLocalDate();
-        LocalDate hoje = LocalDate.now();
-
-        if (dataPedido.equals(hoje)) {
-            return dataHora.format(formatadorHora);
-        }
-        if (dataPedido.equals(hoje.minusDays(1))) {
-            return "Ontem " + dataHora.format(formatadorHora);
-        }
-        return dataHora.format(formatadorDataHora);
-    }
-
-    private String formatarFormaPagamento(PedidoAbstract pedido) {
-        if (!pedido.isPagamentoRegistrado()) {
-            return "";
-        }
-        return pedido.getFormaPagamento();
-    }
-
-    private String formatarValorMonetario(double valor) {
-        return formatadorMoeda.format(valor).replace('\u00A0', ' ');
     }
 
     private int calcularAlturaCartao(PedidoAbstract pedido) {

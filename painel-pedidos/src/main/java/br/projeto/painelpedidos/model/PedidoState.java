@@ -1,4 +1,4 @@
-package br.projeto.painelpedidos.internal.state;
+package br.projeto.painelpedidos.model;
 
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import java.util.Objects;
@@ -7,11 +7,11 @@ import java.util.Objects;
  *
  * @author clayton
  */
-public abstract class PedidoState {
+abstract class PedidoState {
 
     protected final PedidoAbstract pedido;
 
-    public PedidoState(PedidoAbstract pedido) {
+    PedidoState(PedidoAbstract pedido) {
         this.pedido = Objects.requireNonNull(pedido, "Informe um pedido valido");
     }
 

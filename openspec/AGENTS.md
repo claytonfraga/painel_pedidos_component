@@ -223,8 +223,11 @@ A View nao possui setters publicos.
 
 ## Ciclo de vida do pedido (GoF State no estilo Porta)
 
-- `state/PedidoState` (abstrata) com `protected final Pedido pedido`, operacoes
-  default que lancam `RuntimeException`.
+- `model/PedidoState` (abstrata, package-private) com `protected final Pedido pedido`,
+  operacoes default que lancam `RuntimeException`.
+- O State mora no pacote `model`, junto do contexto, e NAO e publico: assim o
+  contrato nao expoe tipo interno e o estavel nao depende do detalhe
+  (`setEstado` e package-private, chamado pelos estados).
 - Estados concretos com prefixo `Pedido` e sufixo `State`, transicionando via
   `pedido.setEstado(new PedidoProximoState(pedido))`.
 - Regras no construtor: pre-condicao nao atendida lanca excecao e a transicao

@@ -1,4 +1,4 @@
-package br.projeto.painelpedidos.internal.state;
+package br.projeto.painelpedidos.model;
 
 import br.projeto.painelpedidos.model.PedidoAbstract;
 
@@ -6,9 +6,9 @@ import br.projeto.painelpedidos.model.PedidoAbstract;
  *
  * @author clayton
  */
-public final class PedidoEmRotaDeEntregaState extends PedidoState {
+final class PedidoEmRotaDeEntregaState extends PedidoState {
 
-    public PedidoEmRotaDeEntregaState(PedidoAbstract pedido) {
+    PedidoEmRotaDeEntregaState(PedidoAbstract pedido) {
         super(pedido);
         if (!pedido.isPagamentoRegistrado()) {
             throw new RuntimeException(

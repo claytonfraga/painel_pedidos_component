@@ -1,7 +1,5 @@
 package br.projeto.painelpedidos.model;
 
-import br.projeto.painelpedidos.internal.state.PedidoNovoState;
-import br.projeto.painelpedidos.internal.state.PedidoState;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -117,7 +115,7 @@ public abstract class PedidoAbstract {
         return estado.ehCancelado();
     }
 
-    public void setEstado(PedidoState estado) {
+    void setEstado(PedidoState estado) {
         this.estado = Objects.requireNonNull(estado, "Informe um estado de pedido valido");
         this.dataHoraMudancaEstado = LocalDateTime.now();
         this.prioridade = false;

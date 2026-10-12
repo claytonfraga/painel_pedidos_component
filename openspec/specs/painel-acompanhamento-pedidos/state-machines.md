@@ -18,7 +18,7 @@ Indice:
 
 ## 1. `Pedido` (GoF State)
 
-Elemento: `model.PedidoAbstract` (contexto) + `state.PedidoState` e concretos
+Elemento: `model.PedidoAbstract` (contexto) + `model.PedidoState` e concretos
 `PedidoNovoState`, `PedidoEmPreparoState`, `PedidoProntoParaEntregaState`,
 `PedidoEmRotaDeEntregaState`, `PedidoEntregueState`, `PedidoCanceladoState`.
 
