@@ -113,6 +113,11 @@ JPMS - so venceria se o artefato deixasse de ser o jar gordo, o que nao acontece
 7. **O contrato e fixado por teste de allow-list.** Um teste compara o conjunto de
    tipos publicos com uma lista explicita e falha quando um tipo entra ou sai fora
    da lista - e o unico jeito de impedir a fronteira de crescer em silencio.
+8. **O jar continua gordo e a dependencia e relocada.** O consumidor pode usar
+   dotenv por conta propria sem conflito de classes; a relocacao e transparente
+   porque o unico ponto que conhece a biblioteca e o Adapter de configuracao.
+   Condicao para o contrario (parar de embutir e publicar as dependencias
+   separadas) so vence se o consumo deixar de ser "artefato unico".
 
 ## Work
 
@@ -122,8 +127,10 @@ JPMS - so venceria se o artefato deixasse de ser o jar gordo, o que nao acontece
 | [Embutir](#embutir) | caminho suportado de embutir pela fachada | clear |
 | [Identidade da aplicacao](#identidade-da-aplicacao) | identidade obrigatoria na config e trava por identidade | clear |
 | [Gate do contrato](#gate-do-contrato) | teste de allow-list do contrato | clear |
+| [Empacotamento](#empacotamento) | dependencia embutida sem conflito para o consumidor | clear |
 
-Ordem: Contrato -> Embutir -> Identidade da aplicacao -> Gate do contrato.
+Ordem: Contrato -> Embutir -> Identidade da aplicacao -> Gate do contrato ->
+Empacotamento.
 
 Ja tratado pelo codigo existente: a liberacao da trava e o "ja travado como
 recusa" (Key decision 5) seguem como estao; os tres listeners e a janela
@@ -174,6 +181,19 @@ regras de excecao e de mensagens orientadoras - como os registros existentes faz
 |---|---|---|
 | Contrato inalterado | Conjunto publico igual a lista | build verde |
 | Tipo publico novo ou removido | Diferenca entre conjunto e lista | build falha apontando o tipo |
+
+### Empacotamento
+
+**Delivers** o jar gordo sem conflito de classes para o consumidor. **Status:
+clear.**
+
+| Estado | O que deve acontecer | Consumidor ve |
+|---|---|---|
+| Consumidor usa dotenv | Nao ha conflito com a copia embutida | build verde com as duas no classpath |
+| Jar gerado | Contem as dependencias, com a embutida relocada | artefato unico e utilizavel |
+
+Alternatives considered: publicar as dependencias separadas em vez de embutir -
+vence se o consumo deixar de ser um artefato unico (condicao da Key decision 8).
 
 ## Sources
 
