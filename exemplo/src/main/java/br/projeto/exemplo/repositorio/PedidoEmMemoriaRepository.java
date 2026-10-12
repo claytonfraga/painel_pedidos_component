@@ -21,7 +21,7 @@ public final class PedidoEmMemoriaRepository implements IPedidoRepository {
     private int proximoNumeroPedido;
 
     public PedidoEmMemoriaRepository(List<PedidoAbstract> pedidosIniciais) {
-        Objects.requireNonNull(pedidosIniciais, "pedidosIniciais");
+        Objects.requireNonNull(pedidosIniciais, "Informe uma lista de pedidos iniciais valida");
         this.pedidosPorIdentificador = new LinkedHashMap<>();
         this.proximoNumeroPedido = 1;
         for (PedidoAbstract pedido : pedidosIniciais) {
@@ -35,7 +35,7 @@ public final class PedidoEmMemoriaRepository implements IPedidoRepository {
 
     @Override
     public void salvar(PedidoAbstract pedido) {
-        Objects.requireNonNull(pedido, "pedido");
+        Objects.requireNonNull(pedido, "Informe um pedido valido");
         pedidosPorIdentificador.put(pedido.getIdentificador(), pedido);
     }
 
@@ -56,7 +56,8 @@ public final class PedidoEmMemoriaRepository implements IPedidoRepository {
             return Integer.parseInt(pedido.getIdentificador());
         } catch (NumberFormatException excecao) {
             throw new IllegalArgumentException(
-                    "Identificador de pedido nao numerico: " + pedido.getIdentificador(), excecao);
+                    "Informe um identificador de pedido numerico; valor recebido: "
+                    + pedido.getIdentificador(), excecao);
         }
     }
 }

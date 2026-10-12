@@ -52,7 +52,9 @@ public final class AplicacaoPainelPedido {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ReflectiveOperationException | UnsupportedLookAndFeelException excecao) {
-            throw new IllegalStateException("Nao foi possivel configurar o Look and Feel do sistema", excecao);
+            throw new IllegalStateException(
+                    "Nao foi possivel configurar o Look and Feel do sistema; "
+                    + "verifique o ambiente grafico e tente novamente", excecao);
         }
     }
 }

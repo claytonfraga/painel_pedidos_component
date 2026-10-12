@@ -23,7 +23,8 @@ public final class CriarNovoPedidoListener implements ICriarNovoPedidoListener {
     private final int quantidadeMaxima = 10;
 
     public CriarNovoPedidoListener(IPedidoRepository repositorio) {
-        this.repositorio = Objects.requireNonNull(repositorio, "repositorio");
+        this.repositorio = Objects.requireNonNull(
+                repositorio, "Informe um repositorio de pedidos valido");
     }
 
     @Override

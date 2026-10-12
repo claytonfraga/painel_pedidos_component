@@ -19,7 +19,7 @@ public final class PedidoSeeder {
     private final LocalDateTime dataReferencia;
 
     public PedidoSeeder(LocalDateTime dataReferencia) {
-        this.dataReferencia = Objects.requireNonNull(dataReferencia, "dataReferencia");
+        this.dataReferencia = Objects.requireNonNull(dataReferencia, "Informe uma data de referencia valida");
     }
 
     public List<PedidoAbstract> gerar() {
