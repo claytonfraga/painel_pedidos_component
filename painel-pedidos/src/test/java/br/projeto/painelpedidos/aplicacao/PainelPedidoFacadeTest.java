@@ -184,17 +184,6 @@ public final class PainelPedidoFacadeTest {
     }
 
     private ConfiguracaoPainelPedido criarConfiguracao() {
-        Map<String, Duration> slaPorSituacao = new LinkedHashMap<>();
-        slaPorSituacao.put("Novo", Duration.ofMinutes(5));
-        slaPorSituacao.put("Em preparo", Duration.ofMinutes(20));
-        slaPorSituacao.put("Pronto para entrega", Duration.ofMinutes(10));
-        slaPorSituacao.put("Em rota de entrega", Duration.ofMinutes(10));
-        return new ConfiguracaoPainelPedido(
-                slaPorSituacao,
-                Duration.ofSeconds(30),
-                10,
-                false,
-                "Teste",
-                IDENTIDADE_DE_TESTE);
+        return new ConfiguracaoDeTeste().criar(IDENTIDADE_DE_TESTE, false);
     }
 }
