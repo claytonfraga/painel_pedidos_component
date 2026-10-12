@@ -4,11 +4,11 @@ Este projeto é uma **atividade da disciplina Projeto de Sistemas de Software**
 (UFES) e é, ele mesmo, um exercício do que a ementa cobra: *"padrões de projeto,
 princípio de reuso, construção e uso de componentes de software e frameworks"*.
 
-Nesta atividade ainda se usa **NetBeans** pela facilidade de construir telas
-Swing, e **Swing** porque a disciplina não tem nenhuma disciplina de web como
+Nesta atividade ainda se usa NetBeans pela facilidade de construir telas Swing.
+Swing, por sua vez, porque a disciplina não tem disciplina de web como
 pré-requisito: montar um software do zero, sem frameworks e com o mínimo de
-dependências, é a forma de fixar os fundamentos que se quer ensinar. A escolha é
-didática — não é uma recomendação de stack.
+dependências, é a forma de fixar os fundamentos que se quer ensinar. É uma escolha
+didática, e só por isso.
 
 O que se entrega é um componente **Java Swing** reutilizável para sistemas de
 delivery. Apresenta os pedidos em seis colunas de situação — **Novo**, **Em
