@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -50,6 +51,25 @@ public final class LeitorConfiguracaoPainelPedidoTest {
         assertThat(configuracao.isSomAtivo(), is(false));
         assertThat(configuracao.getTituloJanela(), is("Meu Painel"));
         assertThat(configuracao.getIdentificadorAplicacao(), is("painel-de-teste"));
+    }
+
+    @Test
+    public void asChavesDeSlaSaoOsNomesDasSituacoesDoCiclo() throws IOException {
+        // given: um painel_pedidos.env com as chaves obrigatorias
+        escreverConfiguracao(
+                "SLA_NOVO_MINUTOS=5\n"
+                + "SLA_EM_PREPARO_MINUTOS=20\n"
+                + "SLA_PRONTO_PARA_ENTREGA_MINUTOS=10\n"
+                + "SLA_EM_ROTA_DE_ENTREGA_MINUTOS=10\n"
+                + "IDENTIFICADOR_APLICACAO=painel-de-teste\n");
+
+        // when: a configuracao e lida
+        ConfiguracaoPainelPedido configuracao = criarLeitor().ler();
+
+        // then: as chaves sao exatamente as situacoes com SLA - renomear um
+        // estado do ciclo quebra este teste, e nao o silencio do SLA
+        assertThat(configuracao.getSlaPorSituacao().keySet(),
+                is(Set.of("Novo", "Em preparo", "Pronto para entrega", "Em rota de entrega")));
     }
 
     @Test

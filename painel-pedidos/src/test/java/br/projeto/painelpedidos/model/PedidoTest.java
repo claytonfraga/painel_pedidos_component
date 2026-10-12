@@ -176,6 +176,43 @@ public final class PedidoTest {
         assertThat(excecao.getMessage(), containsString("registre o pagamento em um pedido Novo"));
     }
 
+    @Test
+    public void asSituacoesDoCicloTemOsNomesQueOConsumidorConfigura() {
+        // given: um pedido novo
+        PedidoAbstract pedido = criarPedido("1", 50.0);
+
+        // when: percorre-se o ciclo de vida inteiro
+        String novo = pedido.getSituacao();
+        pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
+        String emPreparo = pedido.getSituacao();
+        pedido.marcarProntoParaEntrega(REFERENCIA);
+        String pronto = pedido.getSituacao();
+        pedido.sairParaEntrega(REFERENCIA);
+        String emRota = pedido.getSituacao();
+        pedido.marcarEntregue(REFERENCIA);
+        String entregue = pedido.getSituacao();
+
+        // then: os nomes sao exatamente os que o SLA e a tela esperam - se um
+        // estado for renomeado, isto falha e o painel_pedidos.env fica sabendo
+        assertThat(novo, is("Novo"));
+        assertThat(emPreparo, is("Em preparo"));
+        assertThat(pronto, is("Pronto para entrega"));
+        assertThat(emRota, is("Em rota de entrega"));
+        assertThat(entregue, is("Entregue"));
+    }
+
+    @Test
+    public void aSituacaoCanceladaTemONomeQueOConsumidorConfigura() {
+        // given: um pedido novo
+        PedidoAbstract pedido = criarPedido("1", 50.0);
+
+        // when: o pedido e cancelado
+        pedido.cancelar(REFERENCIA);
+
+        // then: o nome e o esperado
+        assertThat(pedido.getSituacao(), is("Cancelado"));
+    }
+
     private PedidoAbstract criarPedido(String identificador, double valor) {
         return new PedidoDeTeste(identificador, REFERENCIA, "Ana Souza", "Rua das Flores, 120 - Centro", valor);
     }

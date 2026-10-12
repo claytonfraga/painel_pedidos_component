@@ -20,15 +20,25 @@
 - **S4 - registrado** no `AGENTS.md`: o componente nao deduplica; o consumidor
   empurra so o que e novo.
 
-### S3 aberto - e agora com o achado da skill
+### S3 fechado - o modo de falha era drift, nao duplicacao
 
-A skill de State e explicita: "**status strings duplicated across
-services/repositories**" e um anti-pattern. As situacoes hoje aparecem como
-strings em tres lugares: `getNome()` nos estados, o mapa de SLA e as chaves do
-`painel_pedidos.env`. O conserto alinhado e um **tipo `Situacao`** (sem `enum`)
-com o conjunto fechado, usado pelos estados e pelo mapa - o que tambem faz a
-configuracao errada falhar ao construir, em vez de silenciar. E uma mudanca de
-contrato (15o tipo) e por isso ficou como decisao.
+Reavaliado com a skill na mao: a "duplicacao" das situacoes esta no **adaptador**
+(o `LeitorConfiguracaoPainelPedido` traduz as chaves do `painel_pedidos.env` para
+as situacoes do dominio) - isso e o trabalho de um Adapter, nao o anti-pattern
+("strings duplicadas em services/repositories"). O que sobra e o modo de falha
+real: **drift silencioso** entre as chaves do arquivo e os nomes dos estados.
+Se um estado for renomeado, o SLA deixa de casar e nada avisa.
+
+Fechado com dois testes que quebram no drift:
+- `PedidoTest` percorre o ciclo e fixa os 6 nomes (`Novo`, `Em preparo`,
+  `Pronto para entrega`, `Em rota de entrega`, `Entregue`, `Cancelado`).
+- `LeitorConfiguracaoPainelPedidoTest` fixa que as chaves do mapa de SLA sao
+  exatamente as quatro situacoes com SLA.
+
+**Ainda em aberto, como opcao mais profunda:** um tipo `Situacao` (sem `enum`)
+com o conjunto fechado, usado pelos estados e pelo mapa - o que tornaria a
+configuracao errada impossivel de escrever em vez de apenas detectavel. E mudanca
+de contrato (15o tipo) e nao foi feita.
 
 ## Mecanica
 

@@ -160,6 +160,11 @@ fabrica de periodo acoplada ao indice do combo).
   `SLA_EM_ROTA_DE_ENTREGA_MINUTOS`.
 - Chave obrigatoria: `IDENTIFICADOR_APLICACAO` (identidade da aplicacao;
   distingue este painel dos demais na mesma maquina).
+- As chaves de SLA sao as **situacoes do ciclo** (`Novo`, `Em preparo`,
+  `Pronto para entrega`, `Em rota de entrega`): uma chave que nao casa com
+  nenhuma delas faz o SLA **nao se aplicar**, sem aviso - por isso use o
+  `LeitorConfiguracaoPainelPedido`, e os testes `PedidoTest` e
+  `LeitorConfiguracaoPainelPedidoTest` fixam esse contrato.
 - Demais chaves (defaults): `SLA_MONITOR_INTERVALO_SEGUNDOS`,
   `NOTIFICACAO_DURACAO_SEGUNDOS`, `SOM_ATIVO`, `TITULO_JANELA`.
 - `painel_pedidos.env.example` documenta.
