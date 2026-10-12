@@ -74,7 +74,33 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
 
     public PainelPedidoView() {
         initComponents();
+        configurarBordas();
         configurarSpinnerDeData();
+    }
+
+    private void configurarBordas() {
+        pnlFiltros.setBorder(BorderFactory.createTitledBorder("Filtros"));
+        lblNotificacao.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        pnlAcompanhamento.setBorder(BorderFactory.createTitledBorder("Acompanhamento de Pedidos"));
+        lblTituloNovo.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
+        pnlPedidosNovo.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        scrNovo.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        lblTituloEmPreparo.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
+        pnlPedidosEmPreparo.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        scrEmPreparo.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        lblTituloProntoParaEntrega.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
+        pnlPedidosProntoParaEntrega.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        scrProntoParaEntrega.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        lblTituloEmRotaDeEntrega.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
+        pnlPedidosEmRotaDeEntrega.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        scrEmRotaDeEntrega.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        lblTituloEntregue.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
+        pnlPedidosEntregue.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        scrEntregue.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        lblTituloCancelado.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
+        pnlPedidosCancelado.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        scrCancelado.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        pnlPedidoSelecionado.setBorder(BorderFactory.createTitledBorder("Pedido selecionado"));
     }
 
     private void configurarSpinnerDeData() {
@@ -88,7 +114,6 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         setLayout(new BorderLayout(8, 8));
 
         pnlFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
-        pnlFiltros.setBorder(BorderFactory.createTitledBorder("Filtros"));
 
         lblBuscarPedidoCliente = new JLabel("Buscar pedido ou cliente:");
         pnlFiltros.add(lblBuscarPedidoCliente);
@@ -122,13 +147,11 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         lblNotificacao.setFont(lblNotificacao.getFont().deriveFont(Font.BOLD));
         lblNotificacao.setForeground(Color.WHITE);
         lblNotificacao.setHorizontalAlignment(SwingConstants.CENTER);
-        lblNotificacao.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         pnlFiltros.add(lblNotificacao);
 
         add(pnlFiltros, BorderLayout.NORTH);
 
         pnlAcompanhamento = new JPanel(new BorderLayout(6, 6));
-        pnlAcompanhamento.setBorder(BorderFactory.createTitledBorder("Acompanhamento de Pedidos"));
 
         pnlColunas = new JPanel(new GridLayout(1, 6, 8, 0));
 
@@ -136,18 +159,15 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         lblTituloNovo = new JLabel("Novo (0)");
         lblTituloNovo.setOpaque(true);
         lblTituloNovo.setBackground(new Color(232, 239, 247));
-        lblTituloNovo.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
         lblTituloNovo.setFont(lblTituloNovo.getFont().deriveFont(Font.BOLD));
         lblTituloNovo.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaNovo.add(lblTituloNovo, BorderLayout.NORTH);
         pnlPedidosNovo = new JPanel();
         pnlPedidosNovo.setLayout(new BoxLayout(pnlPedidosNovo, BoxLayout.Y_AXIS));
-        pnlPedidosNovo.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         pnlPedidosNovo.setBackground(new Color(248, 250, 252));
         scrNovo = new JScrollPane();
         scrNovo.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrNovo.getVerticalScrollBar().setUnitIncrement(16);
-        scrNovo.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
         scrNovo.setViewportView(pnlPedidosNovo);
         pnlColunaNovo.add(scrNovo, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaNovo);
@@ -156,18 +176,15 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         lblTituloEmPreparo = new JLabel("Em preparo (0)");
         lblTituloEmPreparo.setOpaque(true);
         lblTituloEmPreparo.setBackground(new Color(218, 236, 252));
-        lblTituloEmPreparo.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
         lblTituloEmPreparo.setFont(lblTituloEmPreparo.getFont().deriveFont(Font.BOLD));
         lblTituloEmPreparo.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaEmPreparo.add(lblTituloEmPreparo, BorderLayout.NORTH);
         pnlPedidosEmPreparo = new JPanel();
         pnlPedidosEmPreparo.setLayout(new BoxLayout(pnlPedidosEmPreparo, BoxLayout.Y_AXIS));
-        pnlPedidosEmPreparo.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         pnlPedidosEmPreparo.setBackground(new Color(248, 250, 252));
         scrEmPreparo = new JScrollPane();
         scrEmPreparo.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrEmPreparo.getVerticalScrollBar().setUnitIncrement(16);
-        scrEmPreparo.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
         scrEmPreparo.setViewportView(pnlPedidosEmPreparo);
         pnlColunaEmPreparo.add(scrEmPreparo, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaEmPreparo);
@@ -176,18 +193,15 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         lblTituloProntoParaEntrega = new JLabel("Pronto pra entrega (0)");
         lblTituloProntoParaEntrega.setOpaque(true);
         lblTituloProntoParaEntrega.setBackground(new Color(255, 242, 196));
-        lblTituloProntoParaEntrega.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
         lblTituloProntoParaEntrega.setFont(lblTituloProntoParaEntrega.getFont().deriveFont(Font.BOLD));
         lblTituloProntoParaEntrega.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaProntoParaEntrega.add(lblTituloProntoParaEntrega, BorderLayout.NORTH);
         pnlPedidosProntoParaEntrega = new JPanel();
         pnlPedidosProntoParaEntrega.setLayout(new BoxLayout(pnlPedidosProntoParaEntrega, BoxLayout.Y_AXIS));
-        pnlPedidosProntoParaEntrega.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         pnlPedidosProntoParaEntrega.setBackground(new Color(248, 250, 252));
         scrProntoParaEntrega = new JScrollPane();
         scrProntoParaEntrega.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrProntoParaEntrega.getVerticalScrollBar().setUnitIncrement(16);
-        scrProntoParaEntrega.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
         scrProntoParaEntrega.setViewportView(pnlPedidosProntoParaEntrega);
         pnlColunaProntoParaEntrega.add(scrProntoParaEntrega, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaProntoParaEntrega);
@@ -196,18 +210,15 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         lblTituloEmRotaDeEntrega = new JLabel("Em rota de entrega (0)");
         lblTituloEmRotaDeEntrega.setOpaque(true);
         lblTituloEmRotaDeEntrega.setBackground(new Color(252, 228, 209));
-        lblTituloEmRotaDeEntrega.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
         lblTituloEmRotaDeEntrega.setFont(lblTituloEmRotaDeEntrega.getFont().deriveFont(Font.BOLD));
         lblTituloEmRotaDeEntrega.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaEmRotaDeEntrega.add(lblTituloEmRotaDeEntrega, BorderLayout.NORTH);
         pnlPedidosEmRotaDeEntrega = new JPanel();
         pnlPedidosEmRotaDeEntrega.setLayout(new BoxLayout(pnlPedidosEmRotaDeEntrega, BoxLayout.Y_AXIS));
-        pnlPedidosEmRotaDeEntrega.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         pnlPedidosEmRotaDeEntrega.setBackground(new Color(248, 250, 252));
         scrEmRotaDeEntrega = new JScrollPane();
         scrEmRotaDeEntrega.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrEmRotaDeEntrega.getVerticalScrollBar().setUnitIncrement(16);
-        scrEmRotaDeEntrega.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
         scrEmRotaDeEntrega.setViewportView(pnlPedidosEmRotaDeEntrega);
         pnlColunaEmRotaDeEntrega.add(scrEmRotaDeEntrega, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaEmRotaDeEntrega);
@@ -216,18 +227,15 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         lblTituloEntregue = new JLabel("Entregue (0)");
         lblTituloEntregue.setOpaque(true);
         lblTituloEntregue.setBackground(new Color(222, 242, 222));
-        lblTituloEntregue.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
         lblTituloEntregue.setFont(lblTituloEntregue.getFont().deriveFont(Font.BOLD));
         lblTituloEntregue.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaEntregue.add(lblTituloEntregue, BorderLayout.NORTH);
         pnlPedidosEntregue = new JPanel();
         pnlPedidosEntregue.setLayout(new BoxLayout(pnlPedidosEntregue, BoxLayout.Y_AXIS));
-        pnlPedidosEntregue.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         pnlPedidosEntregue.setBackground(new Color(248, 250, 252));
         scrEntregue = new JScrollPane();
         scrEntregue.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrEntregue.getVerticalScrollBar().setUnitIncrement(16);
-        scrEntregue.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
         scrEntregue.setViewportView(pnlPedidosEntregue);
         pnlColunaEntregue.add(scrEntregue, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaEntregue);
@@ -236,18 +244,15 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         lblTituloCancelado = new JLabel("Cancelado (0)");
         lblTituloCancelado.setOpaque(true);
         lblTituloCancelado.setBackground(new Color(249, 221, 221));
-        lblTituloCancelado.setBorder(BorderFactory.createEmptyBorder(9, 10, 9, 10));
         lblTituloCancelado.setFont(lblTituloCancelado.getFont().deriveFont(Font.BOLD));
         lblTituloCancelado.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaCancelado.add(lblTituloCancelado, BorderLayout.NORTH);
         pnlPedidosCancelado = new JPanel();
         pnlPedidosCancelado.setLayout(new BoxLayout(pnlPedidosCancelado, BoxLayout.Y_AXIS));
-        pnlPedidosCancelado.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         pnlPedidosCancelado.setBackground(new Color(248, 250, 252));
         scrCancelado = new JScrollPane();
         scrCancelado.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrCancelado.getVerticalScrollBar().setUnitIncrement(16);
-        scrCancelado.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
         scrCancelado.setViewportView(pnlPedidosCancelado);
         pnlColunaCancelado.add(scrCancelado, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaCancelado);
@@ -256,7 +261,6 @@ public class PainelPedidoView extends JPanel implements IPainelPedidoView {
         add(pnlAcompanhamento, BorderLayout.CENTER);
 
         pnlPedidoSelecionado = new JPanel(new BorderLayout(8, 0));
-        pnlPedidoSelecionado.setBorder(BorderFactory.createTitledBorder("Pedido selecionado"));
 
         lblPedidoSelecionado = new JLabel("Selecione um pedido para visualizar detalhes e executar ações.");
         lblPedidoSelecionado.setForeground(new Color(90, 90, 90));
