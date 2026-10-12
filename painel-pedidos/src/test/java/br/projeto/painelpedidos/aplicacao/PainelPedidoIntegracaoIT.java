@@ -61,6 +61,7 @@ public final class PainelPedidoIntegracaoIT {
                 Duration.ofSeconds(30),
                 10,
                 true,
-                "Teste");
+                "Teste",
+                "painel-de-integracao");
     }
 }

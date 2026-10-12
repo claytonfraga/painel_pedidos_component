@@ -1,7 +1,7 @@
 package br.projeto.painelpedidos.model;
 
-import br.projeto.painelpedidos.state.PedidoNovoState;
-import br.projeto.painelpedidos.state.PedidoState;
+import br.projeto.painelpedidos.internal.state.PedidoNovoState;
+import br.projeto.painelpedidos.internal.state.PedidoState;
 import java.time.LocalDateTime;
 import java.util.Objects;
 

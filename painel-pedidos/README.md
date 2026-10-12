@@ -128,13 +128,16 @@ SLA_MONITOR_INTERVALO_SEGUNDOS=30
 NOTIFICACAO_DURACAO_SEGUNDOS=10
 SOM_ATIVO=true
 TITULO_JANELA=Painel de Acompanhamento de Pedidos
+IDENTIFICADOR_APLICACAO=meu-sistema-de-delivery
 ```
 
 O arquivo é **obrigatório**: sem ele, o componente lança exceção. As quatro
 chaves de SLA por estado (`SLA_NOVO_MINUTOS`, `SLA_EM_PREPARO_MINUTOS`,
 `SLA_PRONTO_PARA_ENTREGA_MINUTOS`, `SLA_EM_ROTA_DE_ENTREGA_MINUTOS`) também são
-obrigatórias — o SLA é fixo por estado, em minutos, sem média por bairro. As
-demais chaves usam defaults seguros.
+obrigatórias — o SLA é fixo por estado, em minutos, sem média por bairro. A
+identidade da aplicação (`IDENTIFICADOR_APLICACAO`) também é obrigatória:
+distingue este painel dos demais na mesma máquina, e o arquivo de controle da
+instância única deriva dela. As demais chaves usam defaults seguros.
 
 ## 7. Inicie o painel
 
@@ -175,6 +178,17 @@ configurar.
 
 ## Convenções
 
+- **Contrato público:** só estes tipos são API —
+  `aplicacao.PainelPedidoFacade`, `model.PedidoAbstract`,
+  `repositorio.IPedidoRepository`, `configuracao.ConfiguracaoPainelPedido`,
+  `configuracao.LeitorConfiguracaoPainelPedido`,
+  `listener.IVisualizarPedidoListener`, `listener.IConfirmarPagamentoListener`,
+  `listener.ICriarNovoPedidoListener`, `som.IEstrategiaSom`,
+  `som.SomTomStrategy`, `tempo.IRelogioService`, `tempo.RelogioServiceSistema`,
+  `view.IPainelPedidoView`, `view.PainelPedidoPanel`. Todo o resto vive sob
+  `br.projeto.painelpedidos.internal.*` e pode mudar entre versões.
+- Para embutir o painel, use `PainelPedidoFacade.getPainelPedido()` e
+  `iniciarEmbutido()` — montar `PainelPedidoPresenter` à mão não é suportado.
 - Nomes de classe, classe abstrata e interface no **singular**; classes de
   serviço com sufixo `Service` (ex.: `AgendadorMonitorSlaService`).
 - `PedidoAbstract` **não** define `toString`.

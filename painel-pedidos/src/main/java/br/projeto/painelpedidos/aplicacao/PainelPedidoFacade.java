@@ -1,41 +1,42 @@
 package br.projeto.painelpedidos.aplicacao;
 
 import br.projeto.painelpedidos.configuracao.ConfiguracaoPainelPedido;
-import br.projeto.painelpedidos.filtro.FabricaFiltroPeriodo;
-import br.projeto.painelpedidos.filtro.IFabricaFiltroPeriodo;
-import br.projeto.painelpedidos.ingestao.observer.NovoPedidoObserver;
-import br.projeto.painelpedidos.ingestao.observer.PainelPedidoNovoPedidoObserver;
+import br.projeto.painelpedidos.internal.aplicacao.TravaInstanciaUnicaArquivo;
+import br.projeto.painelpedidos.internal.filtro.FabricaFiltroPeriodo;
+import br.projeto.painelpedidos.internal.filtro.IFabricaFiltroPeriodo;
+import br.projeto.painelpedidos.internal.ingestao.observer.NovoPedidoObserver;
+import br.projeto.painelpedidos.internal.ingestao.observer.PainelPedidoNovoPedidoObserver;
 import br.projeto.painelpedidos.listener.IConfirmarPagamentoListener;
 import br.projeto.painelpedidos.listener.ICriarNovoPedidoListener;
 import br.projeto.painelpedidos.listener.IVisualizarPedidoListener;
 import br.projeto.painelpedidos.model.PedidoAbstract;
-import br.projeto.painelpedidos.notificacao.AlertaSonoroHandler;
-import br.projeto.painelpedidos.notificacao.AtualizarPainelHandler;
-import br.projeto.painelpedidos.notificacao.DestaquePedidoHandler;
-import br.projeto.painelpedidos.notificacao.IServicoNotificacaoNovoPedido;
-import br.projeto.painelpedidos.notificacao.MensagemUmPedidoHandler;
-import br.projeto.painelpedidos.notificacao.MensagemMultiploPedidoHandler;
-import br.projeto.painelpedidos.notificacao.NotificacaoNovoPedidoService;
-import br.projeto.painelpedidos.notificacao.RegraHandler;
-import br.projeto.painelpedidos.notificacao.SalvarPedidoHandler;
-import br.projeto.painelpedidos.notificacao.SelecionarFocarHandler;
-import br.projeto.painelpedidos.ordenacao.IOrdenacaoPedido;
-import br.projeto.painelpedidos.ordenacao.OrdenacaoPedidoPorPrioridadeETempoNoEstado;
-import br.projeto.painelpedidos.presenter.PainelPedidoPresenter;
+import br.projeto.painelpedidos.internal.notificacao.AlertaSonoroHandler;
+import br.projeto.painelpedidos.internal.notificacao.AtualizarPainelHandler;
+import br.projeto.painelpedidos.internal.notificacao.DestaquePedidoHandler;
+import br.projeto.painelpedidos.internal.notificacao.IServicoNotificacaoNovoPedido;
+import br.projeto.painelpedidos.internal.notificacao.MensagemUmPedidoHandler;
+import br.projeto.painelpedidos.internal.notificacao.MensagemMultiploPedidoHandler;
+import br.projeto.painelpedidos.internal.notificacao.NotificacaoNovoPedidoService;
+import br.projeto.painelpedidos.internal.notificacao.RegraHandler;
+import br.projeto.painelpedidos.internal.notificacao.SalvarPedidoHandler;
+import br.projeto.painelpedidos.internal.notificacao.SelecionarFocarHandler;
+import br.projeto.painelpedidos.internal.ordenacao.IOrdenacaoPedido;
+import br.projeto.painelpedidos.internal.ordenacao.OrdenacaoPedidoPorPrioridadeETempoNoEstado;
+import br.projeto.painelpedidos.internal.presenter.PainelPedidoPresenter;
 import br.projeto.painelpedidos.repositorio.IPedidoRepository;
-import br.projeto.painelpedidos.sla.AgendadorMonitorSlaService;
-import br.projeto.painelpedidos.sla.IMonitorSlaService;
-import br.projeto.painelpedidos.sla.MonitorSlaService;
-import br.projeto.painelpedidos.sla.RegraSlaEstadoHandler;
-import br.projeto.painelpedidos.sla.RegraSlaHandler;
-import br.projeto.painelpedidos.sla.observer.PainelPedidoPrioridadeObserver;
+import br.projeto.painelpedidos.internal.sla.AgendadorMonitorSlaService;
+import br.projeto.painelpedidos.internal.sla.IMonitorSlaService;
+import br.projeto.painelpedidos.internal.sla.MonitorSlaService;
+import br.projeto.painelpedidos.internal.sla.RegraSlaEstadoHandler;
+import br.projeto.painelpedidos.internal.sla.RegraSlaHandler;
+import br.projeto.painelpedidos.internal.sla.observer.PainelPedidoPrioridadeObserver;
 import br.projeto.painelpedidos.som.IEstrategiaSom;
-import br.projeto.painelpedidos.som.SomSilenciosoStrategy;
-import br.projeto.painelpedidos.tempo.FonteDataPedido;
-import br.projeto.painelpedidos.tempo.IFonteDataPedido;
+import br.projeto.painelpedidos.internal.som.SomSilenciosoStrategy;
+import br.projeto.painelpedidos.internal.tempo.FonteDataPedido;
+import br.projeto.painelpedidos.internal.tempo.IFonteDataPedido;
 import br.projeto.painelpedidos.tempo.IRelogioService;
 import br.projeto.painelpedidos.view.PainelPedidoPanel;
-import br.projeto.painelpedidos.view.PainelPedidoView;
+import br.projeto.painelpedidos.internal.view.PainelPedidoView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.file.Path;
@@ -136,12 +137,9 @@ public final class PainelPedidoFacade {
 
     public boolean iniciar() {
         validarAcoesObrigatorias();
-
-        TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadrao());
-        if (!trava.adquirir()) {
+        if (!adquirirTravaInstanciaUnica()) {
             return false;
         }
-        this.travaInstanciaUnica = trava;
 
         janela = new PainelPedidoView(painelPedido, configuracao.getTituloJanela());
         painelPedido.getBtnFechar().addActionListener(new ActionListener() {
@@ -153,6 +151,33 @@ public final class PainelPedidoFacade {
         painelPedidoPresenter.iniciar();
         janela.setVisible(true);
         iniciarMonitorSla();
+        return true;
+    }
+
+    /**
+     * Caminho de embutir: monta o painel e o entrega ao consumidor, que o
+     * coloca no proprio conteiner. Nao cria janela; aplica a instancia unica e
+     * inicia o monitor de SLA.
+     */
+    public boolean iniciarEmbutido() {
+        validarAcoesObrigatorias();
+        if (!adquirirTravaInstanciaUnica()) {
+            return false;
+        }
+        iniciarMonitorSla();
+        return true;
+    }
+
+    public PainelPedidoPanel getPainelPedido() {
+        return painelPedido;
+    }
+
+    private boolean adquirirTravaInstanciaUnica() {
+        TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadrao());
+        if (!trava.adquirir()) {
+            return false;
+        }
+        this.travaInstanciaUnica = trava;
         return true;
     }
 
@@ -174,7 +199,24 @@ public final class PainelPedidoFacade {
     }
 
     private Path caminhoTravaPadrao() {
-        return Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock");
+        return Paths.get(System.getProperty("java.io.tmpdir"), nomeArquivoTrava());
+    }
+
+    private String nomeArquivoTrava() {
+        String identidade = configuracao.getIdentificadorAplicacao();
+        StringBuilder nome = new StringBuilder("painel_pedidos-");
+        for (char caractere : identidade.toCharArray()) {
+            nome.append(caractereSeguro(caractere) ? caractere : '-');
+        }
+        return nome.append(".lock").toString();
+    }
+
+    private boolean caractereSeguro(char caractere) {
+        boolean letra = (caractere >= 'a' && caractere <= 'z')
+                || (caractere >= 'A' && caractere <= 'Z');
+        boolean digito = caractere >= '0' && caractere <= '9';
+        boolean separador = caractere == '.' || caractere == '_' || caractere == '-';
+        return letra || digito || separador;
     }
 
     private void iniciarMonitorSla() {

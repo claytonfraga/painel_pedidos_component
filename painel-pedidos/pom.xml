@@ -75,6 +75,12 @@
                                     </excludes>
                                 </filter>
                             </filters>
+                            <relocations>
+                                <relocation>
+                                    <pattern>io.github.cdimascio</pattern>
+                                    <shadedPattern>br.projeto.painelpedidos.internal</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>

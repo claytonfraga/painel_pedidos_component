@@ -96,6 +96,25 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
   modulos): nenhuma verificacao de nulo deixa de comecar com `Informe `, e
   nenhuma excecao e levantada com um identificador solto como mensagem.
 
+## Contrato publico e pacotes internos
+
+- O contrato publico do componente e EXATAMENTE: `aplicacao.PainelPedidoFacade`,
+  `model.PedidoAbstract`, `repositorio.IPedidoRepository`,
+  `configuracao.ConfiguracaoPainelPedido`,
+  `configuracao.LeitorConfiguracaoPainelPedido`,
+  `listener.IVisualizarPedidoListener`, `listener.IConfirmarPagamentoListener`,
+  `listener.ICriarNovoPedidoListener`, `som.IEstrategiaSom`,
+  `som.SomTomStrategy`, `tempo.IRelogioService`, `tempo.RelogioServiceSistema`,
+  `view.IPainelPedidoView`, `view.PainelPedidoPanel`.
+- Todo o resto vive sob `br.projeto.painelpedidos.internal.*`: estado, filtro,
+  notificacao, SLA, ordenacao, ingestao, presenter, a janela invólucro, a trava
+  de instancia unica e a fonte de data.
+- `ContratoPublicoTest` varre o codigo de producao e falha nomeando o tipo que
+  entrou ou saiu do contrato. Nao acrescente tipo publico fora do contrato sem
+  decidir que ele e API - a fronteira nao e imposta pelo compilador, e o gate.
+- Embutir o painel usa `getPainelPedido()` e `iniciarEmbutido()`; montar o
+  `PainelPedidoPresenter` a mao NAO e caminho suportado.
+
 ## Sem simulacao, sem dados mockados
 
 - O componente NAO gera, sorteia, semeia nem embute pedidos. Nao ha `seeder`,
@@ -115,6 +134,8 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
 - Chaves de SLA por estado (minutos): `SLA_NOVO_MINUTOS`,
   `SLA_EM_PREPARO_MINUTOS`, `SLA_PRONTO_PARA_ENTREGA_MINUTOS`,
   `SLA_EM_ROTA_DE_ENTREGA_MINUTOS`.
+- Chave obrigatoria: `IDENTIFICADOR_APLICACAO` (identidade da aplicacao;
+  distingue este painel dos demais na mesma maquina).
 - Demais chaves (defaults): `SLA_MONITOR_INTERVALO_SEGUNDOS`,
   `NOTIFICACAO_DURACAO_SEGUNDOS`, `SOM_ATIVO`, `TITULO_JANELA`.
 - `painel_pedidos.env.example` documenta.
@@ -232,7 +253,9 @@ A View nao possui setters publicos.
 - A trava e a fonte unica da verdade: a fachada NAO guarda flag "ja aberto"; o
   defeito antigo era o singleton de JVM nunca resetar.
 - Trava padrao: `TravaInstanciaUnicaArquivo` sobre um arquivo em
-  `java.io.tmpdir`; "ja travado" (`tryLock()==null` ou
+  `java.io.tmpdir` cujo nome deriva da identidade da aplicacao
+  (`IDENTIFICADOR_APLICACAO`), de modo que dois sistemas diferentes na mesma
+  maquina convivem; "ja travado" (`tryLock()==null` ou
   `OverlappingFileLockException`) e recusa, nunca excecao.
 - A trava e detalhe interno (package-private): NAO e porta nem ponto de extensao;
   nao recrie interface para ela sem um consumidor que a implemente.

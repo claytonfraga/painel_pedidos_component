@@ -1,4 +1,5 @@
 package br.projeto.painelpedidos.aplicacao;
+import br.projeto.painelpedidos.internal.aplicacao.TravaInstanciaUnicaArquivo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -65,6 +66,24 @@ public final class TravaInstanciaUnicaArquivoTest {
         assertThat(trava.adquirir(), is(true));
 
         trava.liberar();
+    }
+
+    @Test
+    public void identidadesDiferentesNaoDisputamOMesmoArquivo() {
+        // given: duas identidades de aplicacao, cada uma com o seu arquivo derivado
+        TravaInstanciaUnicaArquivo sistemaA = new TravaInstanciaUnicaArquivo(caminhoDeTeste("sistema-a"));
+        TravaInstanciaUnicaArquivo sistemaB = new TravaInstanciaUnicaArquivo(caminhoDeTeste("sistema-b"));
+
+        // when: as duas são adquiridas na mesma maquina
+        boolean adquiridaA = sistemaA.adquirir();
+        boolean adquiridaB = sistemaB.adquirir();
+
+        // then: as duas convivem (a disputa e por identidade, nao global)
+        assertThat(adquiridaA, is(true));
+        assertThat(adquiridaB, is(true));
+
+        sistemaA.liberar();
+        sistemaB.liberar();
     }
 
     private Path caminhoDeTeste(String nome) {
