@@ -6,11 +6,12 @@ name: Verificar JitPack
 #   Release (cria a Release) -> JitPack constroi -> este workflow verifica.
 
 on:
+  # Uma unica porta de entrada por tag: a conclusao do workflow Release.
+  # (O gatilho release:[published] foi removido por disparar de novo no mesmo
+  # evento, duplicando a verificacao.)
   workflow_run:
     workflows: ["Release"]
     types: [completed]
-  release:
-    types: [published]
   workflow_dispatch:
 
 permissions:
