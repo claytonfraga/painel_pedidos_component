@@ -32,3 +32,9 @@ Funcionalidade: Abrir o painel uma unica vez
     Dado que o sistema consumidor inicie o painel
     Quando ele não informar nada sobre instância única
     Então o próprio painel cuida disso
+
+  @US25-005
+  Cenário: Dois sistemas diferentes na mesma máquina
+    Dado o painel de um sistema aberto
+    Quando outro sistema, com identidade diferente, abrir o painel
+    Então a segunda abertura deve ser concedida

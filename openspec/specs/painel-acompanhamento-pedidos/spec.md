@@ -119,30 +119,36 @@ entrega (`SLA_PRONTO_PARA_ENTREGA_MINUTOS`) e Em rota de entrega
 
 ### Requirement: Configuracao obrigatoria por `painel_pedidos.env`
 O arquivo e obrigatorio no uso do componente, e as quatro chaves de SLA por
-estado tambem; ausentes, `LeitorConfiguracaoPainelPedido` lanca excecao.
-Cenarios: `@US27-002`.
+estado e a **identidade da aplicacao** (`IDENTIFICADOR_APLICACAO`) tambem;
+ausentes, `LeitorConfiguracaoPainelPedido` lanca excecao.
+Cenarios: `@US27-002`, `@US27-006`.
 
 ### Requirement: Ordenacao dos cards (prioridade e fila FIFO)
 Prioridade primeiro; dentro da raia, `dataHoraMudancaEstado` ascendente.
 Cenarios: `@US24-007`.
 
-### Requirement: Painel aberto uma unica vez
+### Requirement: Painel aberto uma unica vez por aplicacao
 O componente possui a trava de instancia unica e a aplica sozinho ao iniciar:
-`iniciar()` adquire a trava antes de criar a janela e, nao conseguindo, devolve
-`false` sem abrir nada (nem janela, nem SLA, nem observer). `encerrar()` libera a
-trava, de modo que fechar e reabrir no mesmo processo volta a abrir. A trava e um
-arquivo fornecido pelo componente e o arquivo nunca e apagado. O consumidor nao
-configura trava, caminho nem singleton; informar o usuario da recusa e do
-consumidor.
-Cenarios: `@US25-001` a `@US25-004`.
+`iniciar()` e `iniciarEmbutido()` adquirem a trava antes de criar a janela e, nao
+conseguindo, devolvem `false` sem abrir nada (nem janela, nem SLA, nem observer).
+`encerrar()` libera a trava, de modo que fechar e reabrir no mesmo processo volta a
+abrir. A identidade da aplicacao e o que a trava isola: dois sistemas diferentes na
+mesma maquina convivem, e o mesmo sistema recusa a segunda abertura. O arquivo de
+controle deriva da identidade, e nunca e apagado. O consumidor nao configura
+trava, caminho nem singleton; informar o usuario da recusa e do consumidor.
+Cenarios: `@US25-001` a `@US25-005`.
 
 ### Requirement: Atualizacoes de tela por Observer
 Novos pedidos (empurrados pelo consumidor) e prioridade usam Observer. Cenarios:
 `@US26-001` (efeito observavel).
 
 ### Requirement: Componente reutilizavel como dependencia Maven
-Jar com dependencias; configuracao por `painel_pedidos.env`; modulo de exemplo;
-View embedavel. Cenarios: `@US27-001` a `@US27-005`.
+Jar com dependencias - a dotenv embutida e **relocada**, para o consumidor poder
+usar dotenv por conta propria sem conflito de classes; configuracao por
+`painel_pedidos.env`; modulo de exemplo; View embedavel. O **contrato publico** e
+enumerado (14 tipos) e todo o resto vive sob `br.projeto.painelpedidos.internal`,
+fixado pelo `ContratoPublicoTest`; embutir o painel usa `getPainelPedido()` e
+`iniciarEmbutido()`. Cenarios: `@US27-001` a `@US27-008`.
 
 ### Requirement: Modelo de pedido abstrato
 O componente nao possui pedido concreto; expoe `PedidoAbstract`, com os dados
