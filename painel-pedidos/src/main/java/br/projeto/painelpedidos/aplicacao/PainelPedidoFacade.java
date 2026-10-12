@@ -136,12 +136,9 @@ public final class PainelPedidoFacade {
 
     public boolean iniciar() {
         validarAcoesObrigatorias();
-
-        TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadrao());
-        if (!trava.adquirir()) {
+        if (!adquirirTravaInstanciaUnica()) {
             return false;
         }
-        this.travaInstanciaUnica = trava;
 
         janela = new PainelPedidoView(painelPedido, configuracao.getTituloJanela());
         painelPedido.getBtnFechar().addActionListener(new ActionListener() {
@@ -153,6 +150,33 @@ public final class PainelPedidoFacade {
         painelPedidoPresenter.iniciar();
         janela.setVisible(true);
         iniciarMonitorSla();
+        return true;
+    }
+
+    /**
+     * Caminho de embutir: monta o painel e o entrega ao consumidor, que o
+     * coloca no proprio conteiner. Nao cria janela; aplica a instancia unica e
+     * inicia o monitor de SLA.
+     */
+    public boolean iniciarEmbutido() {
+        validarAcoesObrigatorias();
+        if (!adquirirTravaInstanciaUnica()) {
+            return false;
+        }
+        iniciarMonitorSla();
+        return true;
+    }
+
+    public PainelPedidoPanel getPainelPedido() {
+        return painelPedido;
+    }
+
+    private boolean adquirirTravaInstanciaUnica() {
+        TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadrao());
+        if (!trava.adquirir()) {
+            return false;
+        }
+        this.travaInstanciaUnica = trava;
         return true;
     }
 

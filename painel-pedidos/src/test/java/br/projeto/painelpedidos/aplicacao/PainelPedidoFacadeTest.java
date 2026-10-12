@@ -2,8 +2,10 @@ package br.projeto.painelpedidos.aplicacao;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import br.projeto.painelpedidos.configuracao.ConfiguracaoPainelPedido;
@@ -15,6 +17,7 @@ import br.projeto.painelpedidos.model.PedidoDeTeste;
 import br.projeto.painelpedidos.repositorio.PedidoRepositoryFake;
 import br.projeto.painelpedidos.som.SomSilenciosoStrategy;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
+import br.projeto.painelpedidos.view.PainelPedidoPanel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -82,6 +85,41 @@ public final class PainelPedidoFacadeTest {
 
         // then: uma excecao e lancada antes de criar a janela
         assertThrows(IllegalStateException.class, iniciar);
+    }
+
+    @Test
+    public void caminhoDeEmbutirEntregaOPainelMontadoSemCriarJanela() {
+        // given: uma fachada sobre uma origem com um pedido de hoje
+        PedidoRepositoryFake repositorio = new PedidoRepositoryFake();
+        repositorio.salvar(new PedidoDeTeste(
+                "1", LocalDateTime.now(), "Ana Souza", "Rua das Flores, 120 - Centro", 42.90));
+        PainelPedidoFacade painelPedido = criarPainel(repositorio);
+
+        // when: o consumidor pede o painel para embutir
+
+        // then: o painel vem montado, com o pedido na raia, e sem janela
+        PainelPedidoPanel painel = painelPedido.getPainelPedido();
+        assertThat(painel, is(notNullValue()));
+        assertThat(painel.getPnlPedidosNovo().getComponentCount(), greaterThan(0));
+        assertThat(painel.getLblTituloNovo().getText(), is("Novo (1)"));
+    }
+
+    @Test
+    public void iniciarEmbutidoComATravaRetidaERecusado() {
+        // given: a trava da identidade ja retida por outra execucao
+        TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadraoDoComponente());
+        assertThat(trava.adquirir(), is(true));
+        PainelPedidoFacade painelPedido = criarPainelComListeners(new PedidoRepositoryFake());
+
+        try {
+            // when: tenta-se iniciar pelo caminho de embutir
+            boolean iniciado = painelPedido.iniciarEmbutido();
+
+            // then: a recusa e sinalizada, sem iniciar nada
+            assertThat(iniciado, is(false));
+        } finally {
+            trava.liberar();
+        }
     }
 
     @Test
