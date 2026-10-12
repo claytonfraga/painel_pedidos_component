@@ -85,7 +85,7 @@ public final class PainelPedidoFacadeTest {
     @Test
     public void segundaAberturaComATravaPadraoRetidaERecusadaSemAbrirJanela() {
         // given: a trava padrao do componente ja retida por outra execucao
-        ITravaInstanciaUnica trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadraoDoComponente());
+        TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadraoDoComponente());
         assertThat(trava.adquirir(), is(true));
         PainelPedidoFacade painelPedido = criarPainelComListeners(new PedidoRepositoryFake());
 

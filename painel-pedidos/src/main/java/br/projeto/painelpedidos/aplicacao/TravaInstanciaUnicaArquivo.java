@@ -13,19 +13,21 @@ import java.util.Objects;
  * que quebra a exclusao; o sistema operacional libera a trava quando o processo
  * termina, entao um arquivo remanescente nao bloqueia a proxima abertura.
  *
+ * <p>Detalhe interno do componente: nao e porta nem ponto de extensao - o
+ * consumidor nao configura trava alguma.</p>
+ *
  * @author clayton
  */
-public final class TravaInstanciaUnicaArquivo implements ITravaInstanciaUnica {
+final class TravaInstanciaUnicaArquivo {
 
     private final Path caminhoArquivo;
     private FileChannel canal;
 
-    public TravaInstanciaUnicaArquivo(Path caminhoArquivo) {
+    TravaInstanciaUnicaArquivo(Path caminhoArquivo) {
         this.caminhoArquivo = Objects.requireNonNull(caminhoArquivo, "caminhoArquivo");
     }
 
-    @Override
-    public boolean adquirir() {
+    boolean adquirir() {
         if (canal != null) {
             return false;
         }
@@ -38,8 +40,7 @@ public final class TravaInstanciaUnicaArquivo implements ITravaInstanciaUnica {
         return true;
     }
 
-    @Override
-    public void liberar() {
+    void liberar() {
         if (canal == null) {
             return;
         }

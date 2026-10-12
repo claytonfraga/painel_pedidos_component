@@ -84,7 +84,7 @@ public final class PainelPedidoFacade {
     private ICriarNovoPedidoListener criarNovoPedidoListener;
     private PainelPedidoView janela;
     private AgendadorMonitorSlaService agendadorMonitorSla;
-    private ITravaInstanciaUnica travaInstanciaUnica;
+    private TravaInstanciaUnicaArquivo travaInstanciaUnica;
 
     public PainelPedidoFacade(
             IPedidoRepository pedidoRepository,
@@ -134,7 +134,7 @@ public final class PainelPedidoFacade {
     public boolean iniciar() {
         validarAcoesObrigatorias();
 
-        ITravaInstanciaUnica trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadrao());
+        TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadrao());
         if (!trava.adquirir()) {
             return false;
         }

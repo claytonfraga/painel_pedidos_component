@@ -82,6 +82,7 @@ public final class EstruturaComponenteTest {
         // then: nenhum deles existe (a fachada aplica a instancia unica)
         afirmarClasseAusente("br.projeto.painelpedidos.aplicacao.IExecucaoAplicacao");
         afirmarClasseAusente("br.projeto.painelpedidos.aplicacao.InstanciaUnicaAplicacao");
+        afirmarClasseAusente("br.projeto.painelpedidos.aplicacao.ITravaInstanciaUnica");
     }
 
     @Test
