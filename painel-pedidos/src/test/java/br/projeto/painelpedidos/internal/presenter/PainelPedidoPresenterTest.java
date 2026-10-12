@@ -18,8 +18,8 @@ import br.projeto.painelpedidos.internal.som.SomSilenciosoStrategy;
 import br.projeto.painelpedidos.internal.tempo.FonteDataPedido;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
 import br.projeto.painelpedidos.view.IPainelPedidoView;
-import br.projeto.painelpedidos.view.PainelPedidoPanel;
-import br.projeto.painelpedidos.view.PainelPedidoPanelEspiao;
+import br.projeto.painelpedidos.view.PainelPedidoView;
+import br.projeto.painelpedidos.view.PainelPedidoViewEspiao;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -139,7 +139,7 @@ public final class PainelPedidoPresenterTest {
     @Test
     public void iniciarComandaAMaximizacaoDaView() {
         // given: uma Presenter ligada a uma View espia
-        PainelPedidoPanelEspiao painel = new PainelPedidoPanelEspiao();
+        PainelPedidoViewEspiao painel = new PainelPedidoViewEspiao();
         PainelPedidoPresenter presenter = criarPresenter(painel, new PedidoRepositoryFake());
 
         // when: a Presenter inicia
@@ -150,7 +150,7 @@ public final class PainelPedidoPresenterTest {
     }
 
     private PainelPedidoPresenter criarPresenter(PedidoRepositoryFake repositorio) {
-        return criarPresenter(new PainelPedidoPanel(), repositorio);
+        return criarPresenter(new PainelPedidoView(), repositorio);
     }
 
     private PainelPedidoPresenter criarPresenter(IPainelPedidoView painel, PedidoRepositoryFake repositorio) {

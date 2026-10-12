@@ -18,7 +18,7 @@ import br.projeto.painelpedidos.model.PedidoDeTeste;
 import br.projeto.painelpedidos.repositorio.PedidoRepositoryFake;
 import br.projeto.painelpedidos.internal.som.SomSilenciosoStrategy;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
-import br.projeto.painelpedidos.view.PainelPedidoPanel;
+import br.projeto.painelpedidos.view.PainelPedidoView;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -113,7 +113,7 @@ public final class PainelPedidoFacadeTest {
         // when: o consumidor pede o painel para embutir
 
         // then: o painel vem montado, com o pedido na raia, e sem janela
-        PainelPedidoPanel painel = painelPedido.getPainelPedido();
+        PainelPedidoView painel = painelPedido.getPainelPedido();
         assertThat(painel, is(notNullValue()));
         assertThat(painel.getPnlPedidosNovo().getComponentCount(), greaterThan(0));
         assertThat(painel.getLblTituloNovo().getText(), is("Novo (1)"));

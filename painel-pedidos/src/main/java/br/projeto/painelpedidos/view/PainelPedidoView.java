@@ -25,8 +25,9 @@ import javax.swing.SwingUtilities;
  *
  * @author clayton
  */
-public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
+public class PainelPedidoView extends JPanel implements IPainelPedidoView {
 
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private JPanel pnlFiltros;
     private JLabel lblBuscarPedidoCliente;
     private JTextField txtBuscaPedidoCliente;
@@ -69,11 +70,14 @@ public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
     private JButton btnVisualizarPedido;
     private JButton btnExecutarAcao;
     private JButton btnFechar;
+    // End of variables declaration//GEN-END:variables
 
-    public PainelPedidoPanel() {
+    public PainelPedidoView() {
         initComponents();
     }
 
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         setLayout(new BorderLayout(8, 8));
 
@@ -131,8 +135,15 @@ public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
         lblTituloNovo.setFont(lblTituloNovo.getFont().deriveFont(Font.BOLD));
         lblTituloNovo.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaNovo.add(lblTituloNovo, BorderLayout.NORTH);
-        pnlPedidosNovo = criarPainelCartoes();
-        scrNovo = criarScroll(pnlPedidosNovo);
+        pnlPedidosNovo = new JPanel();
+        pnlPedidosNovo.setLayout(new BoxLayout(pnlPedidosNovo, BoxLayout.Y_AXIS));
+        pnlPedidosNovo.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        pnlPedidosNovo.setBackground(new Color(248, 250, 252));
+        scrNovo = new JScrollPane();
+        scrNovo.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrNovo.getVerticalScrollBar().setUnitIncrement(16);
+        scrNovo.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        scrNovo.setViewportView(pnlPedidosNovo);
         pnlColunaNovo.add(scrNovo, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaNovo);
 
@@ -144,8 +155,15 @@ public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
         lblTituloEmPreparo.setFont(lblTituloEmPreparo.getFont().deriveFont(Font.BOLD));
         lblTituloEmPreparo.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaEmPreparo.add(lblTituloEmPreparo, BorderLayout.NORTH);
-        pnlPedidosEmPreparo = criarPainelCartoes();
-        scrEmPreparo = criarScroll(pnlPedidosEmPreparo);
+        pnlPedidosEmPreparo = new JPanel();
+        pnlPedidosEmPreparo.setLayout(new BoxLayout(pnlPedidosEmPreparo, BoxLayout.Y_AXIS));
+        pnlPedidosEmPreparo.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        pnlPedidosEmPreparo.setBackground(new Color(248, 250, 252));
+        scrEmPreparo = new JScrollPane();
+        scrEmPreparo.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrEmPreparo.getVerticalScrollBar().setUnitIncrement(16);
+        scrEmPreparo.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        scrEmPreparo.setViewportView(pnlPedidosEmPreparo);
         pnlColunaEmPreparo.add(scrEmPreparo, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaEmPreparo);
 
@@ -157,8 +175,15 @@ public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
         lblTituloProntoParaEntrega.setFont(lblTituloProntoParaEntrega.getFont().deriveFont(Font.BOLD));
         lblTituloProntoParaEntrega.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaProntoParaEntrega.add(lblTituloProntoParaEntrega, BorderLayout.NORTH);
-        pnlPedidosProntoParaEntrega = criarPainelCartoes();
-        scrProntoParaEntrega = criarScroll(pnlPedidosProntoParaEntrega);
+        pnlPedidosProntoParaEntrega = new JPanel();
+        pnlPedidosProntoParaEntrega.setLayout(new BoxLayout(pnlPedidosProntoParaEntrega, BoxLayout.Y_AXIS));
+        pnlPedidosProntoParaEntrega.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        pnlPedidosProntoParaEntrega.setBackground(new Color(248, 250, 252));
+        scrProntoParaEntrega = new JScrollPane();
+        scrProntoParaEntrega.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrProntoParaEntrega.getVerticalScrollBar().setUnitIncrement(16);
+        scrProntoParaEntrega.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        scrProntoParaEntrega.setViewportView(pnlPedidosProntoParaEntrega);
         pnlColunaProntoParaEntrega.add(scrProntoParaEntrega, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaProntoParaEntrega);
 
@@ -170,8 +195,15 @@ public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
         lblTituloEmRotaDeEntrega.setFont(lblTituloEmRotaDeEntrega.getFont().deriveFont(Font.BOLD));
         lblTituloEmRotaDeEntrega.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaEmRotaDeEntrega.add(lblTituloEmRotaDeEntrega, BorderLayout.NORTH);
-        pnlPedidosEmRotaDeEntrega = criarPainelCartoes();
-        scrEmRotaDeEntrega = criarScroll(pnlPedidosEmRotaDeEntrega);
+        pnlPedidosEmRotaDeEntrega = new JPanel();
+        pnlPedidosEmRotaDeEntrega.setLayout(new BoxLayout(pnlPedidosEmRotaDeEntrega, BoxLayout.Y_AXIS));
+        pnlPedidosEmRotaDeEntrega.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        pnlPedidosEmRotaDeEntrega.setBackground(new Color(248, 250, 252));
+        scrEmRotaDeEntrega = new JScrollPane();
+        scrEmRotaDeEntrega.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrEmRotaDeEntrega.getVerticalScrollBar().setUnitIncrement(16);
+        scrEmRotaDeEntrega.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        scrEmRotaDeEntrega.setViewportView(pnlPedidosEmRotaDeEntrega);
         pnlColunaEmRotaDeEntrega.add(scrEmRotaDeEntrega, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaEmRotaDeEntrega);
 
@@ -183,8 +215,15 @@ public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
         lblTituloEntregue.setFont(lblTituloEntregue.getFont().deriveFont(Font.BOLD));
         lblTituloEntregue.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaEntregue.add(lblTituloEntregue, BorderLayout.NORTH);
-        pnlPedidosEntregue = criarPainelCartoes();
-        scrEntregue = criarScroll(pnlPedidosEntregue);
+        pnlPedidosEntregue = new JPanel();
+        pnlPedidosEntregue.setLayout(new BoxLayout(pnlPedidosEntregue, BoxLayout.Y_AXIS));
+        pnlPedidosEntregue.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        pnlPedidosEntregue.setBackground(new Color(248, 250, 252));
+        scrEntregue = new JScrollPane();
+        scrEntregue.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrEntregue.getVerticalScrollBar().setUnitIncrement(16);
+        scrEntregue.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        scrEntregue.setViewportView(pnlPedidosEntregue);
         pnlColunaEntregue.add(scrEntregue, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaEntregue);
 
@@ -196,8 +235,15 @@ public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
         lblTituloCancelado.setFont(lblTituloCancelado.getFont().deriveFont(Font.BOLD));
         lblTituloCancelado.setHorizontalAlignment(SwingConstants.LEFT);
         pnlColunaCancelado.add(lblTituloCancelado, BorderLayout.NORTH);
-        pnlPedidosCancelado = criarPainelCartoes();
-        scrCancelado = criarScroll(pnlPedidosCancelado);
+        pnlPedidosCancelado = new JPanel();
+        pnlPedidosCancelado.setLayout(new BoxLayout(pnlPedidosCancelado, BoxLayout.Y_AXIS));
+        pnlPedidosCancelado.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+        pnlPedidosCancelado.setBackground(new Color(248, 250, 252));
+        scrCancelado = new JScrollPane();
+        scrCancelado.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrCancelado.getVerticalScrollBar().setUnitIncrement(16);
+        scrCancelado.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
+        scrCancelado.setViewportView(pnlPedidosCancelado);
         pnlColunaCancelado.add(scrCancelado, BorderLayout.CENTER);
         pnlColunas.add(pnlColunaCancelado);
 
@@ -231,24 +277,9 @@ public class PainelPedidoPanel extends JPanel implements IPainelPedidoView {
 
         pnlPedidoSelecionado.add(pnlBotoesRodape, BorderLayout.EAST);
         add(pnlPedidoSelecionado, BorderLayout.SOUTH);
-    }
+    }// </editor-fold>//GEN-END:initComponents
 
-    private JPanel criarPainelCartoes() {
-        JPanel pnlCartoes = new JPanel();
-        pnlCartoes.setLayout(new BoxLayout(pnlCartoes, BoxLayout.Y_AXIS));
-        pnlCartoes.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-        pnlCartoes.setBackground(new Color(248, 250, 252));
-        return pnlCartoes;
-    }
 
-    private JScrollPane criarScroll(JPanel pnlCartoes) {
-        JScrollPane scr = new JScrollPane();
-        scr.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scr.getVerticalScrollBar().setUnitIncrement(16);
-        scr.setBorder(BorderFactory.createLineBorder(new Color(225, 230, 235)));
-        scr.setViewportView(pnlCartoes);
-        return scr;
-    }
 
     @Override
     public JPanel getPainelPrincipal() {

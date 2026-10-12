@@ -38,7 +38,7 @@ public final class ContratoPublicoTest {
             "br.projeto.painelpedidos.tempo.IRelogioService",
             "br.projeto.painelpedidos.tempo.RelogioServiceSistema",
             "br.projeto.painelpedidos.view.IPainelPedidoView",
-            "br.projeto.painelpedidos.view.PainelPedidoPanel");
+            "br.projeto.painelpedidos.view.PainelPedidoView");
 
     @Test
     public void oContratoPublicoForaDosPacotesInternosEExatamenteOListado() throws IOException {
