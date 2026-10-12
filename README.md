@@ -256,7 +256,7 @@ sua (o componente apenas sinaliza).
 ### 4.3 Embutir em uma aplicação Swing existente
 
 Use `PainelPedidoView` (`JPanel`, implementa `IPainelPedidoView`) com um
-`PainelPedidoPresenter`. A `PainelPedidoJanela` é apenas um `JFrame` invólucro.
+`PainelPedidoPresenter`. A janela é criada pela fachada (`JFrame`).
 
 ## 5. Comportamento do painel
 

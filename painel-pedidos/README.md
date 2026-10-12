@@ -166,8 +166,8 @@ sua aplicação.
 
 ### Embutir em uma aplicação Swing existente
 
-Use `PainelPedidoView` (`JPanel`) com um `PainelPedidoPresenter`; a classe
-`PainelPedidoJanela` é apenas um `JFrame` invólucro.
+Use `PainelPedidoView` (`JPanel`) com um `PainelPedidoPresenter`; a janela é
+criada pela fachada (`JFrame`).
 
 ### Instância única (do componente)
 
@@ -209,6 +209,6 @@ configurar.
 | `ICriarNovoPedidoListener` | Criação de novos pedidos pelo cliente (obrigatório) |
 | `IEstrategiaSom` / `IRelogioService` | Comportamento com implementação default |
 | `PainelPedidoFacade` | Fachada: compõe, valida e inicia |
-| `PainelPedidoView` / `PainelPedidoJanela` | View (embutível / janela) |
+| `PainelPedidoView` | View: `JPanel` embutível (par `.java` + `.form`) |
 
 A especificação completa está em [`../openspec/`](../openspec/README.md).
