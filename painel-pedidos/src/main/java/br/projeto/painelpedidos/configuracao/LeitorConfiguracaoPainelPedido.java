@@ -31,7 +31,7 @@ public final class LeitorConfiguracaoPainelPedido {
         } catch (DotenvException excecao) {
             throw new IllegalStateException(
                     "O arquivo " + nomeArquivo + " e obrigatorio em " + diretorio
-                    + "; crie-o com as chaves de SLA (veja painel_pedidos.env.example)", excecao);
+                    + "; crie-o com as chaves de SLA obrigatorias", excecao);
         }
     }
 

@@ -244,8 +244,8 @@ Ambos têm implementação default; só informe se quiser trocar.
 
 ## 3. Configuração `painel_pedidos.env` (**obrigatória**)
 
-No diretório de trabalho da sua aplicação, crie `painel_pedidos.env` (veja
-[`painel_pedidos.env.example`](painel_pedidos.env.example)):
+No diretório de trabalho da sua aplicação, crie `painel_pedidos.env` com as
+chaves abaixo:
 
 ```properties
 # SLA fixo por estado, em minutos (OBRIGATÓRIO)

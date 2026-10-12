@@ -117,8 +117,7 @@ cardinalidade e destaca os cards.
 
 ## 6. Configure `painel_pedidos.env`
 
-No diretório de trabalho da sua aplicação (veja
-[`../painel_pedidos.env.example`](../painel_pedidos.env.example)):
+No diretório de trabalho da sua aplicação:
 
 ```properties
 SLA_NOVO_MINUTOS=5
