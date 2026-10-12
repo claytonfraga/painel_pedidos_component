@@ -1,0 +1,40 @@
+package br.projeto.painelpedidos.internal.tempo;
+
+import br.projeto.painelpedidos.tempo.IRelogioService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+/**
+ *
+ * @author clayton
+ */
+public final class FonteDataPedido implements IFonteDataPedido {
+
+    private final IRelogioService relogioService;
+    private LocalDate dataEspecifica;
+
+    public FonteDataPedido(IRelogioService relogioService) {
+        this.relogioService = Objects.requireNonNull(
+                relogioService, "Informe um relogio de datas valido");
+    }
+
+    @Override
+    public void usarDataAtual() {
+        this.dataEspecifica = null;
+    }
+
+    @Override
+    public void usarData(LocalDate data) {
+        this.dataEspecifica = Objects.requireNonNull(data, "Informe uma data valida");
+    }
+
+    @Override
+    public LocalDateTime obterDataHora() {
+        LocalDateTime agora = relogioService.agora();
+        if (dataEspecifica == null) {
+            return agora;
+        }
+        return dataEspecifica.atTime(agora.toLocalTime());
+    }
+}

@@ -178,6 +178,17 @@ configurar.
 
 ## Convenções
 
+- **Contrato público:** só estes tipos são API —
+  `aplicacao.PainelPedidoFacade`, `model.PedidoAbstract`,
+  `repositorio.IPedidoRepository`, `configuracao.ConfiguracaoPainelPedido`,
+  `configuracao.LeitorConfiguracaoPainelPedido`,
+  `listener.IVisualizarPedidoListener`, `listener.IConfirmarPagamentoListener`,
+  `listener.ICriarNovoPedidoListener`, `som.IEstrategiaSom`,
+  `som.SomTomStrategy`, `tempo.IRelogioService`, `tempo.RelogioServiceSistema`,
+  `view.IPainelPedidoView`, `view.PainelPedidoPanel`. Todo o resto vive sob
+  `br.projeto.painelpedidos.internal.*` e pode mudar entre versões.
+- Para embutir o painel, use `PainelPedidoFacade.getPainelPedido()` e
+  `iniciarEmbutido()` — montar `PainelPedidoPresenter` à mão não é suportado.
 - Nomes de classe, classe abstrata e interface no **singular**; classes de
   serviço com sufixo `Service` (ex.: `AgendadorMonitorSlaService`).
 - `PedidoAbstract` **não** define `toString`.

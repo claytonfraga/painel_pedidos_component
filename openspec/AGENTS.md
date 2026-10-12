@@ -96,6 +96,25 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
   modulos): nenhuma verificacao de nulo deixa de comecar com `Informe `, e
   nenhuma excecao e levantada com um identificador solto como mensagem.
 
+## Contrato publico e pacotes internos
+
+- O contrato publico do componente e EXATAMENTE: `aplicacao.PainelPedidoFacade`,
+  `model.PedidoAbstract`, `repositorio.IPedidoRepository`,
+  `configuracao.ConfiguracaoPainelPedido`,
+  `configuracao.LeitorConfiguracaoPainelPedido`,
+  `listener.IVisualizarPedidoListener`, `listener.IConfirmarPagamentoListener`,
+  `listener.ICriarNovoPedidoListener`, `som.IEstrategiaSom`,
+  `som.SomTomStrategy`, `tempo.IRelogioService`, `tempo.RelogioServiceSistema`,
+  `view.IPainelPedidoView`, `view.PainelPedidoPanel`.
+- Todo o resto vive sob `br.projeto.painelpedidos.internal.*`: estado, filtro,
+  notificacao, SLA, ordenacao, ingestao, presenter, a janela invólucro, a trava
+  de instancia unica e a fonte de data.
+- `ContratoPublicoTest` varre o codigo de producao e falha nomeando o tipo que
+  entrou ou saiu do contrato. Nao acrescente tipo publico fora do contrato sem
+  decidir que ele e API - a fronteira nao e imposta pelo compilador, e o gate.
+- Embutir o painel usa `getPainelPedido()` e `iniciarEmbutido()`; montar o
+  `PainelPedidoPresenter` a mao NAO e caminho suportado.
+
 ## Sem simulacao, sem dados mockados
 
 - O componente NAO gera, sorteia, semeia nem embute pedidos. Nao ha `seeder`,

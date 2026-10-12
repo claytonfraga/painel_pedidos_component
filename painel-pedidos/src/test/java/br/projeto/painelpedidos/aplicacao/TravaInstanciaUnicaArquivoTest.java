@@ -1,4 +1,5 @@
 package br.projeto.painelpedidos.aplicacao;
+import br.projeto.painelpedidos.internal.aplicacao.TravaInstanciaUnicaArquivo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

@@ -1,4 +1,4 @@
-package br.projeto.painelpedidos.ingestao.observer;
+package br.projeto.painelpedidos.internal.ingestao.observer;
 
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import java.util.ArrayList;

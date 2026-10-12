@@ -1,4 +1,5 @@
 package br.projeto.painelpedidos.aplicacao;
+import br.projeto.painelpedidos.internal.aplicacao.TravaInstanciaUnicaArquivo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -15,7 +16,7 @@ import br.projeto.painelpedidos.listener.VisualizarPedidoListenerFake;
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import br.projeto.painelpedidos.model.PedidoDeTeste;
 import br.projeto.painelpedidos.repositorio.PedidoRepositoryFake;
-import br.projeto.painelpedidos.som.SomSilenciosoStrategy;
+import br.projeto.painelpedidos.internal.som.SomSilenciosoStrategy;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
 import br.projeto.painelpedidos.view.PainelPedidoPanel;
 import java.nio.file.Path;

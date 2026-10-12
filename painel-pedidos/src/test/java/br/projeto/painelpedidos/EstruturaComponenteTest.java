@@ -59,8 +59,8 @@ public final class EstruturaComponenteTest {
         // when: procura-se pela porta e pelo leitor de novos pedidos
 
         // then: nenhum deles existe (a ingestao e por empurrao)
-        afirmarClasseAusente("br.projeto.painelpedidos.ingestao.IFonteNovoPedido");
-        afirmarClasseAusente("br.projeto.painelpedidos.ingestao.LeitorNovoPedidoService");
+        afirmarClasseAusente("br.projeto.painelpedidos.internal.ingestao.IFonteNovoPedido");
+        afirmarClasseAusente("br.projeto.painelpedidos.internal.ingestao.LeitorNovoPedidoService");
     }
 
     @Test
