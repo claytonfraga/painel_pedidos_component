@@ -187,11 +187,16 @@ NOTIFICACAO_DURACAO_SEGUNDOS=10
 # Som e título
 SOM_ATIVO=true
 TITULO_JANELA=Painel de Acompanhamento de Pedidos
+
+# Identidade da aplicação (OBRIGATÓRIO): distingue este painel dos demais
+# na mesma máquina; o arquivo de controle da instância única deriva dela
+IDENTIFICADOR_APLICACAO=meu-sistema-de-delivery
 ```
 
 - O **arquivo** é obrigatório: ausente, `LeitorConfiguracaoPainelPedido` lança
   exceção.
-- As **quatro chaves de SLA por estado** também são obrigatórias.
+- As **quatro chaves de SLA por estado** também são obrigatórias, e a
+  **identidade da aplicação** (`IDENTIFICADOR_APLICACAO`) também.
 - As demais chaves usam defaults seguros.
 
 Não quer o arquivo no diretório de trabalho? Aponte o diretório no construtor:

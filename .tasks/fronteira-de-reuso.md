@@ -21,7 +21,7 @@ caminho de embutir que reusa a composicao da fachada. A instancia unica passa a 
 com identidade vinda da configuracao. A dependencia embutida e relocada para conviver com a dotenv
 do consumidor.
 
-12 criterios em 4 slices · 6 portas de mao unica · 1 aberta, 0 bloqueiam.
+12 criterios em 4 slices · 6 portas de mao unica · 0 abertas.
 
 ## Criteria
 
@@ -30,7 +30,8 @@ do consumidor.
 1. Sempre, o conjunto de tipos publicos fora dos pacotes `internal` e exatamente: `PainelPedidoFacade`,
    `PedidoAbstract`, `IPedidoRepository`, `ConfiguracaoPainelPedido`, `LeitorConfiguracaoPainelPedido`,
    `IVisualizarPedidoListener`, `IConfirmarPagamentoListener`, `ICriarNovoPedidoListener`,
-   `IEstrategiaSom`, `IRelogioService`, `IPainelPedidoView`, `PainelPedidoPanel`.
+   `IEstrategiaSom`, `SomTomStrategy`, `IRelogioService`, `RelogioServiceSistema`,
+   `IPainelPedidoView`, `PainelPedidoPanel`.
 2. Quando um tipo publico e acrescentado ou retirado fora de `internal`, o build falha e a mensagem
    nomeia o tipo.
 3. Sempre, todo tipo que nao pertence ao contrato reside sob um pacote `internal`.
@@ -130,7 +131,7 @@ trava (fachada e teste da fachada, que mudam juntos), o `painel_pedidos.env` do 
 |---|---|---|
 | O contrato e enumerado; o resto vai para `internal` | pacotes `...internal.*`, publicos porem fora do contrato | deixar tudo publico - nenhum sinal de fronteira; package-private - impossivel, os usuarios moram em outro pacote |
 | A fronteira nao e imposta pelo compilador | convencao `internal` + teste de allow-list | JPMS - a dependencia nao tem `module-info` e o shade o exclui, entao o jar gordo nao e modulo |
-| A instancia unica e por aplicacao | identidade na configuracao; arquivo de trava derivado dela | nome fixo do componente - dois sistemas na mesma maquina colidem |
+| A instancia unica e por aplicacao, com identidade obrigatoria | identidade obrigatoria na configuracao (`IDENTIFICADOR_APLICACAO`); arquivo de trava derivado dela | nome fixo do componente - dois sistemas na mesma maquina colidem; default pelo titulo da janela - dois sistemas com o mesmo titulo colidem em silencio |
 | A fachada compoe e entrega o painel | um caminho de embutir que nao cria janela | consumidor remontar Presenter e servicos - duplica a composicao e obriga a importar internos |
 | A dependencia embutida e relocada | `<relocations>` no shade para o pacote da dotenv | embutir sem relocar - conflito de classes no classpath do consumidor |
 | O contrato e fixado por teste | allow-list explicita dos tipos publicos | revisao apenas - nao impede a fronteira de crescer em silencio |
@@ -157,6 +158,5 @@ This task is the record of decision. If a linked document diverges, ask before b
 
 ## Unresolved
 
-| # | Kind | Question | Until answered |
-|---|---|---|---|
-| 1 | open | A identidade da aplicacao e obrigatoria ou tem default (ex.: o titulo da janela)? | o default tomado e obrigatoria; sem default um consumidor de sistema unico ainda precisa informa-la, e com default dois sistemas com o mesmo titulo colidem em silencio |
+None - a unica questao aberta (identidade obrigatoria ou com default) foi decidida
+pelo autor: obrigatoria.
