@@ -102,17 +102,20 @@ um par de propriedades no [`exemplo/pom.xml`](exemplo/pom.xml):
 ```
 
 1. Faça um fork (ou clone) do repositório no **seu** GitHub, mantendo-o público.
-2. Crie a sua tag e uma Release: `git tag v1.0.1 && git push origin v1.0.1`. O
-   workflow de release alinha a versão, verifica e publica a Release; o JitPack
+2. Crie a sua tag e uma Release: `git tag v1.0.3 && git push origin v1.0.3`. O
+   workflow `Release` alinha a versão, verifica e publica a Release; o JitPack
    constrói o artefato **no primeiro pedido**.
 3. Troque as três propriedades acima para `com.github.<seu-usuario>`, o nome do
    seu repositório e a sua versão. Pronto: o `exemplo` passa a resolver o **seu** artefato.
 
-> O build do JitPack pode falhar na primeira tentativa com **HTTP 429** (limite
-> de requisições do Maven Central, compartilhado pela infraestrutura do JitPack);
-> é transitório - reenvie a Release/tag e ele conclui. Se preferir não depender do
-> JitPack, instale o jar localmente: `mvn -U clean install` dentro de
-> `painel-pedidos/` e dependa de `br.projeto:painel-pedidos:1.0.0`.
+> **A versão no JitPack é a tag** (`v1.0.3`), e não o número sem o `v`. A imagem
+> de build do JitPack traz um Maven antigo; o `jitpack.yml` instala um Maven
+> moderno antes do build por causa disso. O workflow [`Verificar
+> JitPack`](.github/workflows/verificar-jitpack.yml) aguarda o build e valida o
+> `exemplo` contra o artefato publicado — se ele passar, a sua publicação está
+> íntegra. Para não depender do JitPack, instale o jar localmente:
+> `mvn -U clean install` dentro de `painel-pedidos/` e dependa de
+> `br.projeto:painel-pedidos:1.0.0`.
 
 ## 2. O que o seu projeto implementa
 
@@ -421,6 +424,19 @@ sozinho a cada nova tag).
 A suíte (JUnit Jupiter + Hamcrest) cobre o ciclo de vida, a configuração, a
 ingestão (empurrão), a fachada, os listeners e a maximização, além de garantir a
 ausência de simulação/dados mockados e da leitura automática de novos pedidos.
+
+### Publicação (CI/CD)
+
+| Workflow | Quando | O que faz |
+|---|---|---|
+| [`qualidade.yml`](.github/workflows/qualidade.yml) | push/PR em `main` | Gate do componente (`mvn -U clean verify`) e, quando o artefato publicado resolve, o do exemplo |
+| [`release.yml`](.github/workflows/release.yml) | tag `v*` | Alinha a versão, verifica e publica a Release com o jar do componente |
+| [`verificar-jitpack.yml`](.github/workflows/verificar-jitpack.yml) | após o `Release` | Aguarda o JitPack construir o artefato, verifica o exemplo contra ele e registra a versão |
+
+São **duas etapas** de propósito: o `release.yml` publica a Release e termina; o
+`verificar-jitpack.yml` é disparado pela conclusão do primeiro. Sem essa separação
+o ciclo seria circular — o release esperaria o JitPack, que só constrói depois da
+Release. Localmente, `scripts/ci-local.sh` roda o mesmo gate do componente.
 
 ## 8. Solução de problemas (Windows)
 
