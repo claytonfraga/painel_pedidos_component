@@ -47,8 +47,9 @@ mockados no componente — os dados e as telas são sempre seus.
   pedido *ultrapassa* o limite (seção 5).
 - **O contrato público tem 14 tipos**; o resto vive sob `internal` e pode mudar
   entre versões (seção 3, "Contrato público").
-- **Há um consumidor completo para copiar**: o módulo [`exemplo`](exemplo/) faz
-  tudo isso e roda (seção 6).
+- **Há um consumidor completo para copiar**: o projeto [`exemplo`](exemplo/) faz
+  tudo isso e roda (seção 6). Ele é um projeto independente que depende do
+  componente pelo JitPack — o mesmo caminho que o seu sistema vai usar.
 
 ## Requisitos
 
@@ -82,8 +83,8 @@ O jar de `painel-pedidos` **já contém todas as dependências** (é empacotado 
 constrói **no primeiro pedido**, então a primeira resolução pode demorar um
 pouco mais.
 
-**Uso local** (antes de publicar): a partir da raiz do projeto do componente,
-rode `mvn -U clean install` e dependa de `br.projeto:painel-pedidos:1.0.0`.
+**Uso local** (antes de publicar): dentro de `painel-pedidos/`, rode
+`mvn -U clean install` e dependa de `br.projeto:painel-pedidos:1.0.0`.
 
 ## 2. O que o seu projeto implementa
 
@@ -360,32 +361,34 @@ public class MeuMain {
 }
 ```
 
-Há um consumidor de referência no módulo [`exemplo`](exemplo/) (repositório em
-memória, seeder determinístico e `painel_pedidos.env`):
+Há um consumidor de referência no projeto [`exemplo`](exemplo/) (repositório em
+memória, seeder determinístico e `painel_pedidos.env`). Ele é um projeto Maven
+independente que depende do componente **pelo JitPack**, na versão declarada na
+propriedade `painel-pedidos.version` do `exemplo/pom.xml`:
 
 ```bash
+cd exemplo
 mvn -U clean verify
-java -jar exemplo/target/exemplo-painel-pedidos-1.0.0.jar
+java -jar target/exemplo-painel-pedidos-1.0.0.jar
 ```
 
-## 7. Módulos, build e testes
+## 7. Projetos, build e testes
 
-| Módulo | Papel |
-|---|---|
-| `painel-pedidos-parent` | Agregador Maven |
-| `painel-pedidos` | O componente (biblioteca, jar com todas as dependências) |
-| `exemplo` | Consumidor de demonstração |
+São **dois projetos Maven independentes**, cada um com o próprio `pom.xml`:
 
-Rode a partir da **raiz** (o `pom.xml` agregador constrói os três módulos):
+| Projeto | Papel | Como construir |
+|---|---|---|
+| `painel-pedidos/` | O componente (biblioteca, jar com todas as dependências) | `cd painel-pedidos && mvn -U clean verify` |
+| `exemplo/` | Consumidor de demonstração, que depende do componente publicado no JitPack | `cd exemplo && mvn -U clean verify` |
 
-```bash
-mvn -U clean verify
-mvn -U clean install   # instala parent + painel-pedidos no repositório local
-```
+Não há `pom.xml` agregador na raiz: cada projeto é construído dentro do seu
+diretório. O `exemplo` é, por isso, um **teste vivo da publicação** — ele resolve
+o artefato do JitPack como qualquer consumidor faria, então uma quebra na
+publicação aparece como falha no build do exemplo.
 
-Para construir o módulo `exemplo` **isolado** (ex.: abrindo só ele no NetBeans),
-o `painel-pedidos` precisa estar instalado (`mvn -U clean install` na raiz) ou
-publicado no JitPack. Mais simples: abra/construa o projeto pela raiz.
+O exemplo consome a versão publicada; para trocá-la, edite a propriedade
+`painel-pedidos.version` em `exemplo/pom.xml` (o workflow de release faz isso
+sozinho a cada nova tag).
 
 A suíte (JUnit Jupiter + Hamcrest) cobre o ciclo de vida, a configuração, a
 ingestão (empurrão), a fachada, os listeners e a maximização, além de garantir a
@@ -395,8 +398,8 @@ ausência de simulação/dados mockados e da leitura automática de novos pedido
 
 - **`clean` falha com "Failed to delete ...\target\..."**: algum processo segura
   a pasta. Feche o NetBeans e instâncias do painel em execução, pause o OneDrive
-  (se o projeto estiver em `Downloads`) e rode o build a partir da raiz. Também
-  pode apagar manualmente: `rmdir /s /q target` (dentro do módulo).
+  (se o projeto estiver em `Downloads`) e rode o build dentro do projeto. Também
+  pode apagar manualmente: `rmdir /s /q target` (dentro do projeto).
 - **`ClassNotFoundException` ao rodar pelo NetBeans**: a configuração de "Run"
   guardou um nome de classe antigo. Rode o arquivo com a classe `main` correta ou
   use `java -jar` (o `Main-Class` do jar está correto).
@@ -405,7 +408,7 @@ ausência de simulação/dados mockados e da leitura automática de novos pedido
 
 ## 9. Documentação
 
-Este README cobre o uso do componente. O módulo
+Este README cobre o uso do componente. O projeto
 [`painel-pedidos/README.md`](painel-pedidos/README.md) traz o mesmo guia de forma
-mais enxuta, e o módulo [`exemplo`](exemplo/) é um consumidor completo - a melhor
+mais enxuta, e o projeto [`exemplo`](exemplo/) é um consumidor completo - a melhor
 referência para copiar.

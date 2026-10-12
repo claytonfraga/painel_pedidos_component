@@ -25,8 +25,9 @@ que você implementa.
 </dependency>
 ```
 
-O jar já contém as dependências (maven-shade). Para uso local:
-`mvn -U clean install` e depois `br.projeto:painel-pedidos:1.0.0`.
+O jar já contém as dependências (maven-shade). Este projeto é independente: para
+uso local, rode `mvn -U clean install` dentro de `painel-pedidos/` e depois
+dependa de `br.projeto:painel-pedidos:1.0.0`.
 
 ## 2. Estenda `PedidoAbstract`
 
