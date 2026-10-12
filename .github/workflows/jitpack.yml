@@ -1,0 +1,96 @@
+name: Publicar no JitPack
+
+# A documentacao do JitPack diz que publicar e criar uma GitHub Release, e que o
+# build acontece no primeiro pedido do artefato. Este workflow faz os dois:
+# dispara o pedido e espera, com retentativa (o 429 do Maven Central e transitorio).
+#
+# A versao alvo e SEMPRE a do topo - a ultima tag do repositorio - e nao a que
+# disparou o evento. O input manual existe apenas para forcar uma versao antiga.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: 'Forcar uma versao especifica (por padrao, a ultima)'
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  jitpack:
+    name: Dispara e verifica o build no JitPack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Definir a versao alvo (a ultima) e a base
+        id: alvo
+        run: |
+          VERSAO="${{ github.event.inputs.versao }}"
+          if [ -z "${VERSAO}" ]; then
+            VERSAO="$(git tag --list 'v*' --sort=-v:refname | head -1)"
+          fi
+          if [ -z "${VERSAO}" ]; then
+            echo "Nenhuma tag v* encontrada no repositorio."; exit 1
+          fi
+          REPO="${GITHUB_REPOSITORY#*/}"
+          BASE="https://jitpack.io/com/github/${GITHUB_REPOSITORY_OWNER}/${REPO}"
+          # o artefato publicado e o do modulo painel-pedidos (projeto multi-modulo)
+          echo "versao=${VERSAO}" >> "$GITHUB_OUTPUT"
+          echo "base=${BASE}" >> "$GITHUB_OUTPUT"
+          echo "url=${BASE}/painel-pedidos/${VERSAO}/painel-pedidos-${VERSAO}.pom" >> "$GITHUB_OUTPUT"
+          echo "Versao alvo: ${VERSAO}"
+
+      - name: Disparar o build (o primeiro pedido constroi)
+        run: |
+          BASE="${{ steps.alvo.outputs.base }}"
+          VERSAO="${{ steps.alvo.outputs.versao }}"
+          curl -s -o /dev/null -w "pedido por versao (${VERSAO}): HTTP %{http_code}\n" \
+            "${BASE}/painel-pedidos/${VERSAO}/painel-pedidos-${VERSAO}.pom" --max-time 120 || true
+          # Em repositorio novo o indice de tags pode estar atrasado; pedir pelo
+          # commit e o caminho documentado que nao depende desse indice.
+          curl -s -o /dev/null -w "pedido por commit: HTTP %{http_code}\n" \
+            "${BASE}/painel-pedidos/${{ github.sha }}/painel-pedidos-${{ github.sha }}.pom" --max-time 120 || true
+
+      - name: Aguardar o build, com retentativa
+        run: |
+          BASE="${{ steps.alvo.outputs.base }}"
+          VERSAO="${{ steps.alvo.outputs.versao }}"
+          LOG=""
+          for tentativa in $(seq 1 20); do
+            sleep 30
+            LOG="$(curl -s --max-time 45 "${BASE}/${VERSAO}/build.log" || true)"
+
+            if echo "$LOG" | grep -q "BUILD SUCCESS"; then
+              echo "Build concluido com sucesso (tentativa ${tentativa})."
+              exit 0
+            fi
+
+            if echo "$LOG" | grep -q "429"; then
+              echo "Tentativa ${tentativa}: Maven Central limitou o build (429). Re-disparando."
+              curl -s -o /dev/null "${BASE}/painel-pedidos/${VERSAO}/painel-pedidos-${VERSAO}.pom" --max-time 120 || true
+              continue
+            fi
+
+            if echo "$LOG" | grep -q "BUILD FAILURE"; then
+              echo "Build falhou (tentativa ${tentativa}). Fim do log:"
+              echo "$LOG" | tail -25
+              exit 1
+            fi
+
+            echo "Tentativa ${tentativa}: build em andamento."
+          done
+
+          echo "Tempo esgotado aguardando o JitPack. Fim do log:"
+          echo "$LOG" | tail -25
+          exit 1
+
+      - name: Confirmar que o artefato resolve
+        run: |
+          CODIGO="$(curl -s -o /dev/null -w '%{http_code}' "${{ steps.alvo.outputs.url }}" --max-time 60)"
+          echo "artefato da versao alvo: HTTP ${CODIGO}"
+          test "${CODIGO}" = "200"
