@@ -26,21 +26,28 @@ package-private) e concretos `PedidoNovoState`, `PedidoEmPreparoState`,
 
 O State mora no pacote `model`, junto do contexto, e nao e publico: o contrato
 publico (`PedidoAbstract`) nao expoe tipo interno e a dependencia aponta para o
-estavel. A transicao e `pedido.setEstado(new PedidoProximoState(pedido))`, com
-`setEstado` package-private.
+estavel. A transicao e `pedido.setEstado(new PedidoProximoState(pedido), quando)`,
+com `setEstado` package-private.
+
+**O instante vem de fora.** Toda operacao de transicao recebe o `quando`
+(`registrarPagamento(forma, quando)`, `cancelar(quando)`, ...) e `setEstado`
+grava esse instante em `dataHoraMudancaEstado`: o Model **nunca** le o relogio do
+sistema. Quem dispara a transicao informa a hora - o consumidor no seu listener,
+o presenter com o relogio injetado - e e o mesmo relogio que o SLA usa para
+medir, entao as duas pontas nao podem divergir.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Novo
-    Novo --> EmPreparo : registrarPagamento(forma)
-    Novo --> Cancelado : cancelar
-    EmPreparo --> ProntoParaEntrega : marcarProntoParaEntrega
-    EmPreparo --> Cancelado : cancelar
-    ProntoParaEntrega --> EmRotaDeEntrega : sairParaEntrega
-    ProntoParaEntrega --> Cancelado : cancelar
-    EmRotaDeEntrega --> Entregue : marcarEntregue
-    EmRotaDeEntrega --> Cancelado : cancelar
-    Entregue --> Cancelado : cancelar
+    Novo --> EmPreparo : registrarPagamento(forma, quando)
+    Novo --> Cancelado : cancelar(quando)
+    EmPreparo --> ProntoParaEntrega : marcarProntoParaEntrega(quando)
+    EmPreparo --> Cancelado : cancelar(quando)
+    ProntoParaEntrega --> EmRotaDeEntrega : sairParaEntrega(quando)
+    ProntoParaEntrega --> Cancelado : cancelar(quando)
+    EmRotaDeEntrega --> Entregue : marcarEntregue(quando)
+    EmRotaDeEntrega --> Cancelado : cancelar(quando)
+    Entregue --> Cancelado : cancelar(quando)
     Cancelado --> [*]
     note right of Cancelado
       Terminal: nao retorna a
@@ -99,8 +106,8 @@ do card (`ApresentacaoDoPedido.textoDoStatus`). Mapeamento:
 stateDiagram-v2
     [*] --> AguardandoPagamento
     AguardandoPagamento --> PagamentoConfirmado : registrarPagamento
-    AguardandoPagamento --> PedidoCancelado : cancelar
-    PagamentoConfirmado --> PedidoCancelado : cancelar
+    AguardandoPagamento --> PedidoCancelado : cancelar(quando)
+    PagamentoConfirmado --> PedidoCancelado : cancelar(quando)
     PedidoCancelado --> [*]
 ```
 

@@ -50,29 +50,30 @@ public abstract class PedidoAbstract {
      */
     public abstract PedidoAbstract criarCopia(String novoIdentificador, LocalDateTime novaDataHora);
 
-    public void registrarPagamento(String formaPagamento) {
-        estado.registrarPagamento(formaPagamento);
+    public void registrarPagamento(String formaPagamento, LocalDateTime quando) {
+        estado.registrarPagamento(formaPagamento, quando);
     }
 
-    public void marcarProntoParaEntrega() {
-        estado.marcarProntoParaEntrega();
+    public void marcarProntoParaEntrega(LocalDateTime quando) {
+        estado.marcarProntoParaEntrega(quando);
     }
 
-    public void sairParaEntrega() {
-        estado.sairParaEntrega();
+    public void sairParaEntrega(LocalDateTime quando) {
+        estado.sairParaEntrega(quando);
     }
 
-    public void marcarEntregue() {
-        estado.marcarEntregue();
+    public void marcarEntregue(LocalDateTime quando) {
+        estado.marcarEntregue(quando);
     }
 
-    public void cancelar() {
-        estado.cancelar();
+    public void cancelar(LocalDateTime quando) {
+        estado.cancelar(quando);
     }
 
-    public void aplicarPagamento(String formaPagamento) {
+    public void aplicarPagamento(String formaPagamento, LocalDateTime quando) {
         this.formaPagamento = validarTextoObrigatorio(formaPagamento, "a forma de pagamento");
-        this.dataHoraPagamento = LocalDateTime.now();
+        this.dataHoraPagamento = Objects.requireNonNull(
+                quando, "Informe a data e hora do pagamento valida");
     }
 
     public void confirmarCancelamento() {
@@ -115,9 +116,10 @@ public abstract class PedidoAbstract {
         return estado.ehCancelado();
     }
 
-    void setEstado(PedidoState estado) {
+    void setEstado(PedidoState estado, LocalDateTime quando) {
         this.estado = Objects.requireNonNull(estado, "Informe um estado de pedido valido");
-        this.dataHoraMudancaEstado = LocalDateTime.now();
+        this.dataHoraMudancaEstado = Objects.requireNonNull(
+                quando, "Informe a data e hora da mudanca de estado valida");
         this.prioridade = false;
     }
 

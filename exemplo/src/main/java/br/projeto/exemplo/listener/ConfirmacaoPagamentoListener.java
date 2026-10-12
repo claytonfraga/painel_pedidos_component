@@ -1,5 +1,6 @@
 package br.projeto.exemplo.listener;
 
+import java.time.LocalDateTime;
 import br.projeto.painelpedidos.listener.IConfirmarPagamentoListener;
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import javax.swing.JOptionPane;
@@ -34,6 +35,6 @@ public final class ConfirmacaoPagamentoListener implements IConfirmarPagamentoLi
             return;
         }
 
-        pedido.registrarPagamento(formaPagamentoSelecionada.toString());
+        pedido.registrarPagamento(formaPagamentoSelecionada.toString(), LocalDateTime.now());
     }
 }

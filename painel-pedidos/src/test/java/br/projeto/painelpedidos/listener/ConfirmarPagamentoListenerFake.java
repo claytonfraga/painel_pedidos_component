@@ -1,5 +1,6 @@
 package br.projeto.painelpedidos.listener;
 
+import java.time.LocalDateTime;
 import br.projeto.painelpedidos.model.PedidoAbstract;
 
 /**
@@ -13,7 +14,7 @@ public final class ConfirmarPagamentoListenerFake implements IConfirmarPagamento
     @Override
     public void confirmarPagamento(PedidoAbstract pedido) {
         this.pedidoRecebido = pedido;
-        pedido.registrarPagamento("Pix - chave CPF");
+        pedido.registrarPagamento("Pix - chave CPF", LocalDateTime.now());
     }
 
     public PedidoAbstract getPedidoRecebido() {

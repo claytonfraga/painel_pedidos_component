@@ -38,7 +38,7 @@ public final class PedidoTest {
         PedidoAbstract pedido = criarPedido("1", 50.0);
 
         // when: o pagamento e registrado
-        pedido.registrarPagamento("Pix - chave CPF");
+        pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
 
         // then: o pedido avanca para Em preparo com pagamento confirmado
         assertThat(pedido.estaEmPreparo(), is(true));
@@ -51,10 +51,10 @@ public final class PedidoTest {
         PedidoAbstract pedido = criarPedido("1", 50.0);
 
         // when: percorre-se todo o ciclo operacional
-        pedido.registrarPagamento("Pix - chave CPF");
-        pedido.marcarProntoParaEntrega();
-        pedido.sairParaEntrega();
-        pedido.marcarEntregue();
+        pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
+        pedido.marcarProntoParaEntrega(REFERENCIA);
+        pedido.sairParaEntrega(REFERENCIA);
+        pedido.marcarEntregue(REFERENCIA);
 
         // then: o pedido esta Entregue
         assertThat(pedido.estaEntregue(), is(true));
@@ -66,7 +66,7 @@ public final class PedidoTest {
         PedidoAbstract pedido = criarPedido("1", 50.0);
 
         // when: o pedido e cancelado
-        pedido.cancelar();
+        pedido.cancelar(REFERENCIA);
 
         // then: ele esta Cancelado e sem credito
         assertThat(pedido.estaCancelado(), is(true));
@@ -77,10 +77,10 @@ public final class PedidoTest {
     public void cancelarComPagamentoGeraCreditoIgualAoValorPago() {
         // given: um pedido pago de 73,45
         PedidoAbstract pedido = criarPedido("1", 73.45);
-        pedido.registrarPagamento("Cartão de crédito");
+        pedido.registrarPagamento("Cartão de crédito", REFERENCIA);
 
         // when: o pedido e cancelado
-        pedido.cancelar();
+        pedido.cancelar(REFERENCIA);
 
         // then: ele esta Cancelado e o credito e igual ao valor pago
         assertThat(pedido.estaCancelado(), is(true));
@@ -91,13 +91,13 @@ public final class PedidoTest {
     public void cancelarPedidoEntregueEPermitido() {
         // given: um pedido que ja foi entregue
         PedidoAbstract pedido = criarPedido("1", 50.0);
-        pedido.registrarPagamento("Pix - chave CPF");
-        pedido.marcarProntoParaEntrega();
-        pedido.sairParaEntrega();
-        pedido.marcarEntregue();
+        pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
+        pedido.marcarProntoParaEntrega(REFERENCIA);
+        pedido.sairParaEntrega(REFERENCIA);
+        pedido.marcarEntregue(REFERENCIA);
 
         // when: o pedido entregue e cancelado
-        pedido.cancelar();
+        pedido.cancelar(REFERENCIA);
 
         // then: ele esta Cancelado com o credito do valor pago
         assertThat(pedido.estaCancelado(), is(true));
@@ -108,13 +108,13 @@ public final class PedidoTest {
     public void canceladoNaoRetornaParaNenhumaSituacaoAnterior() {
         // given: um pedido Cancelado
         PedidoAbstract pedido = criarPedido("1", 50.0);
-        pedido.cancelar();
+        pedido.cancelar(REFERENCIA);
 
         // when: tenta-se registrar pagamento em um pedido Cancelado
         Executable registrarPagamento = new Executable() {
             @Override
             public void execute() {
-                pedido.registrarPagamento("Pix - chave CPF");
+                pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
             }
         };
 
@@ -126,8 +126,8 @@ public final class PedidoTest {
     public void copiarCanceladoGeraNovoPedidoNovoSemPagamento() {
         // given: um pedido Cancelado
         PedidoAbstract pedido = criarPedido("1", 50.0);
-        pedido.registrarPagamento("Pix - chave CPF");
-        pedido.cancelar();
+        pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
+        pedido.cancelar(REFERENCIA);
 
         // when: cria-se um novo pedido a partir do cancelado
         PedidoAbstract novo = pedido.copiarComoNovo("2", REFERENCIA.plusHours(1));
@@ -161,13 +161,13 @@ public final class PedidoTest {
     public void pagamentoEmPedidoCanceladoOrientaOndeRegistrar() {
         // given: um pedido cancelado
         PedidoAbstract pedido = criarPedido("1", 50.0);
-        pedido.cancelar();
+        pedido.cancelar(REFERENCIA);
 
         // when: tenta-se registrar o pagamento
         Executable registrar = new Executable() {
             @Override
             public void execute() {
-                pedido.registrarPagamento("Pix - chave CPF");
+                pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
             }
         };
 

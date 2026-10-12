@@ -70,25 +70,25 @@ public final class PedidoSeeder {
 
     private PedidoAbstract emPreparo(String id, LocalDateTime dataHora, String cliente, String endereco, double valor) {
         PedidoAbstract pedido = new Pedido(id, dataHora, cliente, endereco, valor);
-        pedido.registrarPagamento("Pix - chave CPF");
+        pedido.registrarPagamento("Pix - chave CPF", dataHora);
         return pedido;
     }
 
     private PedidoAbstract pronto(String id, LocalDateTime dataHora, String cliente, String endereco, double valor) {
         PedidoAbstract pedido = emPreparo(id, dataHora, cliente, endereco, valor);
-        pedido.marcarProntoParaEntrega();
+        pedido.marcarProntoParaEntrega(dataHora);
         return pedido;
     }
 
     private PedidoAbstract emRota(String id, LocalDateTime dataHora, String cliente, String endereco, double valor) {
         PedidoAbstract pedido = pronto(id, dataHora, cliente, endereco, valor);
-        pedido.sairParaEntrega();
+        pedido.sairParaEntrega(dataHora);
         return pedido;
     }
 
     private PedidoAbstract entregue(String id, LocalDateTime dataHora, String cliente, String endereco, double valor) {
         PedidoAbstract pedido = emRota(id, dataHora, cliente, endereco, valor);
-        pedido.marcarEntregue();
+        pedido.marcarEntregue(dataHora);
         return pedido;
     }
 
@@ -96,9 +96,9 @@ public final class PedidoSeeder {
             String id, LocalDateTime dataHora, String cliente, String endereco, double valor, boolean pago) {
         PedidoAbstract pedido = new Pedido(id, dataHora, cliente, endereco, valor);
         if (pago) {
-            pedido.registrarPagamento("Cartão de crédito");
+            pedido.registrarPagamento("Cartão de crédito", dataHora);
         }
-        pedido.cancelar();
+        pedido.cancelar(dataHora);
         return pedido;
     }
 }

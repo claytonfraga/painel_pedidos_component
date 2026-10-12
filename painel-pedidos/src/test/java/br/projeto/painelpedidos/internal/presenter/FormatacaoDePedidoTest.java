@@ -50,8 +50,8 @@ public final class FormatacaoDePedidoTest {
         // when: sao formatados
 
         // then: hoje sai so a hora e ontem vem marcado
-        assertThat(formatacao.horario(agora), is("14:05"));
-        assertThat(formatacao.horario(agora.minusDays(1)), containsString("Ontem"));
+        assertThat(formatacao.horario(agora, agora.toLocalDate()), is("14:05"));
+        assertThat(formatacao.horario(agora.minusDays(1), agora.toLocalDate()), containsString("Ontem"));
     }
 
     @Test
@@ -59,7 +59,7 @@ public final class FormatacaoDePedidoTest {
         // given: um pedido sem e outro com pagamento
         PedidoAbstract semPagamento = criarPedido("1");
         PedidoAbstract comPagamento = criarPedido("2");
-        comPagamento.registrarPagamento("Pix - chave CPF");
+        comPagamento.registrarPagamento("Pix - chave CPF", LocalDateTime.of(2026, 1, 10, 12, 0));
 
         // when: consulta-se a forma de pagamento
 

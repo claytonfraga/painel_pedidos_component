@@ -1,6 +1,6 @@
 package br.projeto.painelpedidos.model;
 
-import br.projeto.painelpedidos.model.PedidoAbstract;
+import java.time.LocalDateTime;
 
 /**
  *

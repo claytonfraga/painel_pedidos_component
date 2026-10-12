@@ -33,9 +33,8 @@ final class FormatacaoDePedido {
         return formatadorMoeda.format(valor).replace('\u00A0', ' ');
     }
 
-    String horario(LocalDateTime dataHora) {
+    String horario(LocalDateTime dataHora, LocalDate hoje) {
         LocalDate dataPedido = dataHora.toLocalDate();
-        LocalDate hoje = LocalDate.now();
 
         if (dataPedido.equals(hoje)) {
             return dataHora.format(formatadorHora);

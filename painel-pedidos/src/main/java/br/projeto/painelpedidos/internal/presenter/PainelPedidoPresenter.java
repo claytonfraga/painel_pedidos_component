@@ -12,6 +12,7 @@ import br.projeto.painelpedidos.repositorio.IPedidoRepository;
 import br.projeto.painelpedidos.internal.tempo.IFonteDataPedido;
 import br.projeto.painelpedidos.internal.sla.observer.IPainelPedidoAtualizador;
 import br.projeto.painelpedidos.som.IEstrategiaSom;
+import br.projeto.painelpedidos.tempo.IRelogioService;
 import br.projeto.painelpedidos.view.IPainelPedidoView;
 import java.awt.Color;
 import java.awt.Component;
@@ -27,6 +28,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +61,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
     private final IFabricaFiltroPeriodo fabricaFiltroPeriodo;
     private final IEstrategiaSom estrategiaSom;
     private final IOrdenacaoPedido ordenacaoPedidos;
+    private final IRelogioService relogioService;
     private final int duracaoNotificacaoSegundos;
 
     private Timer timerNotificacao;
@@ -78,6 +81,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
             IFabricaFiltroPeriodo fabricaFiltroPeriodo,
             IEstrategiaSom estrategiaSom,
             IOrdenacaoPedido ordenacaoPedidos,
+            IRelogioService relogioService,
             int duracaoNotificacaoSegundos) {
 
         this.painelPedidoView = Objects.requireNonNull(
@@ -92,6 +96,8 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
                 estrategiaSom, "Informe uma estrategia de som valida");
         this.ordenacaoPedidos = Objects.requireNonNull(
                 ordenacaoPedidos, "Informe uma ordenacao de pedidos valida");
+        this.relogioService = Objects.requireNonNull(
+                relogioService, "Informe um relogio de datas valido");
         this.duracaoNotificacaoSegundos = duracaoNotificacaoSegundos;
         this.pedidosPorIdentificador = new LinkedHashMap<>();
         this.cartoesPorIdentificador = new LinkedHashMap<>();
@@ -197,6 +203,10 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         timerDestaque.start();
     }
 
+    private LocalDateTime agora() {
+        return relogioService.agora();
+    }
+
     private void aplicarDestaque(boolean aceso) {
         for (JPanel pnlCartao : pnlCartoesDestacados) {
             if (aceso) {
@@ -238,7 +248,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
 
     private void configurarPeriodos() {
         painelPedidoView.getCmbPeriodo().removeAllItems();
-        for (String rotulo : fabricaFiltroPeriodo.rotulos(LocalDate.now())) {
+        for (String rotulo : fabricaFiltroPeriodo.rotulos(agora().toLocalDate())) {
             painelPedidoView.getCmbPeriodo().addItem(rotulo);
         }
         painelPedidoView.getCmbPeriodo().setSelectedIndex(0);
@@ -359,7 +369,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
     private List<PedidoAbstract> filtrarPedidos(List<PedidoAbstract> pedidosConsultados) {
         String textoBusca = painelPedidoView.getTxtBuscaPedidoCliente().getText();
         String buscaNormalizada = textoBusca == null ? "" : textoBusca.trim().toLowerCase(Locale.ROOT);
-        LocalDate hoje = LocalDate.now();
+        LocalDate hoje = agora().toLocalDate();
 
         IFiltroPeriodo filtroPeriodo = filtroPeriodoSelecionado();
         atualizarFonteDataPedido(filtroPeriodo);
@@ -466,7 +476,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
             }
         });
 
-        JLabel lblHorario = new JLabel(formatacao.horario(pedido.getDataHora()));
+        JLabel lblHorario = new JLabel(formatacao.horario(pedido.getDataHora(), agora().toLocalDate()));
         pnlCabecalho.add(btnSelecionarPedido, java.awt.BorderLayout.CENTER);
         pnlCabecalho.add(lblHorario, java.awt.BorderLayout.EAST);
         pnlCartaoPedido.add(pnlCabecalho, restricoes);
@@ -666,21 +676,21 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
 
         try {
             if (pedido.estaEmPreparo()) {
-                pedido.marcarProntoParaEntrega();
+                pedido.marcarProntoParaEntrega(agora());
                 pedidoRepository.salvar(pedido);
                 atualizarPainel();
                 return;
             }
 
             if (pedido.estaProntoParaEntrega()) {
-                pedido.sairParaEntrega();
+                pedido.sairParaEntrega(agora());
                 pedidoRepository.salvar(pedido);
                 atualizarPainel();
                 return;
             }
 
             if (pedido.estaEmRotaDeEntrega()) {
-                pedido.marcarEntregue();
+                pedido.marcarEntregue(agora());
                 pedidoRepository.salvar(pedido);
                 atualizarPainel();
                 return;
@@ -737,7 +747,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
         }
 
         try {
-            pedidoSelecionado.cancelar();
+            pedidoSelecionado.cancelar(agora());
             pedidoRepository.salvar(pedidoSelecionado);
             atualizarPainel();
         } catch (RuntimeException excecao) {
