@@ -61,6 +61,14 @@ desktop.ini
 .gemini/
 .agent/
 .codex/
+.github/
+
+# Especificacao, registros de decisao e empacotamento de skills ficam locais:
+# nao vao para o repositorio
+openspec/
+.design/
+.tasks/
+skill-*.zip
 
 # Reports
 *.exec
