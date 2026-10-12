@@ -35,6 +35,23 @@ Funcionalidade: Requisitos não funcionais do componente
     Então o componente não deve alterar o Look and Feel
     E a aplicação cliente é quem o define (ex.: do sistema/Windows)
 
+  @US27-006
+  Cenário: Identidade da aplicação obrigatória
+    Dado um painel_pedidos.env sem IDENTIFICADOR_APLICACAO
+    Então uma exceção orientando informá-la deve ser lançada
+
+  @US27-007
+  Cenário: Contrato público enumerado
+    Dado o componente compilado
+    Então apenas os 14 tipos do contrato devem ser públicos fora de internal
+    E um tipo que entre ou saia do contrato deve fazer o build falhar
+
+  @US27-008
+  Cenário: Dependência embutida relocada
+    Dado o jar do componente
+    Então a cópia embutida da dotenv deve estar relocada
+    E o consumidor pode usar dotenv sem conflito de classes
+
   # ----- Plataforma e build -----
 
   @NF-001
