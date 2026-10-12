@@ -1,5 +1,7 @@
 # Painel de Acompanhamento de Pedidos
 
+[![Release](https://jitpack.io/v/claytonfraga/painel_pedidos_component.svg)](https://jitpack.io/#claytonfraga/painel_pedidos_component)
+
 Este projeto é uma **atividade da disciplina Projeto de Sistemas de Software**
 (UFES) e é, ele mesmo, um exercício do que a ementa cobra: *"padrões de projeto,
 princípio de reuso, construção e uso de componentes de software e frameworks"*.
@@ -56,8 +58,9 @@ mockados no componente — os dados e as telas são sempre seus.
 
 ## 1. Adicione a dependência
 
-O repositório pode ser publicado no [JitPack](https://jitpack.io). Substitua
-`<usuario>` pelo usuário do GitHub e `<tag>` pela versão publicada:
+O componente é publicado no [JitPack](https://jitpack.io) a partir das tags do
+repositório. Use as coordenadas abaixo - e troque `v1.0.1` pela versão que
+quiser:
 
 ```xml
 <repositories>
@@ -70,12 +73,14 @@ O repositório pode ser publicado no [JitPack](https://jitpack.io). Substitua
 <dependency>
     <groupId>com.github.claytonfraga.painel_pedidos_component</groupId>
     <artifactId>painel-pedidos</artifactId>
-    <version><tag></version>
+    <version>v1.0.1</version>
 </dependency>
 ```
 
 O jar de `painel-pedidos` **já contém todas as dependências** (é empacotado com
-`maven-shade-plugin`), então esta é a única dependência necessária.
+`maven-shade-plugin`), então esta é a única dependência necessária. O JitPack
+constrói **no primeiro pedido**, então a primeira resolução pode demorar um
+pouco mais.
 
 **Uso local** (antes de publicar): a partir da raiz do projeto do componente,
 rode `mvn -U clean install` e dependa de `br.projeto:painel-pedidos:1.0.0`.
