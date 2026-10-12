@@ -1,58 +1,85 @@
-# Build output
+# ---- Saida de build ----
 target/
 build/
 out/
 bin/
 *.class
+
+# ---- Artefatos Java ----
+# (se algum dia precisar versionar um jar local, negue o caso: !lib/*.jar)
 *.jar
 *.war
 *.ear
 *.nar
-*.exec
 
-# Documentacao gerada (print do painel pelo teste headless)
-docs/
-
-# Maven
+# ---- Maven ----
 .mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
 dependency-reduced-pom.xml
 .flattened-pom.xml
 pom.xml.tag
+pom.xml.next
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 release.properties
-.mvn/wrapper/maven-wrapper.properties
+# O Maven Wrapper (.mvn/wrapper/maven-wrapper.properties, mvnw, mvnw.cmd) e
+# VERSIONADO de proposito - e o que torna o build reproduzivel em qualquer clone.
+# Apenas o jar legado do wrapper fica fora.
+.mvn/wrapper/maven-wrapper.jar
 
-# Environment / secrets
+# ---- Cobertura e analise ----
+*.exec
+
+# ---- JVM: log, dump e telemetria ----
+*.log
+*.log.*
+hs_err_pid*
+replay_pid*
+*.hprof
+*.jfr
+*.attach_pid*
+
+# ---- Configuracao e segredos ----
 .env
 /painel_pedidos.env
 !painel_pedidos.env.example
 
-# Logs
-*.log
-hs_err_pid*
-replay_pid*
+# Documentacao gerada (print do painel pelo teste headless)
+docs/
 
-# IDE
+# ---- IDEs ----
+# IntelliJ
 .idea/
 *.iml
 *.ipr
 *.iws
-.vscode/
+# Eclipse
+.metadata/
 .settings/
 .classpath
 .project
 .factorypath
+# VS Code
+.vscode/
+# NetBeans
 nbproject/private/
 nb-configuration.xml
+nbbuild/
+nbdist/
+dist/
+.nb-gradle/
 
-# OS
+# ---- Editores ----
+*.swp
+*.swo
+*~
+
+# ---- Sistema operacional ----
 .DS_Store
 Thumbs.db
+ehthumbs.db
 desktop.ini
 
-# Tooling / agent output
+# ---- Ferramentas de agente ----
 .opencode/
 .agents/
 .claude/
@@ -63,12 +90,8 @@ desktop.ini
 .codex/
 .github/
 
-# Especificacao, registros de decisao e empacotamento de skills ficam locais:
-# nao vao para o repositorio
+# ---- Especificacao, registros de decisao e pacotes de skill ficam locais ----
 openspec/
 .design/
 .tasks/
 skill-*.zip
-
-# Reports
-*.exec
