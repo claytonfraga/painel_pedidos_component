@@ -1,6 +1,7 @@
 package br.projeto.painelpedidos.model;
 
-import br.projeto.painelpedidos.model.PedidoAbstract;
+
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -41,27 +42,27 @@ abstract class PedidoState {
         return false;
     }
 
-    public void registrarPagamento(String formaPagamento) {
+    public void registrarPagamento(String formaPagamento, LocalDateTime quando) {
         throw new RuntimeException("Nao e possivel registrar pagamento de um pedido " + getNome()
                 + "; registre o pagamento em um pedido Novo");
     }
 
-    public void marcarProntoParaEntrega() {
+    public void marcarProntoParaEntrega(LocalDateTime quando) {
         throw new RuntimeException("Nao e possivel marcar como pronto para entrega um pedido " + getNome()
                 + "; marque como pronto para entrega apenas um pedido Em preparo");
     }
 
-    public void sairParaEntrega() {
+    public void sairParaEntrega(LocalDateTime quando) {
         throw new RuntimeException("Nao e possivel sair para entrega um pedido " + getNome()
                 + "; saia para entrega apenas um pedido Pronto para entrega");
     }
 
-    public void marcarEntregue() {
+    public void marcarEntregue(LocalDateTime quando) {
         throw new RuntimeException("Nao e possivel marcar como entregue um pedido " + getNome()
                 + "; marque como entregue apenas um pedido Em rota de entrega");
     }
 
-    public void cancelar() {
+    public void cancelar(LocalDateTime quando) {
         throw new RuntimeException("Nao e possivel cancelar um pedido " + getNome()
                 + "; o pedido ja esta cancelado e nao volta a nenhuma situacao anterior");
     }

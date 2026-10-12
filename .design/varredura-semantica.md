@@ -1,8 +1,34 @@
 # Varredura do codigo (mecanica e semantica)
 
-> Status: record - 2026-10-11. Resultado da varredura pedida. Mecanica corrigida;
-> semantica com tres decisoes abertas (S1, S2, S3) que mudam contrato ou
-> construtor e por isso NAO foram implementadas sem decisao.
+> Status: record - 2026-10-11. Resultado da varredura pedida. Mecanica corrigida.
+> Semantica: **S1, S2 e S5 corrigidos**; **S3 aberto** (exige tipo de situacao).
+
+## Corrigido depois da varredura
+
+- **S1 - resolvido no estilo do State (skill `state-pattern-java`).** As operacoes
+  de transicao passaram a receber o `quando` e `setEstado(estado, quando)` grava
+  em `dataHoraMudancaEstado`; o Model **nao** le mais o relogio do sistema.
+  Quem dispara informa a hora (o consumidor no listener com o proprio relogio; o
+  presenter com o `IRelogioService` injetado). O `PedidoSeeder` passa a data
+  derivada da referencia, entao os dados da demonstracao ficam coerentes com o
+  SLA. `RegraSlaEstadoHandlerTest` foi reescrito com relogio **fixo** e provou
+  discriminar: revertendo `setEstado` para `LocalDateTime.now()`, ele falha.
+- **S2 - resolvido.** `IRelogioService` passou a ser injetado no presenter (8o
+  argumento) e responde pelo "hoje" do filtro, pelos rotulos do combo e pelo
+  hoje/ontem da formatacao (`FormatacaoDePedido.horario(dataHora, hoje)`).
+- **S5 - resolvido.** `volatile` no canal da trava.
+- **S4 - registrado** no `AGENTS.md`: o componente nao deduplica; o consumidor
+  empurra so o que e novo.
+
+### S3 aberto - e agora com o achado da skill
+
+A skill de State e explicita: "**status strings duplicated across
+services/repositories**" e um anti-pattern. As situacoes hoje aparecem como
+strings em tres lugares: `getNome()` nos estados, o mapa de SLA e as chaves do
+`painel_pedidos.env`. O conserto alinhado e um **tipo `Situacao`** (sem `enum`)
+com o conjunto fechado, usado pelos estados e pelo mapa - o que tambem faz a
+configuracao errada falhar ao construir, em vez de silenciar. E uma mudanca de
+contrato (15o tipo) e por isso ficou como decisao.
 
 ## Mecanica
 

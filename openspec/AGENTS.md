@@ -231,7 +231,11 @@ A View nao possui setters publicos.
   contrato nao expoe tipo interno e o estavel nao depende do detalhe
   (`setEstado` e package-private, chamado pelos estados).
 - Estados concretos com prefixo `Pedido` e sufixo `State`, transicionando via
-  `pedido.setEstado(new PedidoProximoState(pedido))`.
+  `pedido.setEstado(new PedidoProximoState(pedido), quando)`.
+- O instante da transicao vem de FORA: as operacoes recebem `quando` e `setEstado`
+  grava em `dataHoraMudancaEstado`. O Model NUNCA le o relogio do sistema - quem
+  dispara informa a hora (consumidor no listener, presenter com `IRelogioService`),
+  e o SLA mede com esse mesmo relogio.
 - Regras no construtor: pre-condicao nao atendida lanca excecao e a transicao
   nao ocorre (`PedidoCanceladoState` calcula o credito no construtor).
 - `Pedido` e o contexto; sem `enum`, sem `instanceof`, sem strings de situacao.

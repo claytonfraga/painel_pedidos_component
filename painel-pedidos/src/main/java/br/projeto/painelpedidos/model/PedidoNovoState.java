@@ -1,6 +1,6 @@
 package br.projeto.painelpedidos.model;
 
-import br.projeto.painelpedidos.model.PedidoAbstract;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -23,13 +23,13 @@ final class PedidoNovoState extends PedidoState {
     }
 
     @Override
-    public void registrarPagamento(String formaPagamento) {
-        pedido.aplicarPagamento(formaPagamento);
-        pedido.setEstado(new PedidoEmPreparoState(pedido));
+    public void registrarPagamento(String formaPagamento, LocalDateTime quando) {
+        pedido.aplicarPagamento(formaPagamento, quando);
+        pedido.setEstado(new PedidoEmPreparoState(pedido), quando);
     }
 
     @Override
-    public void cancelar() {
-        pedido.setEstado(new PedidoCanceladoState(pedido));
+    public void cancelar(LocalDateTime quando) {
+        pedido.setEstado(new PedidoCanceladoState(pedido), quando);
     }
 }

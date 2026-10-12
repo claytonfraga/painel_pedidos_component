@@ -1,6 +1,6 @@
 package br.projeto.painelpedidos.model;
 
-import br.projeto.painelpedidos.model.PedidoAbstract;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -27,7 +27,7 @@ final class PedidoEntregueState extends PedidoState {
     }
 
     @Override
-    public void cancelar() {
-        pedido.setEstado(new PedidoCanceladoState(pedido));
+    public void cancelar(LocalDateTime quando) {
+        pedido.setEstado(new PedidoCanceladoState(pedido), quando);
     }
 }

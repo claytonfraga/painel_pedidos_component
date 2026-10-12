@@ -161,6 +161,7 @@ public final class PainelPedidoPresenterTest {
                 new FabricaFiltroPeriodo(),
                 new SomSilenciosoStrategy(),
                 new OrdenacaoPedidoPorPrioridadeETempoNoEstado(),
+                new RelogioServiceSistema(),
                 10);
     }
 

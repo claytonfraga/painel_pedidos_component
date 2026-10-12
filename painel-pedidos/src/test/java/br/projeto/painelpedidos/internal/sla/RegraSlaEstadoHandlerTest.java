@@ -22,10 +22,12 @@ import org.junit.jupiter.api.Test;
  */
 public final class RegraSlaEstadoHandlerTest {
 
+    private static final LocalDateTime REFERENCIA = LocalDateTime.of(2026, 1, 10, 12, 0);
+
     @Test
     public void priorizaPedidoNovoAcimaDoSlaDaSituacao() {
         // given: um pedido Novo e um limite de 5 minutos para a situacao Novo
-        PedidoAbstract pedido = new PedidoDeTeste("1", LocalDateTime.now(), "Ana", "Rua X, 1 - Centro", 10.0);
+        PedidoAbstract pedido = new PedidoDeTeste("1", REFERENCIA, "Ana", "Rua X, 1 - Centro", 10.0);
         ContextoSla contexto = criarContexto(pedido);
         RegraSlaEstadoHandler regra = new RegraSlaEstadoHandler(criarSlas("Novo", Duration.ofMinutes(5)));
 
@@ -42,7 +44,7 @@ public final class RegraSlaEstadoHandlerTest {
     @Test
     public void naoAplicaQuandoASituacaoNaoTemSlaConfigurado() {
         // given: um pedido Novo e um limite configurado apenas para Em preparo
-        PedidoAbstract pedido = new PedidoDeTeste("1", LocalDateTime.now(), "Ana", "Rua X, 1 - Centro", 10.0);
+        PedidoAbstract pedido = new PedidoDeTeste("1", REFERENCIA, "Ana", "Rua X, 1 - Centro", 10.0);
         ContextoSla contexto = criarContexto(pedido);
         RegraSlaEstadoHandler regra = new RegraSlaEstadoHandler(criarSlas("Em preparo", Duration.ofMinutes(20)));
 
@@ -56,11 +58,11 @@ public final class RegraSlaEstadoHandlerTest {
     @Test
     public void aceitaSituacaoNovaSemAlterarAClasse() {
         // given: um pedido Entregue e um limite de 1 minuto para a situacao Entregue
-        PedidoAbstract pedido = new PedidoDeTeste("1", LocalDateTime.now(), "Ana", "Rua X, 1 - Centro", 10.0);
-        pedido.registrarPagamento("Pix - chave CPF");
-        pedido.marcarProntoParaEntrega();
-        pedido.sairParaEntrega();
-        pedido.marcarEntregue();
+        PedidoAbstract pedido = new PedidoDeTeste("1", REFERENCIA, "Ana", "Rua X, 1 - Centro", 10.0);
+        pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
+        pedido.marcarProntoParaEntrega(REFERENCIA);
+        pedido.sairParaEntrega(REFERENCIA);
+        pedido.marcarEntregue(REFERENCIA);
         ContextoSla contexto = criarContexto(pedido);
         RegraSlaEstadoHandler regra = new RegraSlaEstadoHandler(criarSlas("Entregue", Duration.ofMinutes(1)));
 
@@ -82,7 +84,9 @@ public final class RegraSlaEstadoHandlerTest {
     private ContextoSla criarContexto(PedidoAbstract pedido) {
         List<PedidoAbstract> pedidos = new ArrayList<>();
         pedidos.add(pedido);
-        LocalDateTime agora = pedido.getDataHoraMudancaEstado().plusMinutes(10);
+        // o instante de referencia vem de fora, nao do proprio pedido: e o que
+        // prova que a regra usa o relogio injetado e nao o do sistema.
+        LocalDateTime agora = REFERENCIA.plusMinutes(10);
         return new ContextoSla(pedidos, agora);
     }
 }

@@ -38,7 +38,7 @@ public final class ApresentacaoDoPedidoTest {
     public void pedidoPagoMudaAcaoEStatus() {
         // given: um pedido com pagamento registrado
         PedidoAbstract pedido = criarPedido("1", 50.0);
-        pedido.registrarPagamento("Pix - chave CPF");
+        pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
 
         // when: consultam-se acao e status
 
@@ -51,7 +51,7 @@ public final class ApresentacaoDoPedidoTest {
     public void pedidoCanceladoOfereceNovoPedidoESemCreditoSemPagamento() {
         // given: um pedido cancelado sem pagamento
         PedidoAbstract pedido = criarPedido("1", 50.0);
-        pedido.cancelar();
+        pedido.cancelar(REFERENCIA);
 
         // when: consultam-se acao, status e credito
 
@@ -66,8 +66,8 @@ public final class ApresentacaoDoPedidoTest {
     public void pedidoCanceladoComPagamentoGeraCreditoDoValorPago() {
         // given: um pedido pago e depois cancelado
         PedidoAbstract pedido = criarPedido("1", 42.90);
-        pedido.registrarPagamento("Pix - chave CPF");
-        pedido.cancelar();
+        pedido.registrarPagamento("Pix - chave CPF", REFERENCIA);
+        pedido.cancelar(REFERENCIA);
 
         // when: consulta-se o credito
 
@@ -82,10 +82,10 @@ public final class ApresentacaoDoPedidoTest {
         // given: um pedido novo e outro entregue
         PedidoAbstract novo = criarPedido("1", 50.0);
         PedidoAbstract entregue = criarPedido("2", 50.0);
-        entregue.registrarPagamento("Pix - chave CPF");
-        entregue.marcarProntoParaEntrega();
-        entregue.sairParaEntrega();
-        entregue.marcarEntregue();
+        entregue.registrarPagamento("Pix - chave CPF", REFERENCIA);
+        entregue.marcarProntoParaEntrega(REFERENCIA);
+        entregue.sairParaEntrega(REFERENCIA);
+        entregue.marcarEntregue(REFERENCIA);
 
         // when: comparam-se as cores de fundo
 

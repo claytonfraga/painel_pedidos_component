@@ -109,7 +109,7 @@ public final class PainelPedidoFacade {
 
         this.painelPedidoPresenter = new PainelPedidoPresenter(
                 painelPedido, pedidoRepository, fonteDataPedido, fabricaFiltroPeriodo,
-                som, ordenacaoPedidos, configuracao.getDuracaoNotificacaoSegundos());
+                som, ordenacaoPedidos, relogioService, configuracao.getDuracaoNotificacaoSegundos());
 
         this.servicoNotificacao = new NotificacaoNovoPedidoService(criarRegrasNotificacao());
         this.novoPedidoObserver = new PainelPedidoNovoPedidoObserver(painelPedidoPresenter, servicoNotificacao);
