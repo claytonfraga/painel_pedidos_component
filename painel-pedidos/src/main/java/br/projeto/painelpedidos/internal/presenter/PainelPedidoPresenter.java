@@ -1,5 +1,6 @@
 package br.projeto.painelpedidos.internal.presenter;
 
+import br.projeto.painelpedidos.internal.ingestao.observer.NovoPedidoObserver;
 import br.projeto.painelpedidos.internal.filtro.IFabricaFiltroPeriodo;
 import br.projeto.painelpedidos.internal.filtro.IFiltroPeriodo;
 import br.projeto.painelpedidos.listener.IConfirmarPagamentoListener;
@@ -73,6 +74,7 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
     private IVisualizarPedidoListener visualizarPedidoListener;
     private IConfirmarPagamentoListener confirmarPagamentoListener;
     private ICriarNovoPedidoListener criarNovoPedidoListener;
+    private NovoPedidoObserver novoPedidoObserver;
 
     public PainelPedidoPresenter(
             IPainelPedidoView painelPedidoView,
@@ -121,6 +123,10 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
 
     public void setCriarNovoPedidoListener(ICriarNovoPedidoListener criarNovoPedidoListener) {
         this.criarNovoPedidoListener = criarNovoPedidoListener;
+    }
+
+    public void setNovoPedidoObserver(NovoPedidoObserver novoPedidoObserver) {
+        this.novoPedidoObserver = novoPedidoObserver;
     }
 
     public void iniciar() {
@@ -764,14 +770,15 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
             throw new IllegalStateException(
                     "Configure ICriarNovoPedidoListener na aplicacao cliente para criar novo pedido");
         }
+        if (novoPedidoObserver == null) {
+            throw new IllegalStateException(
+                    "Informe o observador de novos pedidos antes de criar pedido pelo painel");
+        }
         List<PedidoAbstract> novos = criarNovoPedidoListener.criarNovoPedido();
-        if (novos == null) {
+        if (novos == null || novos.isEmpty()) {
             return;
         }
-        for (PedidoAbstract pedido : novos) {
-            pedidoRepository.salvar(pedido);
-        }
-        atualizarPainel();
+        novoPedidoObserver.receberNovosPedidos(novos);
     }
 
     private void visualizarPedidoSelecionado() {

@@ -116,6 +116,7 @@ public final class PainelPedidoFacade {
 
         this.servicoNotificacao = new NotificacaoNovoPedidoService(criarRegrasNotificacao());
         this.novoPedidoObserver = new PainelPedidoNovoPedidoObserver(painelPedidoPresenter, servicoNotificacao);
+        this.painelPedidoPresenter.setNovoPedidoObserver(novoPedidoObserver);
         this.monitorSlaService = new MonitorSlaService(criarRegrasSla(configuracao));
         this.monitorSlaService.adicionarObserver(new PainelPedidoPrioridadeObserver(painelPedidoPresenter));
     }
