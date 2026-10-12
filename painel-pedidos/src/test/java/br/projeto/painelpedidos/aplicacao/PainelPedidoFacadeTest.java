@@ -89,6 +89,23 @@ public final class PainelPedidoFacadeTest {
     }
 
     @Test
+    public void caminhoDeEmbutirAdquireATravaEEncerrarALibera() {
+        // given: uma fachada com os listeners obrigatorios e a trava livre
+        PedidoRepositoryFake repositorio = new PedidoRepositoryFake();
+        PainelPedidoFacade painelPedido = criarPainelComListeners(repositorio);
+
+        // when: inicia-se pelo caminho de embutir e em seguida encerra-se
+        boolean iniciado = painelPedido.iniciarEmbutido();
+        painelPedido.encerrar();
+
+        // then: a abertura foi concedida e a trava voltou a ficar livre
+        assertThat(iniciado, is(true));
+        TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadraoDoComponente());
+        assertThat(trava.adquirir(), is(true));
+        trava.liberar();
+    }
+
+    @Test
     public void caminhoDeEmbutirEntregaOPainelMontadoSemCriarJanela() {
         // given: uma fachada sobre uma origem com um pedido de hoje
         PedidoRepositoryFake repositorio = new PedidoRepositoryFake();
