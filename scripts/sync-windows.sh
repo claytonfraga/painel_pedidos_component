@@ -5,23 +5,24 @@
 set -euo pipefail
 
 RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DESTINO="/mnt/c/Users/clayt/Downloads/PainelPedidos_MVP_PassiveView"
+DESTINO="/mnt/c/Users/clayt/Downloads/painel_pedidos_mvp"
 
 mkdir -p "$DESTINO"
-find "$DESTINO" -mindepth 1 -delete 2>/dev/null || true
 
-copiar() {
-  [ -e "$RAIZ/$1" ] && cp -r "$RAIZ/$1" "$DESTINO/"
-}
-
-copiar pom.xml
-copiar src
-copiar openspec
-copiar scripts
-copiar .github
-copiar .gitignore
-copiar .env.example
-copiar .env
+rsync -a --delete --no-perms --no-owner --no-group \
+  --exclude '.git/' \
+  --exclude 'target/' \
+  --exclude 'docs/' \
+  --exclude 'desktop.ini' \
+  --exclude '.opencode/' \
+  --exclude '.claude/' \
+  --exclude '.cursor/' \
+  --exclude '.windsurf/' \
+  --exclude '.agents/' \
+  --exclude '.gemini/' \
+  --exclude '.codex/' \
+  --exclude '.github/' \
+  "$RAIZ"/ "$DESTINO"/
 
 for pasta in "$DESTINO" \
   /mnt/c/Users/clayt/Downloads/_PainelPedidos_MVP_PassiveView \

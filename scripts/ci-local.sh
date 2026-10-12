@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Pipeline de CI/CD local (mesmo comando do GitHub Actions: mvn -U clean verify).
+# Pipeline de CI/CD local (os mesmos comandos do GitHub Actions).
 #
 set -euo pipefail
 
@@ -16,9 +16,14 @@ else
   exit 1
 fi
 
-echo "== Build e validacao: mvn -U clean verify =="
-"$MVN" -U clean verify
+echo "== Componente: mvn -U clean verify =="
+( cd painel-pedidos && "$MVN" -U clean verify )
 
 echo
-echo "Artefato(s) gerado(s):"
-ls -1 target/*.jar 2>/dev/null || echo "  (nenhum jar encontrado)"
+echo "Artefato do componente:"
+ls -1 painel-pedidos/target/*.jar 2>/dev/null || echo "  (nenhum jar encontrado)"
+
+echo
+echo "== Exemplo (consome o artefato publicado) =="
+echo "Pulado por padrao: depende da versao publicada no JitPack."
+echo "Para construir: ( cd exemplo && \\$MVN -U clean verify )"
