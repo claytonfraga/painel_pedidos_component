@@ -64,3 +64,9 @@ desktop.ini
 
 # Documentacao gerada
 docs/
+
+# Trabalho local (nao vai para o repositorio)
+openspec/
+.design/
+.tasks/
+skill*.zip
