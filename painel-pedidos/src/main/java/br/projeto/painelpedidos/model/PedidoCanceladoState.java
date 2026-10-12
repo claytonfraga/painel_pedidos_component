@@ -1,4 +1,4 @@
-package br.projeto.painelpedidos.internal.state;
+package br.projeto.painelpedidos.model;
 
 import br.projeto.painelpedidos.model.PedidoAbstract;
 
@@ -6,9 +6,9 @@ import br.projeto.painelpedidos.model.PedidoAbstract;
  *
  * @author clayton
  */
-public final class PedidoCanceladoState extends PedidoState {
+final class PedidoCanceladoState extends PedidoState {
 
-    public PedidoCanceladoState(PedidoAbstract pedido) {
+    PedidoCanceladoState(PedidoAbstract pedido) {
         super(pedido);
         pedido.confirmarCancelamento();
     }

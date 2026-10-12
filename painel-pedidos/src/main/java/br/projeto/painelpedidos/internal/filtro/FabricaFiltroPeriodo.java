@@ -1,12 +1,26 @@
 package br.projeto.painelpedidos.internal.filtro;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author clayton
  */
 public final class FabricaFiltroPeriodo implements IFabricaFiltroPeriodo {
+
+    @Override
+    public List<String> rotulos(LocalDate hoje) {
+        List<String> rotulos = new ArrayList<>();
+        rotulos.add("Hoje (" + hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
+        rotulos.add("Últimos 7 dias");
+        rotulos.add("Últimos 30 dias");
+        rotulos.add("Todos");
+        rotulos.add("Data específica");
+        return rotulos;
+    }
 
     @Override
     public IFiltroPeriodo criar(int indice, LocalDate dataEspecifica) {

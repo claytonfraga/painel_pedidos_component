@@ -1,9 +1,32 @@
 # RFC - Estruturais do componente
 
-> Status: open - 2026-10-11. Nada aqui e decisao: sao quatro questoes que a
-> varredura de SOLID/DRY/Demeter levantou e que NAO se resolvem por leitura do
-> codigo. Ninguem implementa antes de responder.
+> Status: resolved - 2026-10-11. As quatro questoes foram decididas pelo autor e
+> implementadas (ver "Decisoes"). O texto original de cada questao fica abaixo
+> como registro do que foi pesado.
 > Origem: varredura registrada em `openspec/AGENTS.md` (secao "Excecoes aceitas").
+
+## Decisoes
+
+- **Q1 - SRP do presenter: resolvido por extracao.** Saíram do presenter a
+  formatacao (`FormatacaoDePedido`: identificador, valor, horario, forma de
+  pagamento) e a aparencia por estado (`ApresentacaoDoPedido`: texto da acao, cor
+  da raia, rotulo e cor do status, credito). Ficaram a montagem do cartao e a
+  selecao/destaque: sao layout e interacao, coesos com o papel do presenter, e
+  verificaveis so pelo caminho de pintura. Presenter: 943 -> 862 linhas, com os
+  dois tipos novos cobertos por teste headless.
+- **Q2 - contrato expondo `PedidoState`: resolvido por placement.** O State foi
+  para o pacote `model`, junto do contexto, e virou package-private;
+  `setEstado` virou package-private e o contrato para de expor tipo interno. O
+  contrato segue com 14 tipos e a dependencia passou a apontar para o estavel.
+- **Q3 - branching por estado: resolvido no escopo da aparencia.** As quatro
+  cadeias de aparencia saíram para `ApresentacaoDoPedido`. Ficaram a particao por
+  raia (sao as 6 colunas fixas da View) e o roteamento da acao (e transicao de
+  estado e depende dos colaboradores do presenter) - ambos registrados com a
+  razao, nao escondidos.
+- **Q4 - fabrica acoplada ao indice do combo: resolvido por fonte unica.** A
+  fabrica passou a expor `rotulos(hoje)`, e a tela monta o combo a partir dela:
+  a lista e o mapeamento indice -> periodo vivem na mesma classe e nao podem
+  divergir. Coberto por `FabricaFiltroPeriodoTest`.
 
 ## Por que este documento existe
 

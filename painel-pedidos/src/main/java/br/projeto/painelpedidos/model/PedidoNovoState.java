@@ -1,4 +1,4 @@
-package br.projeto.painelpedidos.internal.state;
+package br.projeto.painelpedidos.model;
 
 import br.projeto.painelpedidos.model.PedidoAbstract;
 
@@ -6,9 +6,9 @@ import br.projeto.painelpedidos.model.PedidoAbstract;
  *
  * @author clayton
  */
-public final class PedidoNovoState extends PedidoState {
+final class PedidoNovoState extends PedidoState {
 
-    public PedidoNovoState(PedidoAbstract pedido) {
+    PedidoNovoState(PedidoAbstract pedido) {
         super(pedido);
     }
 

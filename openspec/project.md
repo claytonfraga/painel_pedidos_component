@@ -49,8 +49,9 @@ simulacao, geracao de pedidos, seed nem dados mockados.
 
 ## Ciclo de vida (GoF State)
 
-- `state/PedidoState` (abstrata) mantem `protected final Pedido pedido` e
-  operacoes default que lancam `RuntimeException`.
+- `model/PedidoState` (abstrata, package-private) mantem `protected final Pedido pedido` e
+  operacoes default que lancam `RuntimeException`. O State mora com o contexto,
+  no pacote `model`, para o contrato nao expor tipo interno.
 - Estados concretos `PedidoNovoState`, `PedidoEmPreparoState`,
   `PedidoProntoParaEntregaState`, `PedidoEmRotaDeEntregaState`,
   `PedidoEntregueState`, `PedidoCanceladoState` sobrescrevem as operacoes
