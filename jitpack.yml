@@ -1,0 +1,13 @@
+# Configuracao do JitPack para este repositorio multi-modulo.
+#
+# O JitPack publica cada modulo como com.github.claytonfraga.painel_pedidos_component:MODULO:VERSAO,
+# entao o consumidor depende de "painel-pedidos". A publicacao e disparada por
+# uma GitHub Release (ou por uma tag), que o workflow .github/workflows/release.yml cria.
+#
+# jdk: o projeto exige Java 21 (o maven-enforcer-plugin recusa outro JDK, entao um
+# valor errado aqui falha alto e claro, em vez de publicar artefato inconsistente).
+jdk:
+  - openjdk21
+
+install:
+  - mvn -B -DskipTests clean install

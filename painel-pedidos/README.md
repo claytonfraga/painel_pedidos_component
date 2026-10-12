@@ -33,7 +33,7 @@ O jar já contém as dependências (maven-shade). Para uso local:
 O componente **não tem classe de pedido concreta**. Você estende
 `br.projeto.painelpedidos.model.PedidoAbstract` e implementa `criarCopia`
 (usada ao "Criar novo pedido" a partir de um cancelado). `PedidoAbstract` já
-traz a máquina de estados (BR12/BR13) e os dados essenciais do painel.
+traz a máquina de estados e os dados essenciais do painel.
 
 ```java
 public class MeuPedido extends PedidoAbstract {
@@ -211,4 +211,4 @@ configurar.
 | `PainelPedidoFacade` | Fachada: compõe, valida e inicia |
 | `PainelPedidoView` | View: `JPanel` embutível (par `.java` + `.form`) |
 
-A especificação completa está em [`../openspec/`](../openspec/README.md).
+O guia de uso do repositório está em [`../README.md`](../README.md).

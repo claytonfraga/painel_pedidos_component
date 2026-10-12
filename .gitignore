@@ -88,7 +88,11 @@ desktop.ini
 .gemini/
 .agent/
 .codex/
-.github/
+# .github/ guarda o CI/CD do repositorio: os workflows sao versionados, o resto
+# (criado por ferramenta do lado Windows) fica fora
+.github/*
+!.github/workflows/
+!.github/workflows/**
 
 # ---- Especificacao, registros de decisao e pacotes de skill ficam locais ----
 openspec/

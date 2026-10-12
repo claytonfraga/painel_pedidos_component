@@ -7,8 +7,8 @@ princípio de reuso, construção e uso de componentes de software e frameworks"
 O que se entrega é um componente **Java Swing** reutilizável para sistemas de
 delivery. Apresenta os pedidos em seis colunas de situação — **Novo**, **Em
 preparo**, **Pronto para entrega**, **Em rota de entrega**, **Entregue** e
-**Cancelado** — com busca, filtro por período, ações de transição (BR12),
-cancelamento com crédito (BR13), prioridade por SLA e ordenação em fila (FIFO).
+**Cancelado** — com busca, filtro por período, ações de transição, cancelamento
+com crédito, prioridade por SLA e ordenação em fila (FIFO).
 
 O componente é consumido como **dependência Maven**: o seu sistema de delivery
 implementa um pequeno conjunto de **portas** (interfaces) e o painel chama de
@@ -33,7 +33,7 @@ mockados no componente — os dados e as telas são sempre seus.
   não guarda pedidos: ele exibe o que você entregar.
 - **A ingestão é por empurrão.** Você chama `receberNovosPedidos(...)`; não há
   leitura automática, e o componente **não deduplica** (seção 2.6).
-- **O ciclo de vida é fixo** (BR12/BR13): seis situações e as transições da seção
+- **O ciclo de vida é fixo**: seis situações, com as transições descritas na seção
   5 — não há como criar uma situação nova sem mexer no componente.
 - **O SLA é por estado, em minutos**, vem do `.env`, e marca "Prioridade" quando o
   pedido *ultrapassa* o limite (seção 5).
@@ -110,7 +110,7 @@ A `PedidoAbstract` oferece (e o painel usa):
 
 Regras validadas pela própria máquina de estados: não avança **Novo → Em
 preparo** sem pagamento; **Cancelado** não retorna; o crédito é calculado no
-cancelamento (BR12/BR13).
+cancelamento.
 
 ### 2.2 Implemente `IPedidoRepository` (a origem de dados)
 
@@ -291,13 +291,13 @@ Use `PainelPedidoView` (`JPanel`, implementa `IPainelPedidoView`) com um
 
 ## 5. Comportamento do painel
 
-### Ciclo de vida (BR12)
+### Ciclo de vida do pedido
 
 `Novo → Em preparo → Pronto para entrega → Em rota de entrega → Entregue`;
 qualquer estado não cancelado pode ir para `Cancelado`; `Cancelado` não retorna.
 Cada card tem a ação do estado e um botão "Cancelar" (exceto em `Cancelado`).
 
-### Cancelamento e crédito (BR13)
+### Cancelamento e crédito
 
 Cancelamento em qualquer pedido não cancelado (inclusive `Entregue`). Sem
 pagamento, nenhum crédito; com pagamento, crédito igual ao valor pago. Um pedido
@@ -394,6 +394,7 @@ ausência de simulação/dados mockados e da leitura automática de novos pedido
 
 ## 9. Documentação
 
-A especificação completa (requisitos, cenários Gherkin, design, regras e
-decisões) está em [`openspec/`](openspec/README.md). Um guia mais enxuto, focado
-em uso, está em [`painel-pedidos/README.md`](painel-pedidos/README.md).
+Este README cobre o uso do componente. O módulo
+[`painel-pedidos/README.md`](painel-pedidos/README.md) traz o mesmo guia de forma
+mais enxuta, e o módulo [`exemplo`](exemplo/) é um consumidor completo - a melhor
+referência para copiar.
