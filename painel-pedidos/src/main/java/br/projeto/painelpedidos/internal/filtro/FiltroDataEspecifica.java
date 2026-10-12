@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @author clayton
  */
-public final class FiltroDataEspecifica implements IFiltroPeriodo {
+final class FiltroDataEspecifica implements IFiltroPeriodo {
 
     private final LocalDate data;
 

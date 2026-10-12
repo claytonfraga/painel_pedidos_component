@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  *
  * @author clayton
  */
-public final class FiltroMes implements IFiltroPeriodo {
+final class FiltroMes implements IFiltroPeriodo {
 
     @Override
     public boolean aceita(LocalDateTime dataHora, LocalDate hoje) {
