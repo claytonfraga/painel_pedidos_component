@@ -4,9 +4,9 @@
 # o exemplo (exemplo/). Nao ha pom de agregacao na raiz, entao o build do JitPack
 # precisa entrar no diretorio do componente.
 #
-# O artefato publicado e com.github.claytonfraga.painel_pedidos_component:painel-pedidos:VERSAO.
-# A publicacao e disparada por uma GitHub Release (ou por uma tag), que o workflow
-# .github/workflows/release.yml cria.
+# Este repositorio e um template: cada autor publica o seu artefato, que o JitPack expoe
+# como com.github.<usuario>.<repositorio>:painel-pedidos:VERSAO. A publicacao e disparada
+# por uma GitHub Release (ou por uma tag), que o workflow .github/workflows/release.yml cria.
 #
 # jdk: o projeto exige Java 21 (o maven-enforcer-plugin recusa outro JDK, entao um
 # valor errado aqui falha alto e claro, em vez de publicar artefato inconsistente).

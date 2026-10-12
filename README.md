@@ -60,8 +60,8 @@ mockados no componente — os dados e as telas são sempre seus.
 ## 1. Adicione a dependência
 
 O componente é publicado no [JitPack](https://jitpack.io) a partir das tags do
-repositório. Use as coordenadas abaixo - e troque `v1.0.1` pela versão que
-quiser:
+repositório. As coordenadas abaixo usam o autor de referência; **troque o
+usuário pelas suas** (veja a seção 1.1) e a versão pela que quiser:
 
 ```xml
 <repositories>
@@ -72,7 +72,7 @@ quiser:
 </repositories>
 
 <dependency>
-    <groupId>com.github.claytonfraga.painel_pedidos_component</groupId>
+    <groupId>com.github.SEU-USUARIO.painel_pedidos_component</groupId>
     <artifactId>painel-pedidos</artifactId>
     <version>v1.0.1</version>
 </dependency>
@@ -84,7 +84,33 @@ constrói **no primeiro pedido**, então a primeira resolução pode demorar um
 pouco mais.
 
 **Uso local** (antes de publicar): dentro de `painel-pedidos/`, rode
-`mvn -U clean install` e dependa de `br.projeto:painel-pedidos:1.0.0`.
+`mvn -U clean install` e dependa de `br.projeto:painel-pedidos:1.0.0` - o
+`groupId` de desenvolvimento. No JitPack o `groupId` publicado é
+`com.github.<usuario>.<repositorio>`.
+
+### 1.1 Publique o seu próprio componente (template)
+
+Este repositório é um **template**: cada pessoa publica o seu componente, na
+própria conta do GitHub, e aponta o exemplo para ele. O ponto único de autoria é
+um par de propriedades no [`exemplo/pom.xml`](exemplo/pom.xml):
+
+```xml
+<painel-pedidos.groupId>com.github.SEU-USUARIO.painel_pedidos_component</painel-pedidos.groupId>
+<painel-pedidos.version>v1.0.1</painel-pedidos.version>
+```
+
+1. Faça um fork (ou clone) do repositório no **seu** GitHub, mantendo-o público.
+2. Crie a sua tag e uma Release: `git tag v1.0.1 && git push origin v1.0.1`. O
+   workflow de release alinha a versão, verifica e publica a Release; o JitPack
+   constrói o artefato **no primeiro pedido**.
+3. Troque as duas propriedades acima para `com.github.<seu-usuario>.<seu-repo>` e
+   a sua versão. Pronto: o `exemplo` passa a resolver o **seu** artefato.
+
+> O build do JitPack pode falhar na primeira tentativa com **HTTP 429** (limite
+> de requisições do Maven Central, compartilhado pela infraestrutura do JitPack);
+> é transitório - reenvie a Release/tag e ele conclui. Se preferir não depender do
+> JitPack, instale o jar localmente: `mvn -U clean install` dentro de
+> `painel-pedidos/` e dependa de `br.projeto:painel-pedidos:1.0.0`.
 
 ## 2. O que o seu projeto implementa
 

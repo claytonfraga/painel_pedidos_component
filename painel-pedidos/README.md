@@ -19,9 +19,9 @@ que você implementa.
 </repositories>
 
 <dependency>
-    <groupId>com.github.claytonfraga.painel_pedidos_component</groupId>
+    <groupId>com.github.SEU-USUARIO.painel_pedidos_component</groupId>
     <artifactId>painel-pedidos</artifactId>
-    <version><tag></version>
+    <version><versao></version>
 </dependency>
 ```
 
