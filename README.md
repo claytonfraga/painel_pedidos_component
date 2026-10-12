@@ -1,15 +1,46 @@
 # Painel de Acompanhamento de Pedidos
 
-Componente **Java Swing** reutilizável para sistemas de delivery. Apresenta os
-pedidos em seis colunas de situação — **Novo**, **Em preparo**, **Pronto para
-entrega**, **Em rota de entrega**, **Entregue** e **Cancelado** — com busca,
-filtro por período, ações de transição (BR12), cancelamento com crédito (BR13),
-prioridade por SLA e ordenação em fila (FIFO).
+Este projeto é uma **atividade da disciplina Projeto de Sistemas de Software**
+(UFES) e é, ele mesmo, um exercício do que a ementa cobra: *"padrões de projeto,
+princípio de reuso, construção e uso de componentes de software e frameworks"*.
+
+O que se entrega é um componente **Java Swing** reutilizável para sistemas de
+delivery. Apresenta os pedidos em seis colunas de situação — **Novo**, **Em
+preparo**, **Pronto para entrega**, **Em rota de entrega**, **Entregue** e
+**Cancelado** — com busca, filtro por período, ações de transição (BR12),
+cancelamento com crédito (BR13), prioridade por SLA e ordenação em fila (FIFO).
 
 O componente é consumido como **dependência Maven**: o seu sistema de delivery
 implementa um pequeno conjunto de **portas** (interfaces) e o painel chama de
 volta as **suas** telas. Não há simulação, geração de pedidos, seed nem dados
 mockados no componente — os dados e as telas são sempre seus.
+
+## O que você precisa fazer e saber
+
+**Fazer** — quatro passos, detalhados na seção 2:
+
+1. adicionar o componente como dependência (seção 1);
+2. estender `PedidoAbstract` e implementar `IPedidoRepository` — o modelo e a
+   origem de dados são seus;
+3. implementar os **três listeners obrigatórios**: visualizar pedido, confirmar
+   pagamento e criar novo pedido;
+4. criar o `painel_pedidos.env` com as quatro chaves de SLA e o
+   `IDENTIFICADOR_APLICACAO` (seção 3).
+
+**Saber** — o que costuma surpreender quem integra:
+
+- **Os dados e as telas são do seu sistema.** O componente não gera, não semeia e
+  não guarda pedidos: ele exibe o que você entregar.
+- **A ingestão é por empurrão.** Você chama `receberNovosPedidos(...)`; não há
+  leitura automática, e o componente **não deduplica** (seção 2.6).
+- **O ciclo de vida é fixo** (BR12/BR13): seis situações e as transições da seção
+  5 — não há como criar uma situação nova sem mexer no componente.
+- **O SLA é por estado, em minutos**, vem do `.env`, e marca "Prioridade" quando o
+  pedido *ultrapassa* o limite (seção 5).
+- **O contrato público tem 14 tipos**; o resto vive sob `internal` e pode mudar
+  entre versões (seção 3, "Contrato público").
+- **Há um consumidor completo para copiar**: o módulo [`exemplo`](exemplo/) faz
+  tudo isso e roda (seção 6).
 
 ## Requisitos
 
