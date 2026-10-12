@@ -70,3 +70,4 @@ openspec/
 .design/
 .tasks/
 skill*.zip
+*.sh
