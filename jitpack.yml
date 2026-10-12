@@ -1,17 +1,20 @@
 # Configuracao do JitPack para este repositorio.
 #
-# O repositorio tem dois projetos independentes: o componente (painel-pedidos/) e
-# o exemplo (exemplo/). Nao ha pom de agregacao na raiz, entao o build do JitPack
-# precisa entrar no diretorio do componente.
+# Este repositorio e um template: cada autor publica o seu artefato, que o JitPack
+# expoe como com.github.<usuario>.<repositorio>:<modulo>:VERSAO. A publicacao e
+# disparada por uma GitHub Release (ou por uma tag).
 #
-# Este repositorio e um template: cada autor publica o seu artefato, que o JitPack expoe
-# como com.github.<usuario>.<repositorio>:painel-pedidos:VERSAO. A publicacao e disparada
-# por uma GitHub Release (ou por uma tag), que o workflow .github/workflows/release.yml cria.
+# Nao ha pom de agregacao na raiz, entao o build entra no diretorio do componente.
 #
-# jdk: o projeto exige Java 21 (o maven-enforcer-plugin recusa outro JDK, entao um
-# valor errado aqui falha alto e claro, em vez de publicar artefato inconsistente).
+# A imagem padrao do JitPack traz um Maven antigo (< 3.6.3), e o
+# maven-enforcer-plugin 3.5.0 exige Maven >= 3.6.3 ("requires Maven version
+# 3.6.3"). Por isso um Maven moderno e instalado antes do build.
 jdk:
   - openjdk21
 
+before_install:
+  - curl -sL https://archive.apache.org/dist/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz -o /tmp/maven.tar.gz
+  - mkdir -p /tmp/maven && tar xzf /tmp/maven.tar.gz -C /tmp/maven
+
 install:
-  - cd painel-pedidos && mvn -B -DskipTests clean install
+  - /tmp/maven/apache-maven-3.9.10/bin/mvn -B -DskipTests clean install -f painel-pedidos/pom.xml

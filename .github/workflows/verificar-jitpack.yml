@@ -1,0 +1,92 @@
+name: Verificar JitPack
+
+# Etapa 2 de 2: espera o JitPack construir o artefato da ultima tag, verifica o
+# exemplo contra ele e registra a versao no exemplo. Dispara quando o workflow
+# Release termina, entao nao ha dependencia circular:
+#   Release (cria a Release) -> JitPack constroi -> este workflow verifica.
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verificar:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    name: Aguarda o JitPack, verifica o exemplo e registra a versao
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Definir a tag alvo (a ultima)
+        id: tag
+        run: |
+          TAG="$(git tag --list 'v*' --sort=-v:refname | head -1)"
+          if [ -z "${TAG}" ]; then echo "Nenhuma tag v* encontrada."; exit 1; fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Tag alvo: ${TAG}"
+
+      - name: JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Aguardar o JitPack construir o artefato
+        id: artefato
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          # O JitPack constroi no primeiro pedido ("Get it"). A versao e a TAG
+          # (com o 'v'); a URL sem o 'v' da 404.
+          MOD="https://jitpack.io/com/github/${OWNER}/${REPO}/painel-pedidos/${TAG}/painel-pedidos-${TAG}.pom"
+          RAIZ="https://jitpack.io/com/github/${OWNER}/${REPO}/${TAG}/painel_pedidos_component-${TAG}.pom"
+          sleep 30
+          for tentativa in $(seq 1 20); do
+            CM="$(curl -s -o /dev/null -w '%{http_code}' "${MOD}" --max-time 60)"
+            CR="$(curl -s -o /dev/null -w '%{http_code}' "${RAIZ}" --max-time 60)"
+            echo "Tentativa ${tentativa}: modulo HTTP ${CM} | raiz HTTP ${CR}"
+            if [ "${CM}" = "200" ]; then
+              echo "coordenada=painel-pedidos" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if [ "${CR}" = "200" ]; then
+              echo "coordenada=painel_pedidos_component" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "O artefato da tag ${TAG} nao resolveu a tempo no JitPack."
+          exit 1
+
+      - name: Registrar a versao no exemplo e verificar o consumo
+        run: |
+          mvn -B -q -f exemplo/pom.xml versions:set-property \
+            -Dproperty=painel-pedidos.version \
+            -DnewVersion="${{ steps.tag.outputs.tag }}" \
+            -DgenerateBackupPoms=false
+          ( cd exemplo && mvn -U clean verify )
+
+      - name: Commitar a versao registrada no exemplo
+        run: |
+          if git diff --quiet -- exemplo/pom.xml; then
+            echo "O exemplo ja estava em ${{ steps.tag.outputs.tag }}."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add exemplo/pom.xml
+          git commit -m "build: consome a versao ${{ steps.tag.outputs.tag }} do componente"
+          git push origin main
