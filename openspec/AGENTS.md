@@ -73,6 +73,24 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
   (`PainelPedidoPanel`, `PainelPedidoView`), que permanecem estendiveis.
 - Trate excecoes em fronteiras; nao engula excecoes.
 
+## Mensagens de excecao (orientar quem vai corrigir)
+
+- TODA mensagem de excecao - inclusive as de `Objects.requireNonNull` - diz **o
+  que fazer** para resolver, no imperativo, nomeando **especificamente** o que
+  falta. Nunca o nome do parametro nem um substantivo solto.
+- Verificacao de nulo: a mensagem COMECA com `Informe ` e descreve o item
+  especifico - ex.: `Objects.requireNonNull(pedidoRepository, "Informe um
+  repositorio de pedidos valido")`, e nao `"pedidoRepository"`.
+- Verificacao `if` que levanta excecao: a mensagem comeca pelo verbo da acao -
+  `Informe ...`, `Configure ...`, `Escolha ...`, `Use ...`.
+- Operacao invalida no estado (GoF State): a mensagem diz **onde** a operacao e
+  valida - ex.: `"Nao e possivel registrar pagamento de um pedido Cancelado;
+  registre o pagamento em um pedido Novo."`.
+- Sem acentos nem caracteres especiais (regra geral do projeto).
+- Garantido por `MensagemExcecaoTest` (varredura do codigo de producao dos dois
+  modulos): nenhuma verificacao de nulo deixa de comecar com `Informe `, e
+  nenhuma excecao e levantada com um identificador solto como mensagem.
+
 ## Sem simulacao, sem dados mockados
 
 - O componente NAO gera, sorteia, semeia nem embute pedidos. Nao ha `seeder`,

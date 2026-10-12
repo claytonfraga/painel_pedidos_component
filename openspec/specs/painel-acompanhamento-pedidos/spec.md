@@ -172,6 +172,13 @@ servico usam o sufixo `Service`. Cenarios: `@US28-004`.
 O painel inicia maximizado. A maximizacao e comandada pela Presenter; a View
 apenas executa o comando, permanecendo passiva. Cenarios: `@NF-003`.
 
+### Requirement: Mensagens de excecao orientam quem vai corrigir (nao-funcional)
+Toda mensagem de excecao - inclusive as de verificacao de nulo - diz o que fazer
+para resolver, nomeando especificamente o que falta. A verificacao de nulo comeca
+com `Informe ` (ex.: "Informe um repositorio de pedidos valido", e nao
+"pedidoRepository"); a operacao invalida no estado diz onde ela e valida.
+Cenarios: `@NF-004`.
+
 ## Diretrizes visuais
 
 - Borda do card (normal): cinza, RGB (176, 181, 189).

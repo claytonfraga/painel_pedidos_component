@@ -54,6 +54,13 @@ Funcionalidade: Requisitos não funcionais do componente
     Dado o painel iniciado
     Então a janela deve abrir maximizada
 
+  @NF-004
+  Cenário: Mensagens de exceção orientam quem vai corrigir
+    Dado uma falha de validação, de nulo ou de estado
+    Quando a exceção for lançada
+    Então a mensagem deve dizer o que fazer para resolver
+    E não deve ser apenas o nome do parâmetro
+
   @US25-001
   Cenário: Aplicação aberta uma única vez
     Dado que o painel já esteja aberto
