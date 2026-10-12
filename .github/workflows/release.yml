@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    name: Verifica, empacota e publica a release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Alinhar a versao do pom com a tag
+        run: mvn -B -q versions:set -DnewVersion="${GITHUB_REF_NAME#v}" -DgenerateBackupPoms=false
+
+      - name: Gate de qualidade antes de publicar
+        run: mvn -U clean verify
+
+      - name: Publicar a release com o jar do componente
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            painel-pedidos/target/painel-pedidos-*.jar \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes
