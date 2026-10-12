@@ -30,12 +30,15 @@ e a entrada de novos pedidos ficam no sistema consumidor.
 - Execucao unica opcional (US25).
 - Distribuicao como dependencia Maven (jar com dependencias) e View embedavel
   (US27).
+- **Distribuicao e CI/CD:** dois projetos Maven independentes (`painel-pedidos/`
+  e `exemplo/`), sem pom agregador; o exemplo consome o artefato **publicado no
+  JitPack**; publicacao por tag e verificacao do consumo em dois workflows. Detalhe
+  em `changes/2026-10-12-distribuicao-e-ci-cd/proposal.md`.
 
 **Fora:**
 - Persistencia real (SQL/H2) - fica no consumidor, atras de `IPedidoRepository`.
 - Autenticacao real.
 - Integracao com gateway de pagamento (apenas registro da forma).
-- Publicacao no JitPack (a cargo do mantenedor).
 
 ## 4. Regras de negocio
 
@@ -79,10 +82,11 @@ cada raia, o pedido ha mais tempo no estado no topo.
 Singleton thread-safe + trava de arquivo impedem a segunda abertura (capacidade
 opcional oferecida ao consumidor).
 
-### US27 - Componente reutilizavel (`@US27-001`..`005`)
-Jar com dependencias; configuracao por `painel_pedidos.env`; modulo de exemplo;
-View embedavel (`PainelPedidoView`); Look and Feel definido pela aplicacao
-cliente.
+### US27 - Componente reutilizavel e distribuicao (`@US27-001`..`012`)
+Jar com dependencias; configuracao por `painel_pedidos.env`; projeto de exemplo
+independente; View embedavel (`PainelPedidoView`); Look and Feel definido pela
+aplicacao cliente; dois projetos sem agregador; consumo pelo artefato publicado;
+autoria por propriedade; publicacao e verificacao no JitPack (`@US27-009`..`012`).
 
 ### US28 - Acoes do cliente e modelo abstrato (`@US28-001`..`004`)
 O componente nao possui pedido concreto: expoe `PedidoAbstract` (o cliente
@@ -148,6 +152,6 @@ SLAs por estado sao obrigatorios), `SLA_MONITOR_INTERVALO_SEGUNDOS`,
 | US24 | us24-prioridade-sla-ordenacao | `MonitorSlaService`, `RegraSlaEstadoHandler`, `AgendadorMonitorSlaService`, `PrioridadeObserver`, `IOrdenacaoPedido` |
 | US25 | us25-instancia-unica | `PainelPedidoFacade`, `TravaInstanciaUnicaArquivo` |
 | US26 | us26-ingestao-novos-pedidos | `PainelPedidoFacade.receberNovosPedidos`, `PainelPedidoNovoPedidoObserver`, `NotificacaoNovoPedidoService`, `RegraHandler`+`*Handler`, `IEstrategiaSom` |
-| US27 | nao-funcional | `PainelPedidoFacade`, `ConfiguracaoPainelPedido`, `LeitorConfiguracaoPainelPedido`, `PainelPedidoView` |
+| US27 | nao-funcional | `PainelPedidoFacade`, `ConfiguracaoPainelPedido`, `LeitorConfiguracaoPainelPedido`, `PainelPedidoView`; distribuicao em `changes/2026-10-12-distribuicao-e-ci-cd/proposal.md` |
 | US28 | us28-acoes-do-cliente | `PedidoAbstract`, `IVisualizarPedidoListener`, `IConfirmarPagamentoListener`, `PainelPedidoFacade` |
 | US29 | us29-botao-novo-pedido | `ICriarNovoPedidoListener`, `PainelPedidoPresenter`, `PainelPedidoView` |
