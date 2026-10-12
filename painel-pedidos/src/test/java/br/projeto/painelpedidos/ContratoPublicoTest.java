@@ -45,13 +45,12 @@ public final class ContratoPublicoTest {
     @Test
     public void oContratoPublicoForaDosPacotesInternosEExatamenteOListado() throws IOException {
         // given: o codigo de producao do componente
-        List<String> arquivos = new ArrayList<>();
-        coletarArquivosJava(Paths.get("src/main/java"), arquivos);
+        List<Path> arquivos = new FontesDeProducao().arquivosJava();
 
         // when: coletam-se os tipos publicos que nao estao sob `internal`
         List<String> publicos = new ArrayList<>();
-        for (String arquivo : arquivos) {
-            String tipo = lerTipoPublicoForaDoInternal(Paths.get(arquivo));
+        for (Path arquivo : arquivos) {
+            String tipo = lerTipoPublicoForaDoInternal(arquivo);
             if (tipo != null) {
                 publicos.add(tipo);
             }
@@ -107,19 +106,5 @@ public final class ContratoPublicoTest {
             }
         }
         return resultado;
-    }
-
-    private void coletarArquivosJava(Path diretorio, List<String> destino) throws IOException {
-        try (DirectoryStream<Path> entradas = Files.newDirectoryStream(diretorio)) {
-            for (Path entrada : entradas) {
-                if (Files.isDirectory(entrada)) {
-                    coletarArquivosJava(entrada, destino);
-                    continue;
-                }
-                if (entrada.toString().endsWith(".java")) {
-                    destino.add(entrada.toString());
-                }
-            }
-        }
     }
 }

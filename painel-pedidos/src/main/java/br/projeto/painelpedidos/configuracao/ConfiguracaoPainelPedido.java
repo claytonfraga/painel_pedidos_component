@@ -105,7 +105,8 @@ public final class ConfiguracaoPainelPedido {
     private String validarTextoObrigatorio(String valor, String descricao) {
         String texto = Objects.requireNonNull(valor, "Informe " + descricao).trim();
         if (texto.isEmpty()) {
-            throw new IllegalArgumentException("Informe " + descricao + " (texto nao vazio)");
+            throw new IllegalArgumentException(
+                    "Informe " + descricao + " (o texto nao pode ser vazio)");
         }
         return texto;
     }

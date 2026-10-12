@@ -115,6 +115,28 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
 - Embutir o painel usa `getPainelPedido()` e `iniciarEmbutido()`; montar o
   `PainelPedidoPresenter` a mao NAO e caminho suportado.
 
+## Excecoes aceitas a SOLID, DRY e Demeter
+
+Varredura feita em 2026-10-11. Estas NAO sao violacoes a corrigir - sao o preco
+de padroes que o proprio projeto manda, e cada uma tem a sua razao:
+
+- **LSP - `PedidoState` lanca nas operacoes default.** E o estilo de State
+  mandado aqui: o contrato da base declara que a operacao pode ser invalida no
+  estado. Nao "consertar" transformando as operacoes em no-op silencioso.
+- **Lei de Demeter - `view.getX().metodo()` no presenter.** E o Passive View por
+  getters, adotado aqui. Trocar por metodos de intencao na View e redesenho de
+  arquitetura, nao limpeza.
+- **DRY - `MensagemExcecaoTest` repetido nos dois modulos.** Deliberado: o teste
+  do componente NAO pode depender do `exemplo`, e nao ha test-jar compartilhado.
+- **DIP - `AgendadorMonitorSlaService` usa `javax.swing.Timer`.** O callback roda
+  na EDT, que e o que torna a atualizacao da tela segura; `java.util.Timer`
+  exigiria `SwingUtilities.invokeLater`, proibido aqui, e extrair uma porta
+  recriaria a abstracao de implementacao unica que ja foi removida.
+
+O que sobra como trabalho real esta em `.design/rfc-estruturais-do-componente.md`
+(SRP do presenter, contrato expondo tipo interno, branching por estado e a
+fabrica de periodo acoplada ao indice do combo).
+
 ## Sem simulacao, sem dados mockados
 
 - O componente NAO gera, sorteia, semeia nem embute pedidos. Nao ha `seeder`,

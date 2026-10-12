@@ -5,13 +5,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
@@ -62,26 +55,6 @@ public final class MensagemExcecaoTest {
     }
 
     private String lerCodigoDeProducao() throws IOException {
-        List<Path> arquivos = new ArrayList<>();
-        coletarArquivosJava(Paths.get("src/main/java"), arquivos);
-        StringBuilder codigo = new StringBuilder();
-        for (Path arquivo : arquivos) {
-            codigo.append(Files.readString(arquivo, StandardCharsets.UTF_8)).append('\n');
-        }
-        return codigo.toString();
-    }
-
-    private void coletarArquivosJava(Path diretorio, List<Path> destino) throws IOException {
-        try (DirectoryStream<Path> entradas = Files.newDirectoryStream(diretorio)) {
-            for (Path entrada : entradas) {
-                if (Files.isDirectory(entrada)) {
-                    coletarArquivosJava(entrada, destino);
-                    continue;
-                }
-                if (entrada.toString().endsWith(".java")) {
-                    destino.add(entrada);
-                }
-            }
-        }
+        return new FontesDeProducao().codigo();
     }
 }
