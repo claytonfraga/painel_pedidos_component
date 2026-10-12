@@ -34,7 +34,8 @@ public final class LeitorConfiguracaoPainelPedidoTest {
                 + "SLA_MONITOR_INTERVALO_SEGUNDOS=45\n"
                 + "NOTIFICACAO_DURACAO_SEGUNDOS=8\n"
                 + "SOM_ATIVO=false\n"
-                + "TITULO_JANELA=Meu Painel\n");
+                + "TITULO_JANELA=Meu Painel\n"
+                + "IDENTIFICADOR_APLICACAO=painel-de-teste\n");
 
         // when: a configuracao e lida
         ConfiguracaoPainelPedido configuracao = criarLeitor().ler();
@@ -48,6 +49,29 @@ public final class LeitorConfiguracaoPainelPedidoTest {
         assertThat(configuracao.getDuracaoNotificacaoSegundos(), is(8));
         assertThat(configuracao.isSomAtivo(), is(false));
         assertThat(configuracao.getTituloJanela(), is("Meu Painel"));
+        assertThat(configuracao.getIdentificadorAplicacao(), is("painel-de-teste"));
+    }
+
+    @Test
+    public void identificadorDaAplicacaoAusenteLancaExcecao() throws IOException {
+        // given: um painel_pedidos.env com as quatro chaves de SLA, sem a identidade
+        escreverConfiguracao(
+                "SLA_NOVO_MINUTOS=5\n"
+                + "SLA_EM_PREPARO_MINUTOS=20\n"
+                + "SLA_PRONTO_PARA_ENTREGA_MINUTOS=10\n"
+                + "SLA_EM_ROTA_DE_ENTREGA_MINUTOS=10\n");
+
+        // when: tenta-se ler a configuracao
+        Executable ler = new Executable() {
+            @Override
+            public void execute() {
+                criarLeitor().ler();
+            }
+        };
+
+        // then: uma excecao orientando informar a identidade e lancada
+        IllegalStateException excecao = assertThrows(IllegalStateException.class, ler);
+        assertThat(excecao.getMessage().contains("IDENTIFICADOR_APLICACAO"), is(true));
     }
 
     @Test

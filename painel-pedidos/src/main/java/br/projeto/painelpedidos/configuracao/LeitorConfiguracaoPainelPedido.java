@@ -49,7 +49,18 @@ public final class LeitorConfiguracaoPainelPedido {
                 Duration.ofSeconds(lerInteiro("SLA_MONITOR_INTERVALO_SEGUNDOS", 30)),
                 lerInteiro("NOTIFICACAO_DURACAO_SEGUNDOS", 10),
                 lerBooleano("SOM_ATIVO", true),
-                lerTexto("TITULO_JANELA", "Painel de Acompanhamento de Pedidos"));
+                lerTexto("TITULO_JANELA", "Painel de Acompanhamento de Pedidos"),
+                lerTextoObrigatorio("IDENTIFICADOR_APLICACAO"));
+    }
+
+    private String lerTextoObrigatorio(String chave) {
+        String valor = dotenv.get(chave);
+        if (valor == null || valor.trim().isEmpty()) {
+            throw new IllegalStateException(
+                    "Informe a chave " + chave + " no painel_pedidos.env "
+                    + "(identificador da aplicacao; distingue este painel dos demais na maquina)");
+        }
+        return valor.trim();
     }
 
     private int lerInteiroObrigatorio(String chave) {

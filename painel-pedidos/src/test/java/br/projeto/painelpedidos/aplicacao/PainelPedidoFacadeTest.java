@@ -35,6 +35,8 @@ import org.junit.jupiter.api.function.Executable;
  */
 public final class PainelPedidoFacadeTest {
 
+    private static final String IDENTIDADE_DE_TESTE = "painel-de-teste";
+
     @Test
     public void receberNovosPedidosPersisteNaOrigemDeDadosMasNaoIniciaJanela() {
         // given: uma fachada montada sem janela
@@ -138,8 +140,8 @@ public final class PainelPedidoFacadeTest {
     }
 
     private Path caminhoTravaPadraoDoComponente() {
-        // espelha o caminho padrao do componente; se ele mudar, este teste falha.
-        return Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock");
+        // espelha o caminho derivado da identidade; se ele mudar, este teste falha.
+        return Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos-" + IDENTIDADE_DE_TESTE + ".lock");
     }
 
     private ConfiguracaoPainelPedido criarConfiguracao() {
@@ -153,6 +155,7 @@ public final class PainelPedidoFacadeTest {
                 Duration.ofSeconds(30),
                 10,
                 false,
-                "Teste");
+                "Teste",
+                IDENTIDADE_DE_TESTE);
     }
 }

@@ -24,13 +24,15 @@ public final class ConfiguracaoPainelPedido {
     private final int duracaoNotificacaoSegundos;
     private final boolean somAtivo;
     private final String tituloJanela;
+    private final String identificadorAplicacao;
 
     public ConfiguracaoPainelPedido(
             Map<String, Duration> slaPorSituacao,
             Duration slaMonitorIntervalo,
             int duracaoNotificacaoSegundos,
             boolean somAtivo,
-            String tituloJanela) {
+            String tituloJanela,
+            String identificadorAplicacao) {
 
         this.slaPorSituacao = copiarSlas(slaPorSituacao);
         this.slaMonitorIntervalo = validarDuracao(
@@ -39,15 +41,13 @@ public final class ConfiguracaoPainelPedido {
             throw new IllegalArgumentException(
                     "Informe a duracao da notificacao em segundos com pelo menos 1");
         }
-        String titulo = Objects.requireNonNull(
-                tituloJanela, "Informe um titulo de janela valido").trim();
-        if (titulo.isEmpty()) {
-            throw new IllegalArgumentException("Informe um titulo de janela nao vazio");
-        }
+        String titulo = validarTextoObrigatorio(tituloJanela, "um titulo de janela valido");
 
         this.duracaoNotificacaoSegundos = duracaoNotificacaoSegundos;
         this.somAtivo = somAtivo;
         this.tituloJanela = titulo;
+        this.identificadorAplicacao = validarTextoObrigatorio(
+                identificadorAplicacao, "um identificador da aplicacao valido");
     }
 
     public Map<String, Duration> getSlaPorSituacao() {
@@ -68,6 +68,10 @@ public final class ConfiguracaoPainelPedido {
 
     public String getTituloJanela() {
         return tituloJanela;
+    }
+
+    public String getIdentificadorAplicacao() {
+        return identificadorAplicacao;
     }
 
     private Map<String, Duration> copiarSlas(Map<String, Duration> slaPorSituacao) {
@@ -96,5 +100,13 @@ public final class ConfiguracaoPainelPedido {
                     "Informe " + descricao + " com valor maior que zero");
         }
         return duracao;
+    }
+
+    private String validarTextoObrigatorio(String valor, String descricao) {
+        String texto = Objects.requireNonNull(valor, "Informe " + descricao).trim();
+        if (texto.isEmpty()) {
+            throw new IllegalArgumentException("Informe " + descricao + " (texto nao vazio)");
+        }
+        return texto;
     }
 }

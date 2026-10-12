@@ -67,6 +67,24 @@ public final class TravaInstanciaUnicaArquivoTest {
         trava.liberar();
     }
 
+    @Test
+    public void identidadesDiferentesNaoDisputamOMesmoArquivo() {
+        // given: duas identidades de aplicacao, cada uma com o seu arquivo derivado
+        TravaInstanciaUnicaArquivo sistemaA = new TravaInstanciaUnicaArquivo(caminhoDeTeste("sistema-a"));
+        TravaInstanciaUnicaArquivo sistemaB = new TravaInstanciaUnicaArquivo(caminhoDeTeste("sistema-b"));
+
+        // when: as duas são adquiridas na mesma maquina
+        boolean adquiridaA = sistemaA.adquirir();
+        boolean adquiridaB = sistemaB.adquirir();
+
+        // then: as duas convivem (a disputa e por identidade, nao global)
+        assertThat(adquiridaA, is(true));
+        assertThat(adquiridaB, is(true));
+
+        sistemaA.liberar();
+        sistemaB.liberar();
+    }
+
     private Path caminhoDeTeste(String nome) {
         return Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos_teste_" + nome + ".lock");
     }

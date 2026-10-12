@@ -174,7 +174,24 @@ public final class PainelPedidoFacade {
     }
 
     private Path caminhoTravaPadrao() {
-        return Paths.get(System.getProperty("java.io.tmpdir"), "painel_pedidos.lock");
+        return Paths.get(System.getProperty("java.io.tmpdir"), nomeArquivoTrava());
+    }
+
+    private String nomeArquivoTrava() {
+        String identidade = configuracao.getIdentificadorAplicacao();
+        StringBuilder nome = new StringBuilder("painel_pedidos-");
+        for (char caractere : identidade.toCharArray()) {
+            nome.append(caractereSeguro(caractere) ? caractere : '-');
+        }
+        return nome.append(".lock").toString();
+    }
+
+    private boolean caractereSeguro(char caractere) {
+        boolean letra = (caractere >= 'a' && caractere <= 'z')
+                || (caractere >= 'A' && caractere <= 'Z');
+        boolean digito = caractere >= '0' && caractere <= '9';
+        boolean separador = caractere == '.' || caractere == '_' || caractere == '-';
+        return letra || digito || separador;
     }
 
     private void iniciarMonitorSla() {
