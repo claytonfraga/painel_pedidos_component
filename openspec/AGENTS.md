@@ -44,8 +44,9 @@ Nao ha `pom.xml` agregador na raiz. Cada projeto tem o proprio `pom.xml`:
   parent nenhum e centraliza as proprias versoes em propriedades.
 - `exemplo/`: projeto de demonstracao independente que consome o componente
   **publicado no JitPack**, nao o codigo-fonte. A autoria e a versao sao as
-  propriedades `painel-pedidos.groupId` e `painel-pedidos.version` do seu
-  `pom.xml` - o unico ponto onde uma conta de autor aparece.
+  propriedades `painel-pedidos.groupId`, `painel-pedidos.artifactId` e
+  `painel-pedidos.version` do seu `pom.xml` - o unico ponto onde uma conta de
+  autor aparece.
 - Java 21 (`maven.compiler.release=21`); encoding UTF-8.
 - O repositorio e um **template**: cada autor publica o proprio artefato e aponta
   o exemplo para ele (ver README, secao 1.1).
