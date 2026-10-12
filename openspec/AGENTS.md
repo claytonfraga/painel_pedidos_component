@@ -8,282 +8,368 @@ Leia `project.md` e `specs/**/spec.md` antes de alterar qualquer codigo.
 1. Antes de codar, confirme a mudanca contra `specs/**/spec.md` e os `.feature`.
 2. Ao alterar comportamento, atualize primeiro o `.feature` (Gherkin) e o
    `spec.md` da capacidade e, em seguida, o codigo.
-3. Ao terminar qualquer alteracao, rode `mvn -U clean verify`.
+3. Ao terminar qualquer alteracao, rode `mvn -U clean verify` em cada projeto
+   afetado: `cd painel-pedidos && mvn -U clean verify` e, quando o artefato
+   publicado resolver, `cd exemplo && mvn -U clean verify`.
    - Use `mvn -U -DskipTests clean verify` apenas quando a mudanca for
      estritamente documentacao/formatacao.
-4. Este projeto NAO possui suite de testes automatizados: nao criar testes,
-   dependencias de teste (JUnit/Hamcrest) nem o diretorio `src/test`.
+   - O build exige JDK 21 ou superior (enforcer `[21,)`); o codigo e compilado
+     com `--release 21` (bytecode Java 21), podendo o Maven rodar em JDK mais
+     novo (ex.: 24).
+4. O projeto possui suite de testes automatizados (JUnit Jupiter + Hamcrest)
+   em `painel-pedidos/src/test` e `exemplo/src/test`. Testes novos garantem os
+   requisitos da mudanca; nomes em portugues sem caracteres especiais.
+   - Os testes sao o **mecanismo de protecao contra falhas geradas no codigo por
+     IA**: existem para **garantir os requisitos** da spec/`.feature`, nao para
+     cobrir linhas. Cada requisito deve ter teste correspondente; o teste deve
+     **falhar** se o requisito for violado; e o codigo (inclusive gerado por IA)
+     so e aceito com a suite inteira verde.
+   - Os fakes de teste sao **funcionais** (comportam-se como um consumidor real,
+     como o exemplo), ficam em `src/test` e os testes do componente **NAO**
+     dependem do projeto `exemplo`.
+   - Unitarios com Surefire (`*Test`) e integracao com Failsafe (`*IT`).
+   - TODO teste (unitario e de integracao) usa o padrao **given/when/then** com
+     comentarios explicitos (`// given`, `// when`, `// then`), baseado nas
+     especificacoes e nos `.feature`.
+   - NAO usar Mockito; use fakes escritos a mao (em `src/test`).
+   - Gate de qualidade: so prosseguir com **todos** os testes verdes em
+     `mvn -U clean verify`.
+
+## Estrutura (dois projetos Maven independentes)
+
+Nao ha `pom.xml` agregador na raiz. Cada projeto tem o proprio `pom.xml`:
+
+- `painel-pedidos/`: o componente (biblioteca). Utiliza `maven-shade-plugin` para
+  produzir um jar que contem todas as dependencias. E independente: nao herda de
+  parent nenhum e centraliza as proprias versoes em propriedades.
+- `exemplo/`: projeto de demonstracao independente que consome o componente
+  **publicado no JitPack**, nao o codigo-fonte. A autoria e a versao sao as
+  propriedades `painel-pedidos.groupId` e `painel-pedidos.version` do seu
+  `pom.xml` - o unico ponto onde uma conta de autor aparece.
+- Java 21 (`maven.compiler.release=21`); encoding UTF-8.
+- O repositorio e um **template**: cada autor publica o proprio artefato e aponta
+  o exemplo para ele (ver README, secao 1.1).
 
 ## Regras de codigo (obrigatorias em todo o codigo, inclusive Presenter e Repository)
 
 - NAO use lambda.
 - NAO use Stream API (nem `Comparator.comparing`, nem method references).
+- `for` com contador SOMENTE quando o contador for necessario: o indice e usado
+  no corpo (posicao, `buffer[2 * i]`), o laco percorre uma contagem e nao uma
+  colecao, ou o proprio valor do contador e o conteudo. Ao percorrer uma colecao
+  sem precisar do indice, use o **for-each** (`for (Tipo item : colecao)`), sem
+  lambda e sem Stream.
 - NAO use `enum`.
 - NAO use `instanceof`.
-- NAO use `implements Runnable` (nao visto na disciplina); a aplicacao inicia
-  diretamente no ponto de entrada, sem `SwingUtilities.invokeLater`.
+- NAO use `implements Runnable`; sem `SwingUtilities.invokeLater`.
 - NAO use `java.math.BigDecimal`; use `double` para valores monetarios.
-- NAO use `java.util.Optional`; use retorno direto (valor ou ausencia explicita).
-- NAO use atributos estaticos de forma alguma, incluindo constantes
-  `public static final`. Nao ha estado estatico nem constantes estaticas; use
-  metodos de instancia e literais internos. UNICA EXCECAO: o padrao Singleton
-  thread-safe, que usa um unico `private static volatile` como ponto de criacao
-  unica (ver secao Singleton).
-- Existe APENAS UMA classe com `main` no projeto (o ponto de entrada). Nunca
-  criar um segundo `main`.
-- Listeners DEVEM ser configurados com classes anonimas no proprio ponto de uso,
-  ex.: `getBtnSalvar().addActionListener(new ActionListener() { @Override public
-  void actionPerformed(ActionEvent e) { ... } });`. NAO criar arquivos/classes de
-  listener; NAO usar lambda.
-- NAO criar classes internas/anonimas para outros fins alem de listeners.
-- Use sempre excecoes unchecked (`IllegalArgumentException`, `RuntimeException`);
-  nao declarar nem lancar excecoes checked.
-- Use `Objects.requireNonNull` para tratar nulidade de parametros e atributos.
+- NAO use `java.util.Optional`; use retorno direto.
+- NAO use atributos estaticos, incluindo constantes `public static final`. O
+  projeto nao tem nenhum campo estatico.
+- Listeners com classes anonimas no ponto de uso; nao criar arquivos de listener.
+- NAO criar classes internas/anonimas para outros fins alem de listeners (em
+  testes, classes anonimas de `Executable` para `assertThrows` sao permitidas).
+- Excecoes unchecked (`IllegalArgumentException`, `RuntimeException`); nao lancar
+  checked.
+- `Objects.requireNonNull` para nulidade de parametros e atributos.
 - Todo arquivo `.java` DEVE conter o comentario de autoria no padrao NetBeans,
-  antes da declaracao do tipo, com o autor `clayton`:
-  `/**` / ` *` / ` * @author clayton` / ` */`.
-- NAO use comentarios como substituto de logica; sempre entregue codigo completo
-  e compilavel.
+  antes da declaracao do tipo, com o autor `clayton`.
 - Identificadores em portugues do Brasil sem acentos nem caracteres especiais.
-- Sufixos de padrao em ingles quando aplicavel: `Service`, `Repository`,
-  `State`, `Decorator`, `Builder`.
+- Sufixos de padrao em ingles: `Service`, `Repository`, `State`, `Handler`,
+  `Strategy`, `Observer`, `Facade` (ex.: `PainelPedidoFacade`).
 - `Model` (dados de dominio) nao recebe sufixo de padrao nem de arquitetura.
+- Interfaces com prefixo `I`; classes no singular.
 - Sem `HashMap`/`HashSet` onde a ordem importa; use estruturas ordenadas.
 - Visibilidade minima: prefira package-private a `public`.
+- Cada classe tem NO MAXIMO **1 construtor** (sem sobrecarga de construtores).
+- Classes concretas que NAO sao pontos de extensao sao **`final`**. Excecoes:
+  classes abstratas (`PedidoAbstract`, `PedidoState`) e a View
+  (`PainelPedidoView`), que permanece estendivel.
 - Trate excecoes em fronteiras; nao engula excecoes.
 
-## Build (Maven)
+## Mensagens de excecao (orientar quem vai corrigir)
 
-- Basta `maven.compiler.release=21` para compilar em Java 21.
-- NAO adicionar `maven-enforcer-plugin` nem fixar a versao do JDK: o Maven pode
-  rodar sobre um JDK mais novo (ex.: NetBeans com JDK 25) usando `release 21`.
-- NAO adicionar dependencias de teste nem o diretorio `src/test`.
+- TODA mensagem de excecao - inclusive as de `Objects.requireNonNull` - diz **o
+  que fazer** para resolver, no imperativo, nomeando **especificamente** o que
+  falta. Nunca o nome do parametro nem um substantivo solto.
+- Verificacao de nulo: a mensagem COMECA com `Informe ` e descreve o item
+  especifico - ex.: `Objects.requireNonNull(pedidoRepository, "Informe um
+  repositorio de pedidos valido")`, e nao `"pedidoRepository"`.
+- Verificacao `if` que levanta excecao: a mensagem comeca pelo verbo da acao -
+  `Informe ...`, `Configure ...`, `Escolha ...`, `Use ...`.
+- Operacao invalida no estado (GoF State): a mensagem diz **onde** a operacao e
+  valida - ex.: `"Nao e possivel registrar pagamento de um pedido Cancelado;
+  registre o pagamento em um pedido Novo."`.
+- Sem acentos nem caracteres especiais (regra geral do projeto).
+- Garantido por `MensagemExcecaoTest` (varredura do codigo de producao dos dois
+  modulos): nenhuma verificacao de nulo deixa de comecar com `Informe `, e
+  nenhuma excecao e levantada com um identificador solto como mensagem.
 
-## CI/CD
+## Contrato publico e pacotes internos
 
-- Pipeline no GitHub Actions em `.github/workflows/ci.yml`: build e validacao com
-  `mvn -U clean verify` (Java 21), publicacao do jar como artefato e `release` em
-  tags `v*`.
-- Pipeline local equivalente: `scripts/ci-local.sh` (mesmo comando do CI).
-- Sincronizacao com o WSL/Windows (espelho + remocao de `desktop.ini`):
-  `scripts/sync-windows.sh`.
-- O comando de validacao em CI e local DEVE ser o mesmo: `mvn -U clean verify`.
+- O contrato publico do componente e EXATAMENTE: `aplicacao.PainelPedidoFacade`,
+  `model.PedidoAbstract`, `repositorio.IPedidoRepository`,
+  `configuracao.ConfiguracaoPainelPedido`,
+  `configuracao.LeitorConfiguracaoPainelPedido`,
+  `listener.IVisualizarPedidoListener`, `listener.IConfirmarPagamentoListener`,
+  `listener.ICriarNovoPedidoListener`, `som.IEstrategiaSom`,
+  `som.SomTomStrategy`, `tempo.IRelogioService`, `tempo.RelogioServiceSistema`,
+  `view.IPainelPedidoView`, `view.PainelPedidoView`.
+- Todo o resto vive sob `br.projeto.painelpedidos.internal.*`: estado, filtro,
+  notificacao, SLA, ordenacao, ingestao, presenter, a janela invólucro, a trava
+  de instancia unica e a fonte de data.
+- `ContratoPublicoTest` varre o codigo de producao e falha nomeando o tipo que
+  entrou ou saiu do contrato. Nao acrescente tipo publico fora do contrato sem
+  decidir que ele e API - a fronteira nao e imposta pelo compilador, e o gate.
+- Embutir o painel usa `getPainelPedido()` e `iniciarEmbutido()`; montar o
+  `PainelPedidoPresenter` a mao NAO e caminho suportado.
 
-## Seed e persistencia
+## Excecoes aceitas a SOLID, DRY e Demeter
 
-- O repositorio NAO cria pedidos; ele recebe a lista pronta no construtor e
-  apenas persiste.
-- O seed fica em uma classe dedicada `PedidoSeeder`, deterministica, alimentada
-  por uma quantidade e uma data de referencia injetadas (sem `Random` e sem
-  relogio do sistema).
-- A quantidade do seed vem do arquivo `.env` na raiz do projeto
-  (`SEED_QUANTIDADE`), lido por `configuracao/LeitorEnv` (Adapter que encapsula o
-  dotenv); a leitura e fronteira, feita no ponto de entrada.
-- O seed conduz as transicoes do dominio; nunca define a situacao por string.
-- Persistencia em memoria atras de `IPedidoRepository`. So trocar por banco
-  (ex.: H2, sem Spring Boot) se houver exigencia de entrega, e nesse caso troca-se
-  apenas a implementacao da interface.
+Varredura feita em 2026-10-11. Estas NAO sao violacoes a corrigir - sao o preco
+de padroes que o proprio projeto manda, e cada uma tem a sua razao:
 
-## Fonte da verdade de comportamento
+- **LSP - `PedidoState` lanca nas operacoes default.** E o estilo de State
+  mandado aqui: o contrato da base declara que a operacao pode ser invalida no
+  estado. Nao "consertar" transformando as operacoes em no-op silencioso.
+- **Lei de Demeter - `view.getX().metodo()` no presenter.** E o Passive View por
+  getters, adotado aqui. Trocar por metodos de intencao na View e redesenho de
+  arquitetura, nao limpeza.
+- **DRY - `MensagemExcecaoTest` repetido nos dois modulos.** Deliberado: o teste
+  do componente NAO pode depender do `exemplo`, e nao ha test-jar compartilhado.
+- **DIP - `AgendadorMonitorSlaService` usa `javax.swing.Timer`.** O callback roda
+  na EDT, que e o que torna a atualizacao da tela segura; `java.util.Timer`
+  exigiria `SwingUtilities.invokeLater`, proibido aqui, e extrair uma porta
+  recriaria a abstracao de implementacao unica que ja foi removida.
 
-- Todo comportamento descrito em `specs/**/spec.md` deve ter cenario
-  correspondente no arquivo `.feature` da mesma pasta.
-- O arquivo `.feature` e a fonte da verdade testavel; o `spec.md` e a fonte da
-  verdade normativa. Ambos devem permanecer sincronizados.
+O que sobra como trabalho real esta em `.design/rfc-estruturais-do-componente.md`
+(SRP do presenter, contrato expondo tipo interno, branching por estado e a
+fabrica de periodo acoplada ao indice do combo).
+
+## Sem simulacao, sem dados mockados
+
+- O componente NAO gera, sorteia, semeia nem embute pedidos. Nao ha `seeder`,
+  `dados`/`CatalogoPedido`, `simulacao` nem `LeitorEnv`.
+- Novos pedidos entram por **empurrao**: o consumidor chama
+  `PainelPedidoFacade.receberNovosPedidos(List<PedidoAbstract>)` (GoF Observer: o
+  consumidor e o sujeito/fonte do evento e o componente e o observador). Nao ha
+  leitura automatica.
+- O componente **NAO deduplica**: quem decide o que e novo e o consumidor, entao
+  ele empurra apenas o que ainda nao foi notificado.
+- O teste `EstruturaComponenteTest` garante a ausencia dessas classes.
+
+## Configuracao (`painel_pedidos.env`)
+
+- Lida APENAS por `configuracao/LeitorConfiguracaoPainelPedido` (Adapter). Nenhuma
+  outra classe conhece a biblioteca dotenv.
+- O arquivo e OBRIGATORIO no uso do componente, e as quatro chaves de SLA por
+  estado tambem. Ausentes, lanca excecao (`IllegalStateException`).
+- Chaves de SLA por estado (minutos): `SLA_NOVO_MINUTOS`,
+  `SLA_EM_PREPARO_MINUTOS`, `SLA_PRONTO_PARA_ENTREGA_MINUTOS`,
+  `SLA_EM_ROTA_DE_ENTREGA_MINUTOS`.
+- Chave obrigatoria: `IDENTIFICADOR_APLICACAO` (identidade da aplicacao;
+  distingue este painel dos demais na mesma maquina).
+- As chaves de SLA sao as **situacoes do ciclo** (`Novo`, `Em preparo`,
+  `Pronto para entrega`, `Em rota de entrega`): uma chave que nao casa com
+  nenhuma delas faz o SLA **nao se aplicar**, sem aviso - por isso use o
+  `LeitorConfiguracaoPainelPedido`, e os testes `PedidoTest` e
+  `LeitorConfiguracaoPainelPedidoTest` fixam esse contrato.
+- Demais chaves (defaults): `SLA_MONITOR_INTERVALO_SEGUNDOS`,
+  `NOTIFICACAO_DURACAO_SEGUNDOS`, `SOM_ATIVO`, `TITULO_JANELA`.
+- `painel_pedidos.env.example` documenta.
+- Dependencia `dotenv-java` (escopo `compile`), encapsulada pelo Adapter.
+
+## Portas do componente
+
+- `IPedidoRepository` (dados): `salvar`, `buscarTodos`, `gerarProximoIdentificador`.
+  Implementada pelo consumidor (ex.: `exemplo/.../PedidoEmMemoriaRepository`).
+- `IEstrategiaSom`, `IRelogioService`, `IFonteDataPedido`: portas de
+  comportamento com implementacoes default.
+
+## Modelo abstrato (PedidoAbstract)
+
+- O componente NAO possui pedido concreto. O modelo e a classe abstrata
+  `model.PedidoAbstract`, que carrega os dados essenciais do painel e a maquina
+  de estados (GoF State).
+- O sistema consumidor estende `PedidoAbstract` e implementa
+  `criarCopia(String, LocalDateTime)` com o seu tipo concreto.
+- `IPedidoRepository`, notificacao, SLA, ordenacao e a
+  Presenter operam sobre `PedidoAbstract`.
+- `EstruturaComponenteTest` garante a ausencia de `model.Pedido`.
+
+## Acoes do cliente (listeners obrigatorios)
+
+- "Visualizar pedido" e "Confirmar pagamento" sao listeners obrigatorios do
+  cliente: `IVisualizarPedidoListener` e `IConfirmarPagamentoListener`.
+- "Novo Pedido" tambem: `ICriarNovoPedidoListener`, cujo `criarNovoPedido()`
+  devolve `List<PedidoAbstract>`; o componente entrega o retorno ao **mesmo
+  observador do empurrao**, entao a cadeia de notificacao roda inteira (salvar,
+  atualizar, focar, alerta sonoro, mensagem e destaque). O componente nao cria
+  pedidos.
+- O caminho do botao e o do empurrao compartilham UMA politica de notificacao:
+  nao duplique salvar/atualizar/tocar dentro do presenter. O botao fica a esquerda de
+  "Visualizar pedido".
+- Sem eles, `PainelPedidoFacade.iniciar()` lanca `IllegalStateException` e a acao
+  correspondente tambem. O componente NAO abre a tela de pedido nem a de
+  pagamento; quem as exibe e o cliente.
+- O botao "Fechar" encerra apenas a janela do painel; o componente nao encerra a
+  aplicacao.
+
+## Nomes: singular e sufixo de papel
+
+- Classes, classes abstratas e interfaces usam nome no SINGULAR.
+- Classes de servico usam o sufixo `Service` (ex.: `AgendadorMonitorSlaService`).
 
 ## Padrao arquitetural obrigatorio: MVP Passive View
 
-- Padrao adotado conforme o material de referencia indexado em
-  `references/README.md` e `references/Model-View-Presenter.md` (Potel, 1996;
-  Fowler, 2006; Vreca, 2023; Zhang e Luo, 2010; Alles et al., 2006). Em caso de
-  duvida sobre responsabilidades, prevalece a referencia.
-- **Model**: dados/estado e regras de dominio; sem dependencia de Swing, logging
-  ou persistencia.
-- **View**: passiva; apenas captura entrada, dispara eventos e projeta saida. Nao
-  conhece o Model, nao decide o fluxo e nao configura listeners.
+- **Model**: dados/estado e regras de dominio; sem dependencia de Swing.
+- **View**: passiva, par `PainelPedidoView.java` + `PainelPedidoView.form` no
+  padrao de codigo gerado do NetBeans (skill `netbeans-swing-view`);
+  `IPainelPedidoView` e materializada por `PainelPedidoView` (um `JPanel`
+  embedavel). A janela NAO e uma classe: a fachada cria o `JFrame` e hospeda a
+  View. A View nao configura listeners e nao possui `main`; expoe apenas getters
+  dos elementos usados pela Presenter.
+- O `.form` E o design da View: nao remova o arquivo nem deixe os nomes de campo
+  divergirem entre o `.java` e o `.form` - sem isso o NetBeans nao consegue
+  abrir nem regerar a tela.
 - **Presenter**: coordena o caso de uso; configura listeners, le a View, aciona
-  Model/servicos, interpreta resultados e instrui a View sobre como atualizar.
-- A View e abstraida por uma interface `I<Nome>View` que o Presenter conhece; a
-  implementacao concreta e injetada pelo ponto de entrada (`aplicacao`). O
-  Presenter nao instancia a View.
-- Classes de servico sao opcionais e isolam regras de aplicacao/dominio.
-- `JOptionPane` pode permanecer no Presenter (coerente com a passividade da View);
-  para ampliar testabilidade, a saida de mensagens pode ser extraida para uma
-  abstracao `ExibidorMensagem` com implementacao concreta via `JOptionPane`.
-- Adaptacao local: os listeners sao configurados no Presenter como classes
-  anonimas no ponto de uso (sem lambda), sem criar arquivos de listener.
+  Model/servicos e instrui a View. NAO exibe nem fecha a janela (isso e da
+  fachada `PainelPedidoFacade`); a Presenter usa `getPainelPrincipal()` e comanda
+  `maximizar()` (a View permanece passiva).
+- **Fachada** `PainelPedidoFacade`: composicao das dependencias e execucao.
+- A View e abstrata por `IPainelPedidoView`; a implementacao e injetada pela
+  fachada. A Presenter nao instancia a View.
 
-## Padrao Singleton (instancia unica de aplicacao)
+## Nomenclatura de componentes Swing
 
-- A aplicacao DEVE abrir apenas uma vez: uma execucao por JVM e uma instancia
-  por processo, garantido por `InstanciaUnicaAplicacao` (Singleton thread-safe).
-- Implementacao: `private static volatile` + `getInstance()` com double-checked
-  locking e construtor privado. Este `static` e a UNICA excecao a regra de "sem
-  atributos estaticos".
-- `iniciar(IExecucaoAplicacao, ITravaInstanciaUnica)` e `synchronized`: impede
-  reexecucao na mesma JVM (flag `iniciada`) e segunda instancia entre processos
-  (via `FileLock` em `TravaInstanciaUnicaArquivo`).
-- DIP/OCP: o Singleton depende de `IExecucaoAplicacao` e `ITravaInstanciaUnica`;
-  novas execucoes/travas entram sem alterar o Singleton.
-- SRP: o Singleton so garante instancia/execucao unica; a composicao das
-  dependencias fica em `AplicacaoPainelPedido`.
-
-## Configuracao (.env) e dependencia dotenv
-
-- O dotenv (`io.github.cdimascio:dotenv-java`, escopo `compile`) e encapsulado
-  APENAS por `configuracao/LeitorEnv` (padrao Adapter). Nenhuma outra classe do
-  projeto conhece a biblioteca, nem indiretamente (Lei de Demeter): os clientes
-  usam somente `LeitorEnv.lerInteiro(chave, padrao)`.
-- Justificativa da dependencia: padronizar a leitura do `.env` sem expor a
-  biblioteca ao restante do codigo. Alternativa rejeitada: parse manual do
-  arquivo (ja existia) - preterida por manter um leitor unico e testavel.
-- Ao adicionar dependencia, declarar o motivo, o escopo e a alternativa
-  rejeitada neste arquivo.
-
-## Prioridade por SLA e Observer
-
-- SLA por estado: Novo `SLA_NOVO_MINUTOS` (5), Em preparo `SLA_EM_PREPARO_MINUTOS`
-  (20), Pronto para entrega e Em rota de entrega pela media de entrega por bairro
-  (`SLA_ENTREGA_BAIRRO_MINUTOS`, inicia em 10 e e ajustada a cada entrega);
-  Entregue e Cancelado nao tem SLA.
-- Mecanismo: listener periodico (`AgendadorMonitorSla`) opera o CoR adaptado
-  (`MonitorSlaService` + `RegraSla*Handler`), marcando
-  `pedido.marcarPrioridade()`. O monitor avalia logo apos a abertura (delay
-  inicial de 500 ms) e repete a cada `SLA_MONITOR_INTERVALO_SEGUNDOS`; assim,
-  pedidos que ja ultrapassaram o SLA sao marcados assim que a tela abre.
-- A prioridade some quando o pedido muda de estado (`setEstado` limpa a
-  prioridade e atualiza `dataHoraMudancaEstado`).
-- Atualizacoes de tela decorrentes de eventos usam Observer (GoF): abstracao e
-  concretas com sufixo `Observer`, em subpacote do elemento observado.
-- Ordenacao em fila (FIFO): `IOrdenacaoPedidos` /
-  `OrdenacaoPedidoPorPrioridadeETempoNoEstado`: prioridade primeiro; em seguida,
-  quem esta ha mais tempo no estado (que chegou primeiro) no topo, para ser
-  atendido primeiro. A prioridade e por estado: `setEstado` limpa a prioridade e
-  atualiza o timestamp.
-
-## Simulacao, notificacao e sons
-
-- Simulacao: cria de 1 a N pedidos por ciclo (`SIMULACAO_PEDIDOS_POR_CICLO` no
-  `.env`), em intervalo aleatorio (`SIMULACAO_INTERVALO_MINIMO/MAXIMO_SEGUNDOS`).
-- Notificacao usa o **Chain of Responsibility adaptado**: abstracao
-  `RegraHandler` (`seAplica`/`executar`), concretas
-  `Regra...Handler`, sem referencia entre si; o
-  `NotificacaoNovoPedidoService` guarda a colecao (`List`) e `processar(...)`
-  aciona as regras aplicaveis na ordem. O Presenter implementa
-  `IAcoesNotificacaoNovoPedido` (as acoes de UI) e o contexto
-  `ContextoNotificacaoNovoPedido` carrega pedidos + acoes.
-- Som usa **Strategy**: `IEstrategiaSom`, implementada por `SomTomStrategy` (tom
-  audivel gerado); o Presenter depende da abstracao.
-- O label de notificacao e um card pequeno laranja escuro (RGB 194,88,0) com
-  texto branco em negrito; os cards novos piscam por `SIMULACAO_MENSAGEM_SEGUNDOS`.
-
-## Filtro de periodo e data do novo pedido
-
-- O filtro de periodo e uma abstracao `IFiltroPeriodo` (Hoje, ultimos 7, ultimos
-  30, todos, data especifica), criada por `IFabricaFiltroPeriodo`. Novos filtros
-  = novas classes (OCP); o Presenter depende da abstracao (DIP).
-- O campo de data e um `JFormattedTextField` (`txtFmtData`, prefixo `txtFmt`); a
-  data e lida/validada no ponto de uso (`dd/MM/yyyy`), com excecoes unchecked.
-- A data do novo pedido simulado vem de `IFonteDataPedido` (`FonteDataPedido`),
-  atualizada pelo Presenter conforme o periodo selecionado: data selecionada
-  quando em "Data especifica"; data atual caso contrario. O gerador depende de
-  `IFonteDataPedido`, nao de relogio/`Random` diretamente.
-- "Criar novo pedido" a partir de um Cancelado usa a MESMA `IFonteDataPedido`,
-  sincronizada com o periodo selecionado no momento da acao (nunca
-  `LocalDateTime.now()` direto no Presenter).
+Prefixos por tipo, em campos e variaveis locais: `btn`, `chk`, `cmb`, `dtp`,
+`lbl`, `mnu`, `pnl`, `scr`, `spn`, `tab`, `tbl`, `txt`, `txtFmt`, `opt`, etc.
+A View nao possui setters publicos.
 
 ## Ciclo de vida do pedido (GoF State no estilo Porta)
 
-- O estado do pedido usa GoF State no MESMO estilo do exemplo `Porta`:
-  - Classe abstrata `PedidoState` (pacote `br.projeto.painelpedidos.state`) com
-    `protected final Pedido pedido` e construtor `PedidoState(Pedido pedido)`.
-  - Operacoes default na classe abstrata lancam `RuntimeException`.
-  - Cada estado concreto TEM o prefixo `Pedido` e o sufixo `State`:
-    `PedidoNovoState`, `PedidoEmPreparoState`, `PedidoProntoParaEntregaState`,
-    `PedidoEmRotaDeEntregaState`, `PedidoEntregueState`, `PedidoCanceladoState`.
-  - Cada estado concreto sobrescreve apenas as operacoes permitidas e transiciona
-    via `pedido.setEstado(new PedidoProximoState(pedido))`.
-- LOGICA NO CONSTRUTOR: cada estado concreto trata no construtor as regras do que
-  pode existir naquele estado. Se a pre-condicao nao for atendida, o construtor
-  lanca excecao e a transicao NAO acontece (ex.: `PedidoEmPreparoState` exige
-  pagamento registrado; `PedidoCanceladoState` calcula o credito no construtor).
-- O estado concentra as regras de cada situacao (o que pode acontecer com o
-  pedido em cada estado), nao sendo um mero marcador de nome.
-- `Pedido` e o contexto: inicializa `estado = new PedidoNovoState(this)`, delega
-  as operacoes ao estado e expoe `getEstado()`/`setEstado(PedidoState)`.
-- SRP: nomes e regras de situacao ficam nas classes de estado; o Repository NAO
-  conhece strings de situacao, apenas cria/persiste pedidos exercitando as
-  transicoes do dominio.
-- OCP/LSP/DIP: nova situacao = nova classe; estados substituiveis; `Pedido`
-  depende da abstracao `PedidoState`. Sem `enum`, sem `instanceof` e sem strings
-  de situacao duplicadas.
-- Ao semear pedidos no Repository, conduza o pedido pelas transicoes
-  (`registrarPagamento`, `marcarProntoParaEntrega`, `sairParaEntrega`,
-  `marcarEntregue`, `cancelar`) em vez de informar a situacao por string.
+- `model/PedidoState` (abstrata, package-private) com `protected final Pedido pedido`,
+  operacoes default que lancam `RuntimeException`.
+- O State mora no pacote `model`, junto do contexto, e NAO e publico: assim o
+  contrato nao expoe tipo interno e o estavel nao depende do detalhe
+  (`setEstado` e package-private, chamado pelos estados).
+- Estados concretos com prefixo `Pedido` e sufixo `State`, transicionando via
+  `pedido.setEstado(new PedidoProximoState(pedido), quando)`.
+- O instante da transicao vem de FORA: as operacoes recebem `quando` e `setEstado`
+  grava em `dataHoraMudancaEstado`. O Model NUNCA le o relogio do sistema - quem
+  dispara informa a hora (consumidor no listener, presenter com `IRelogioService`),
+  e o SLA mede com esse mesmo relogio.
+- Regras no construtor: pre-condicao nao atendida lanca excecao e a transicao
+  nao ocorre (`PedidoCanceladoState` calcula o credito no construtor).
+- `Pedido` e o contexto; sem `enum`, sem `instanceof`, sem strings de situacao.
 
-## View (padrao NetBeans) e nomenclatura de componentes Swing
+## Prioridade por SLA, ordenacao e Observer
 
-- A View contem apenas codigo para criar/configurar seus elementos visuais.
-- A View NAO configura listeners e NAO possui `main`.
-- A View expoe getters apenas para os elementos que serao manipulados pela
-  Presenter respectiva.
-- A View NAO possui setters publicos; metodo `set` so existe quando estritamente
-  necessario e como algo interno/privado.
-- Seguir o padrao NetBeans: blocos `//GEN-BEGIN:initComponents` /
-  `//GEN-END:initComponents` e `//GEN-BEGIN:variables` /
-  `//GEN-END:variables`, com o `.form` mantido sincronizado com os nomes dos
-  campos.
-- Nomes de componentes Swing DEVEM seguir os prefixos por tipo abaixo, SEMPRE,
-  em campos e variaveis locais, tanto na View quanto no Presenter.
+- SLA fixo por estado, em minutos: Novo `SLA_NOVO_MINUTOS`, Em preparo
+  `SLA_EM_PREPARO_MINUTOS`, Pronto para entrega
+  `SLA_PRONTO_PARA_ENTREGA_MINUTOS`, Em rota de entrega
+  `SLA_EM_ROTA_DE_ENTREGA_MINUTOS`; Entregue e Cancelado sem SLA. Nao ha media
+  por bairro.
+- `AgendadorMonitorSlaService` opera o CoR adaptado (`MonitorSlaService` +
+  `RegraSlaHandler`) usando `IRelogioService` (relogio injetado, nao o do
+  sistema). Marca `pedido.marcarPrioridade()`; a prioridade some ao mudar de
+  estado.
+- O SLA por estado vive num unico mapa
+  (`ConfiguracaoPainelPedido.getSlaPorSituacao`, situacao -> duracao) e e
+  aplicado por `RegraSlaEstadoHandler` (generico): um SLA novo e uma entrada no
+  mapa, sem nova classe nem construtor maior (OCP).
+- Atualizacoes de tela decorrentes de eventos usam Observer (GoF), com sufixo
+  `Observer`.
+- Ordenacao em fila (FIFO) via `IOrdenacaoPedido`.
 
-| Componente Swing | Prefixo adotado | Exemplo |
-|---|---|---|
-| `JButton` | `btn` | `btnSalvar` |
-| `JCheckBox` | `chk` | `chkAtivo` |
-| `JComboBox` | `cmb` | `cmbCategoria` |
-| `JDatePicker` | `dtp` | `dtpDataNascimento` |
-| `JDesktopPane` | `dsk` | `dskPrincipal` |
-| `JFormattedTextField` | `txtFmt` | `txtFmtCpf` |
-| `JLabel` | `lbl` | `lblNome` |
-| `JMenu` | `mnu` | `mnuCadastro` |
-| `JMenuBar` | `mnb` | `mnbPrincipal` |
-| `JMenuItem` | `mit` | `mitSair` |
-| `JOptionPane` | `opt` | `optConfirmacao` |
-| `JPanel` | `pnl` | `pnlDados` |
-| `JPopupMenu` | `pmn` | `pmnOpcoes` |
-| `JProgressBar` | `prg` | `prgProgresso` |
-| `JRadioButton` | `rad` | `radAdministrador` |
-| `JScrollPane` | `scr` | `scrProdutos` |
-| `JSpinner` | `spn` | `spnData` |
-| `JSplitPane` | `spt` | `sptPrincipal` |
-| `JTabbedPane` | `tab` | `tabCadastro` |
-| `JTable` | `tbl` | `tblProdutos` |
-| `JTextField` | `txt` | `txtNome` |
-| `JToggleButton` | `tgl` | `tglAtivo` |
-| `JPasswordField` | `txt` | `txtSenha` |
+## Notificacao de novos pedidos
 
+- `NotificacaoNovoPedidoService` (CoR adaptado) mantem a colecao de
+  `RegraHandler` e executa as aplicaveis na ordem.
+- O som usa Strategy (`IEstrategiaSom`); `SomSilenciosoStrategy` quando
+  `SOM_ATIVO=false`.
+- O label de notificacao e um card laranja escuro (RGB 194,88,0) com texto branco
+  em negrito; os cards novos piscam por `NOTIFICACAO_DURACAO_SEGUNDOS`.
 
-## Regra de sincronizacao com o Windows (obrigatoria)
+## Filtro de periodo e data do novo pedido
 
-- SEMPRE que copiar/espelhar qualquer arquivo para o WSL (`/mnt/c/...`), remova
-  TODOS os arquivos `desktop.ini` resultantes, recursivamente, antes de concluir.
-  Vale para qualquer copia, nao apenas o espelhamento completo.
-- Ao terminar qualquer entrega, espelhe o projeto COMPLETO
-  (`pom.xml`, `src/`, `openspec/`, `README`, scripts) para:
-  `/mnt/c/Users/clayt/Downloads/PainelPedidos_MVP_PassiveView`
-  sobrescrevendo o conteudo de destino.
-- Remova tambem os `desktop.ini` sob `_PainelPedidos_MVP_PassiveView` e
-  `_PainelPedidos_MVP_PassiveView_Revisado`.
-- Nunca versione `desktop.ini`, `target/` nem imagens temporarias.
-- Depois de cada mudanca/requisito, remova imagens temporarias usadas
-  (`/tmp/opencode/`, `/tmp/*.png`) apos confirmar que a informacao foi extraida
-  para codigo, specs e commits.
+- `IFiltroPeriodo` (Hoje, ultimos 7, ultimos 30, todos, data especifica) criada
+  por `IFabricaFiltroPeriodo`; a Presenter depende da abstracao.
+- A data do novo pedido vem de `IFonteDataPedido`, sincronizada com o periodo
+  selecionado.
+
+## Instancia unica
+
+- O COMPONENTE possui a trava de instancia unica; o consumidor nao configura
+  trava, caminho nem singleton.
+- `PainelPedidoFacade.iniciar()` adquire a trava antes de criar a janela e
+  devolve `boolean` (`false` = nada foi aberto). `encerrar()` libera a trava.
+- A recusa NAO e obrigacao tecnica de tratar (Java permite ignorar o retorno),
+  mas quem a engole deixa o app "nao fazendo nada" na segunda execucao. No
+  `exemplo` ela e sinalizada com `System.out.println`, porque o exemplo roda por
+  console (`exec-maven-plugin`/IDE); nao trocar por dialogo sem mudar a forma de
+  lancamento.
+- `System.out.println` e o canal permitido do projeto de demonstracao (o
+  `main` do `exemplo`); em classe que nao e ponto de entrada, use o dialogo do
+  componente.
+- A trava e a fonte unica da verdade: a fachada NAO guarda flag "ja aberto"; o
+  defeito antigo era o singleton de JVM nunca resetar.
+- Trava padrao: `TravaInstanciaUnicaArquivo` sobre um arquivo em
+  `java.io.tmpdir` cujo nome deriva da identidade da aplicacao
+  (`IDENTIFICADOR_APLICACAO`), de modo que dois sistemas diferentes na mesma
+  maquina convivem; "ja travado" (`tryLock()==null` ou
+  `OverlappingFileLockException`) e recusa, nunca excecao.
+- A trava e detalhe interno (package-private): NAO e porta nem ponto de extensao;
+  nao recrie interface para ela sem um consumidor que a implemente.
+- O arquivo de trava NUNCA e apagado: apaga-lo e o que quebra a exclusao.
+- A mensagem ao usuario e do consumidor (o componente apenas sinaliza).
+
+## Build e distribuicao
+
+- `cd painel-pedidos && mvn -U clean verify` compila e testa o componente;
+  `cd exemplo && mvn -U clean verify` verifica o consumidor contra o artefato
+  publicado.
+- O jar de `painel-pedidos` contem as dependencias (maven-shade), para uso como
+  dependencia unica (JitPack).
+- NAO versionar `target/`, `dependency-reduced-pom.xml` nem arquivos gerados.
 
 ## Convencao de nomenclatura de padroes
 
-- `State`, `Decorator`, `Builder`, `Service`, `Repository` sao sufixos.
-- Modelos de dados puros usam apenas o conceito de dominio (ex.: `Pedido`).
-- Nomes de classes sempre no SINGULAR (ex.: `PainelPedidoPresenter`, nao
-  `PainelPedidosPresenter`; `IPainelPedidoView`; `AplicacaoPainelPedido`).
-- Toda interface (abstracao) Java DEVE comecar com `I` (ex.: `IPedidoRepository`,
-  `IPainelPedidoView`).
+- `State`, `Service`, `Repository`, `Handler`, `Strategy`, `Observer` sao
+  sufixos. Modelos de dados puros usam apenas o conceito de dominio (`Pedido`).
+- Interfaces comecam com `I` (ex.: `IPedidoRepository`, `IPainelPedidoView`).
+- Metodos que **configuram um colaborador** (porta/listener) usam o prefixo `set`
+  (`setVisualizarPedidoListener`, `setConfirmarPagamentoListener`). Metodos com
+  semantica de **acao** permanecem descritivos (`usarDataAtual`).
+
+## Commits (Conventional Commits)
+
+- SEMPRE que houver alteracoes, faca commit, inferindo a mensagem e classificando
+  o tipo: `feat`, `fix`, `refactor`, `build`, `test`, `docs`, `chore`.
+- Mensagem no imperativo, em portugues, com escopo quando util (ex.:
+  `feat(exemplo): ...`, `docs(openspec): ...`).
+- Commits pequenos e por escopo, na ordem que reconstroi a estrutura; valide com
+  `mvn -U clean verify` (em cada projeto) antes de concluir a entrega.
+- TODA alteracao termina com a **sincronizacao com o WSL**, sem excecao -
+  inclusive documentacao, `.form` ou mudanca de uma linha so. Commitar sem
+  sincronizar deixa o espelho mentindo sobre o estado do projeto.
+
+## Sincronizacao com o Windows (obrigatoria)
+
+- ANTES de sincronizar, apague as pastas `target/` **aqui e no destino**
+  (`rm -rf target painel-pedidos/target exemplo/target` e o mesmo em
+  `/mnt/c/Users/clayt/Downloads/painel_pedidos_mvp`). O espelho nao carrega
+  build, e um `target` deixado no destino trava o `mvn clean` do lado
+  Windows quando algum processo ainda o segura.
+- SEMPRE que copiar/espelhar qualquer arquivo para o WSL, remova TODOS os
+  arquivos `desktop.ini` resultantes, recursivamente, antes de concluir.
+- Ao terminar qualquer entrega, espelhe o projeto COMPLETO (os dois `pom.xml`,
+  `openspec/`, `README.md`, `painel_pedidos.env.example`, `docs/`) para
+  `/mnt/c/Users/clayt/Downloads/painel_pedidos_mvp`, sobrescrevendo o destino.
+- NAO sincronize `.git/`, `target/` nem pastas de ferramentas de agente/IDE
+  (`.opencode/`, `.claude/`, `.cursor/`, `.windsurf/`, `.agents/`, `.gemini/`,
+  `.agent/`, `.codex/`, `.github/`).
+- Nunca versione `desktop.ini`, `target/` nem imagens temporarias.
+- Depois de cada mudanca, remova imagens temporarias (`/tmp/opencode/`,
+  `/tmp/*.png`) apos confirmar que a informacao foi extraida para codigo, specs
+  e commits.
