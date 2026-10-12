@@ -19,9 +19,35 @@ Funcionalidade: Requisitos não funcionais do componente
 
   @US27-003
   Cenário: Projeto de exemplo consumindo o componente
-    Dado o módulo de exemplo
+    Dado o projeto de exemplo independente, que resolve o componente publicado
     Quando ele for executado
     Então o painel deve abrir sobre os seus dados
+
+  @US27-009
+  Cenário: Dois projetos Maven independentes
+    Dado o repositório
+    Então não deve existir pom agregador na raiz
+    E cada projeto deve ter o próprio pom.xml, sem parent compartilhado
+
+  @US27-010
+  Cenário: Exemplo consome o componente publicado
+    Dado o projeto de exemplo
+    Então ele deve depender do componente pelo artefato publicado, não pelo código-fonte
+    E a coordenada publicada deve ser com.github.<autor>:<repositorio>:<tag>
+
+  @US27-011
+  Cenário: Autoria e versão por propriedade (template)
+    Dado o pom.xml do exemplo
+    Então o groupId, o artifactId e a versão do componente devem vir de propriedades
+    E não deve haver coordenada de autor fixa fora dessas propriedades
+
+  @US27-012
+  Cenário: Publicação e verificação no JitPack
+    Dada uma tag v* empurrada
+    Quando a Release for publicada
+    Então o JitPack deve construir o artefato da tag
+    E um segundo workflow deve aguardar o artefato resolver
+    E verificar o exemplo contra o artefato publicado
 
   @US27-004
   Cenário: View embutível

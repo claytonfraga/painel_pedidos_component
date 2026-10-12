@@ -10,7 +10,9 @@ de Pedidos: acompanhar e atualizar os pedidos pelas etapas operacionais (BR12),
 cancelar com credito e criar novo pedido a partir de um cancelado (BR13),
 filtrar por periodo/data, receber pedidos do sistema consumidor sem simulacao
 (US26), priorizar/ordenar pelo tempo no estado (US24), oferecer execucao unica
-opcional (US25) e ser distribuido como dependencia Maven (US27).
+opcional (US25) e ser distribuido como dependencia Maven (US27) por dois
+projetos independentes, no formato de um template em que cada autor publica o
+proprio artefato.
 
 ## Documentos relacionados
 
@@ -32,7 +34,7 @@ Os cenarios sao a fonte da verdade testavel e nao sao reproduzidos aqui.
 | US22 - Filtrar por periodo e data | [`us22-filtro-periodo-data.feature`](./us22-filtro-periodo-data.feature) | `@US22-001` a `@US22-004` |
 | US24 - Prioridade, SLA e ordenacao | [`us24-prioridade-sla-ordenacao.feature`](./us24-prioridade-sla-ordenacao.feature) | `@US24-001` a `@US24-007` |
 | US26 - Ingestao de novos pedidos sem simulacao | [`us26-ingestao-novos-pedidos.feature`](./us26-ingestao-novos-pedidos.feature) | `@US26-001` a `@US26-003` |
-| Requisitos nao funcionais | [`nao-funcional.feature`](./nao-funcional.feature) | `@US25-001`, `@US27-001` a `@US27-005`, `@NF-001` a `@NF-003` |
+| Requisitos nao funcionais | [`nao-funcional.feature`](./nao-funcional.feature) | `@US25-001`, `@US27-001` a `@US27-012`, `@NF-001` a `@NF-004` |
 | US28 - Acoes do cliente e modelo abstrato | [`us28-acoes-do-cliente.feature`](./us28-acoes-do-cliente.feature) | `@US28-001` a `@US28-004` |
 | US29 - Criar novos pedidos pelo painel | [`us29-botao-novo-pedido.feature`](./us29-botao-novo-pedido.feature) | `@US29-001` a `@US29-003` |
 
@@ -171,6 +173,28 @@ Cenarios: `@US29-001` a `@US29-004`.
 ### Requirement: Fechar encerra apenas o painel
 O botao "Fechar" encerra a janela do painel; o componente nao encerra a
 aplicacao. Cenarios: `@US28-004`.
+
+### Requirement: Dois projetos Maven independentes
+O repositorio nao possui pom agregador nem parent compartilhado: `painel-pedidos/`
+e `exemplo/` sao projetos independentes, cada um com o proprio `pom.xml`. Cenarios:
+`@US27-009`.
+
+### Requirement: Exemplo consome o componente publicado
+O exemplo resolve o componente a partir do **artefato publicado** (JitPack), nao
+do codigo-fonte. Sem pom na raiz, a coordenada publicada e
+`com.github.<autor>:<repositorio>:<tag>` (o `artifactId` e o nome do repositorio).
+Cenarios: `@US27-010`.
+
+### Requirement: Autoria e versao por propriedade (template)
+O repositorio e um **template**: o `groupId`, o `artifactId` e a versao do
+componente consumido pelo exemplo vivem em propriedades no `exemplo/pom.xml` - o
+unico ponto onde uma conta de autor aparece. Cenarios: `@US27-011`.
+
+### Requirement: Publicacao e verificacao no JitPack
+Uma tag `v*` publica a Release (workflow `Release`); o JitPack constroi o artefato
+da tag no primeiro pedido; um segundo workflow (`Verificar JitPack`), disparado
+pela conclusao do primeiro, aguarda o artefato resolver e verifica o exemplo
+contra ele. Cenarios: `@US27-012`.
 
 ### Requirement: Nomes no singular e sufixo de papel
 Classes, classes abstratas e interfaces usam nome no singular; classes de
