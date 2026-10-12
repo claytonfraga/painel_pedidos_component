@@ -2,6 +2,7 @@ package br.projeto.painelpedidos.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -154,6 +155,25 @@ public final class PedidoTest {
 
         // then: a copia e recusada com excecao
         assertThrows(RuntimeException.class, copiar);
+    }
+
+    @Test
+    public void pagamentoEmPedidoCanceladoOrientaOndeRegistrar() {
+        // given: um pedido cancelado
+        PedidoAbstract pedido = criarPedido("1", 50.0);
+        pedido.cancelar();
+
+        // when: tenta-se registrar o pagamento
+        Executable registrar = new Executable() {
+            @Override
+            public void execute() {
+                pedido.registrarPagamento("Pix - chave CPF");
+            }
+        };
+
+        // then: a mensagem diz onde o pagamento e valido
+        RuntimeException excecao = assertThrows(RuntimeException.class, registrar);
+        assertThat(excecao.getMessage(), containsString("registre o pagamento em um pedido Novo"));
     }
 
     private PedidoAbstract criarPedido(String identificador, double valor) {

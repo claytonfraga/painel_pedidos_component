@@ -83,6 +83,25 @@ public final class PainelPedidoFacadeTest {
     }
 
     @Test
+    public void repositorioNuloOrientaInformarUmRepositorioDePedidos() {
+        // given: os demais colaboradores validos
+        ConfiguracaoPainelPedido configuracao = criarConfiguracao();
+
+        // when: constroi-se a fachada sem repositorio
+        Executable construir = new Executable() {
+            @Override
+            public void execute() {
+                new PainelPedidoFacade(
+                        null, configuracao, new SomSilenciosoStrategy(), new RelogioServiceSistema());
+            }
+        };
+
+        // then: a mensagem diz o que o consumidor deve informar
+        NullPointerException excecao = assertThrows(NullPointerException.class, construir);
+        assertThat(excecao.getMessage(), is("Informe um repositorio de pedidos valido"));
+    }
+
+    @Test
     public void segundaAberturaComATravaPadraoRetidaERecusadaSemAbrirJanela() {
         // given: a trava padrao do componente ja retida por outra execucao
         TravaInstanciaUnicaArquivo trava = new TravaInstanciaUnicaArquivo(caminhoTravaPadraoDoComponente());
