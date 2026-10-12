@@ -145,6 +145,8 @@ fabrica de periodo acoplada ao indice do combo).
   `PainelPedidoFacade.receberNovosPedidos(List<PedidoAbstract>)` (GoF Observer: o
   consumidor e o sujeito/fonte do evento e o componente e o observador). Nao ha
   leitura automatica.
+- O componente **NAO deduplica**: quem decide o que e novo e o consumidor, entao
+  ele empurra apenas o que ainda nao foi notificado.
 - O teste `EstruturaComponenteTest` garante a ausencia dessas classes.
 
 ## Configuracao (`painel_pedidos.env`)

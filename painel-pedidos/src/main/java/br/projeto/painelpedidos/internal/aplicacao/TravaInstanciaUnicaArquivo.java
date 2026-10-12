@@ -21,7 +21,7 @@ import java.util.Objects;
 public final class TravaInstanciaUnicaArquivo {
 
     private final Path caminhoArquivo;
-    private FileChannel canal;
+    private volatile FileChannel canal;
 
     public TravaInstanciaUnicaArquivo(Path caminhoArquivo) {
         this.caminhoArquivo = Objects.requireNonNull(

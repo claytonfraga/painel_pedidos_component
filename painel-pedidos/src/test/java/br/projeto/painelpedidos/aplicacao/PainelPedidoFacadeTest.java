@@ -21,12 +21,9 @@ import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
 import br.projeto.painelpedidos.view.PainelPedidoPanel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 

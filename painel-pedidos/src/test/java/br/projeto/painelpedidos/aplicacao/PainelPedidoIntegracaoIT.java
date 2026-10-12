@@ -13,12 +13,9 @@ import br.projeto.painelpedidos.model.PedidoDeTeste;
 import br.projeto.painelpedidos.repositorio.PedidoRepositoryFake;
 import br.projeto.painelpedidos.som.SomFake;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
