@@ -84,12 +84,18 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
             IOrdenacaoPedido ordenacaoPedidos,
             int duracaoNotificacaoSegundos) {
 
-        this.painelPedidoView = Objects.requireNonNull(painelPedidoView, "painelPedidoView");
-        this.pedidoRepository = Objects.requireNonNull(pedidoRepository, "pedidoRepository");
-        this.fonteDataPedido = Objects.requireNonNull(fonteDataPedido, "fonteDataPedido");
-        this.fabricaFiltroPeriodo = Objects.requireNonNull(fabricaFiltroPeriodo, "fabricaFiltroPeriodo");
-        this.estrategiaSom = Objects.requireNonNull(estrategiaSom, "estrategiaSom");
-        this.ordenacaoPedidos = Objects.requireNonNull(ordenacaoPedidos, "ordenacaoPedidos");
+        this.painelPedidoView = Objects.requireNonNull(
+                painelPedidoView, "Informe uma view do painel valida");
+        this.pedidoRepository = Objects.requireNonNull(
+                pedidoRepository, "Informe um repositorio de pedidos valido");
+        this.fonteDataPedido = Objects.requireNonNull(
+                fonteDataPedido, "Informe uma fonte de data do pedido valida");
+        this.fabricaFiltroPeriodo = Objects.requireNonNull(
+                fabricaFiltroPeriodo, "Informe uma fabrica de filtro de periodo valida");
+        this.estrategiaSom = Objects.requireNonNull(
+                estrategiaSom, "Informe uma estrategia de som valida");
+        this.ordenacaoPedidos = Objects.requireNonNull(
+                ordenacaoPedidos, "Informe uma ordenacao de pedidos valida");
         this.duracaoNotificacaoSegundos = duracaoNotificacaoSegundos;
         this.pedidosPorIdentificador = new LinkedHashMap<>();
         this.cartoesPorIdentificador = new LinkedHashMap<>();

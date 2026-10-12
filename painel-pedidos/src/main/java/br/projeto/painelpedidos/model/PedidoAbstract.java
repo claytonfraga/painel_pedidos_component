@@ -35,10 +35,10 @@ public abstract class PedidoAbstract {
             String enderecoEntrega,
             double valorTotal) {
 
-        this.identificador = validarTextoObrigatorio(identificador, "identificador");
-        this.dataHora = Objects.requireNonNull(dataHora, "dataHora");
-        this.nomeCliente = validarTextoObrigatorio(nomeCliente, "nomeCliente");
-        this.enderecoEntrega = validarTextoObrigatorio(enderecoEntrega, "enderecoEntrega");
+        this.identificador = validarTextoObrigatorio(identificador, "o identificador do pedido");
+        this.dataHora = Objects.requireNonNull(dataHora, "Informe uma data e hora do pedido valida");
+        this.nomeCliente = validarTextoObrigatorio(nomeCliente, "o nome do cliente");
+        this.enderecoEntrega = validarTextoObrigatorio(enderecoEntrega, "o endereco de entrega");
         this.valorTotal = validarValorTotal(valorTotal);
         this.creditoGerado = 0.0;
         this.prioridade = false;
@@ -73,7 +73,7 @@ public abstract class PedidoAbstract {
     }
 
     public void aplicarPagamento(String formaPagamento) {
-        this.formaPagamento = validarTextoObrigatorio(formaPagamento, "formaPagamento");
+        this.formaPagamento = validarTextoObrigatorio(formaPagamento, "a forma de pagamento");
         this.dataHoraPagamento = LocalDateTime.now();
     }
 
@@ -83,7 +83,8 @@ public abstract class PedidoAbstract {
 
     public PedidoAbstract copiarComoNovo(String novoIdentificador, LocalDateTime novaDataHora) {
         if (!estado.ehCancelado()) {
-            throw new RuntimeException("Nao e possivel copiar um pedido " + estado.getNome());
+            throw new RuntimeException("Nao e possivel copiar um pedido " + estado.getNome()
+                    + "; copie apenas um pedido Cancelado");
         }
         return criarCopia(novoIdentificador, novaDataHora);
     }
@@ -117,7 +118,7 @@ public abstract class PedidoAbstract {
     }
 
     public void setEstado(PedidoState estado) {
-        this.estado = Objects.requireNonNull(estado, "estado");
+        this.estado = Objects.requireNonNull(estado, "Informe um estado de pedido valido");
         this.dataHoraMudancaEstado = LocalDateTime.now();
         this.prioridade = false;
     }
@@ -168,15 +169,17 @@ public abstract class PedidoAbstract {
 
     private double validarValorTotal(double valorInformado) {
         if (valorInformado < 0) {
-            throw new IllegalArgumentException("O valor total do pedido nao pode ser negativo");
+            throw new IllegalArgumentException(
+                    "Informe um valor total de pedido igual ou maior que zero");
         }
         return valorInformado;
     }
 
-    private String validarTextoObrigatorio(String valor, String nomeCampo) {
-        String texto = Objects.requireNonNull(valor, nomeCampo).trim();
+    private String validarTextoObrigatorio(String valor, String descricao) {
+        String texto = Objects.requireNonNull(valor, "Informe " + descricao).trim();
         if (texto.isEmpty()) {
-            throw new IllegalArgumentException(nomeCampo + " deve ser informado");
+            throw new IllegalArgumentException(
+                    "Informe " + descricao + " (o texto nao pode ser vazio)");
         }
         return texto;
     }

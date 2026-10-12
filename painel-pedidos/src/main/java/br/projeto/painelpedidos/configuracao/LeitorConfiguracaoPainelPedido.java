@@ -21,8 +21,8 @@ public final class LeitorConfiguracaoPainelPedido {
     private final Dotenv dotenv;
 
     public LeitorConfiguracaoPainelPedido(String diretorio, String nomeArquivo) {
-        Objects.requireNonNull(diretorio, "diretorio");
-        Objects.requireNonNull(nomeArquivo, "nomeArquivo");
+        Objects.requireNonNull(diretorio, "Informe um diretorio do arquivo de configuracao valido");
+        Objects.requireNonNull(nomeArquivo, "Informe um nome de arquivo de configuracao valido");
         try {
             this.dotenv = Dotenv.configure()
                     .directory(diretorio)
@@ -30,7 +30,8 @@ public final class LeitorConfiguracaoPainelPedido {
                     .load();
         } catch (DotenvException excecao) {
             throw new IllegalStateException(
-                    "O arquivo " + nomeArquivo + " e obrigatorio para usar o componente", excecao);
+                    "O arquivo " + nomeArquivo + " e obrigatorio em " + diretorio
+                    + "; crie-o com as chaves de SLA (veja painel_pedidos.env.example)", excecao);
         }
     }
 
@@ -55,12 +56,13 @@ public final class LeitorConfiguracaoPainelPedido {
         String valor = dotenv.get(chave);
         if (valor == null || valor.trim().isEmpty()) {
             throw new IllegalStateException(
-                    "A chave " + chave + " e obrigatoria no painel_pedidos.env");
+                    "Informe a chave " + chave + " no painel_pedidos.env (valor inteiro em minutos)");
         }
         try {
             return Integer.parseInt(valor.trim());
         } catch (NumberFormatException excecao) {
-            throw new IllegalArgumentException("Valor invalido para " + chave, excecao);
+            throw new IllegalArgumentException(
+                    "Informe um valor inteiro valido para " + chave + " no painel_pedidos.env", excecao);
         }
     }
 
@@ -72,7 +74,8 @@ public final class LeitorConfiguracaoPainelPedido {
         try {
             return Integer.parseInt(valor.trim());
         } catch (NumberFormatException excecao) {
-            throw new IllegalArgumentException("Valor invalido para " + chave, excecao);
+            throw new IllegalArgumentException(
+                    "Informe um valor inteiro valido para " + chave + " no painel_pedidos.env", excecao);
         }
     }
 

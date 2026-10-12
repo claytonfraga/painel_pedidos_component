@@ -20,8 +20,10 @@ public final class PainelPedidoNovoPedidoObserver implements NovoPedidoObserver 
             IAcaoNotificacaoNovoPedido acoesNotificacao,
             IServicoNotificacaoNovoPedido servicoNotificacao) {
 
-        this.acoesNotificacao = Objects.requireNonNull(acoesNotificacao, "acoesNotificacao");
-        this.servicoNotificacao = Objects.requireNonNull(servicoNotificacao, "servicoNotificacao");
+        this.acoesNotificacao = Objects.requireNonNull(
+                acoesNotificacao, "Informe uma lista de acoes de notificacao valida");
+        this.servicoNotificacao = Objects.requireNonNull(
+                servicoNotificacao, "Informe um servico de notificacao valido");
     }
 
     @Override

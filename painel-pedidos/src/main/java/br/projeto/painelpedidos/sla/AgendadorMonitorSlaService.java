@@ -26,9 +26,12 @@ public final class AgendadorMonitorSlaService {
             IRelogioService relogioService,
             int intervaloMilissegundos) {
 
-        this.pedidoRepository = Objects.requireNonNull(pedidoRepository, "pedidoRepository");
-        this.monitorSlaService = Objects.requireNonNull(monitorSlaService, "monitorSlaService");
-        this.relogioService = Objects.requireNonNull(relogioService, "relogioService");
+        this.pedidoRepository = Objects.requireNonNull(
+                pedidoRepository, "Informe um repositorio de pedidos valido");
+        this.monitorSlaService = Objects.requireNonNull(
+                monitorSlaService, "Informe um monitor de SLA valido");
+        this.relogioService = Objects.requireNonNull(
+                relogioService, "Informe um relogio de datas valido");
         this.timer = new Timer(intervaloMilissegundos, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evento) {

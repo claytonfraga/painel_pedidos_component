@@ -12,7 +12,8 @@ public final class NotificacaoNovoPedidoService implements IServicoNotificacaoNo
     private final List<RegraHandler> regras;
 
     public NotificacaoNovoPedidoService(List<RegraHandler> regras) {
-        this.regras = Objects.requireNonNull(regras, "regras");
+        this.regras = Objects.requireNonNull(
+                regras, "Informe ao menos um handler de notificacao valido");
     }
 
     @Override

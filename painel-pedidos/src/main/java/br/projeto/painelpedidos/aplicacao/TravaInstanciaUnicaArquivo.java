@@ -24,7 +24,8 @@ final class TravaInstanciaUnicaArquivo {
     private FileChannel canal;
 
     TravaInstanciaUnicaArquivo(Path caminhoArquivo) {
-        this.caminhoArquivo = Objects.requireNonNull(caminhoArquivo, "caminhoArquivo");
+        this.caminhoArquivo = Objects.requireNonNull(
+                caminhoArquivo, "Informe um caminho de arquivo de controle valido");
     }
 
     boolean adquirir() {
@@ -55,7 +56,8 @@ final class TravaInstanciaUnicaArquivo {
                     caminhoArquivo, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         } catch (IOException excecao) {
             throw new IllegalStateException(
-                    "Nao foi possivel abrir o arquivo da trava de instancia unica", excecao);
+                    "Nao foi possivel abrir o arquivo de controle de instancia unica em "
+                    + caminhoArquivo + "; verifique as permissoes de escrita", excecao);
         }
     }
 
@@ -66,7 +68,8 @@ final class TravaInstanciaUnicaArquivo {
             return false;
         } catch (IOException excecao) {
             throw new IllegalStateException(
-                    "Nao foi possivel adquirir a trava de instancia unica", excecao);
+                    "Nao foi possivel usar a trava de instancia unica em " + caminhoArquivo
+                    + "; verifique as permissoes de escrita", excecao);
         }
     }
 
@@ -75,7 +78,8 @@ final class TravaInstanciaUnicaArquivo {
             canalAberto.close();
         } catch (IOException excecao) {
             throw new IllegalStateException(
-                    "Nao foi possivel liberar a trava de instancia unica", excecao);
+                    "Nao foi possivel liberar a trava de instancia unica em " + caminhoArquivo
+                    + "; reinicie a aplicacao para liberar", excecao);
         }
     }
 }

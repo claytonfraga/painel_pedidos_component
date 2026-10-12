@@ -11,7 +11,8 @@ public final class PedidoEmRotaDeEntregaState extends PedidoState {
     public PedidoEmRotaDeEntregaState(PedidoAbstract pedido) {
         super(pedido);
         if (!pedido.isPagamentoRegistrado()) {
-            throw new RuntimeException("Nao e possivel sair para entrega sem pagamento registrado");
+            throw new RuntimeException(
+                    "Nao e possivel sair para entrega sem pagamento registrado; registre o pagamento antes");
         }
     }
 

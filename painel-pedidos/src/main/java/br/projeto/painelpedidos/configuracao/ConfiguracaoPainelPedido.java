@@ -33,13 +33,16 @@ public final class ConfiguracaoPainelPedido {
             String tituloJanela) {
 
         this.slaPorSituacao = copiarSlas(slaPorSituacao);
-        this.slaMonitorIntervalo = validarDuracao(slaMonitorIntervalo, "slaMonitorIntervalo");
+        this.slaMonitorIntervalo = validarDuracao(
+                slaMonitorIntervalo, "a duracao do intervalo do monitor de SLA");
         if (duracaoNotificacaoSegundos < 1) {
-            throw new IllegalArgumentException("Duracao da notificacao deve ser de pelo menos 1 segundo");
+            throw new IllegalArgumentException(
+                    "Informe a duracao da notificacao em segundos com pelo menos 1");
         }
-        String titulo = Objects.requireNonNull(tituloJanela, "tituloJanela").trim();
+        String titulo = Objects.requireNonNull(
+                tituloJanela, "Informe um titulo de janela valido").trim();
         if (titulo.isEmpty()) {
-            throw new IllegalArgumentException("tituloJanela deve ser informado");
+            throw new IllegalArgumentException("Informe um titulo de janela nao vazio");
         }
 
         this.duracaoNotificacaoSegundos = duracaoNotificacaoSegundos;
@@ -68,25 +71,29 @@ public final class ConfiguracaoPainelPedido {
     }
 
     private Map<String, Duration> copiarSlas(Map<String, Duration> slaPorSituacao) {
-        Objects.requireNonNull(slaPorSituacao, "slaPorSituacao");
+        Objects.requireNonNull(slaPorSituacao, "Informe um mapa de SLA por situacao valido");
         if (slaPorSituacao.isEmpty()) {
-            throw new IllegalArgumentException("slaPorSituacao deve ter ao menos uma situacao");
+            throw new IllegalArgumentException(
+                    "Informe ao menos uma situacao de SLA com a sua duracao");
         }
         Map<String, Duration> copia = new LinkedHashMap<>();
         for (Map.Entry<String, Duration> entrada : slaPorSituacao.entrySet()) {
-            String situacao = Objects.requireNonNull(entrada.getKey(), "situacao").trim();
+            String situacao = Objects.requireNonNull(
+                    entrada.getKey(), "Informe uma situacao de SLA valida").trim();
             if (situacao.isEmpty()) {
-                throw new IllegalArgumentException("situacao de SLA deve ser informada");
+                throw new IllegalArgumentException("Informe uma situacao de SLA nao vazia");
             }
-            copia.put(situacao, validarDuracao(entrada.getValue(), "sla de " + situacao));
+            copia.put(situacao, validarDuracao(
+                    entrada.getValue(), "a duracao do SLA de " + situacao));
         }
         return Collections.unmodifiableMap(copia);
     }
 
-    private Duration validarDuracao(Duration duracao, String nomeCampo) {
-        Objects.requireNonNull(duracao, nomeCampo);
+    private Duration validarDuracao(Duration duracao, String descricao) {
+        Objects.requireNonNull(duracao, "Informe " + descricao);
         if (duracao.isZero() || duracao.isNegative()) {
-            throw new IllegalArgumentException(nomeCampo + " deve ser maior que zero");
+            throw new IllegalArgumentException(
+                    "Informe " + descricao + " com valor maior que zero");
         }
         return duracao;
     }

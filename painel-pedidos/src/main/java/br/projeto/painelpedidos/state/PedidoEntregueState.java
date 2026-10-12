@@ -11,7 +11,8 @@ public final class PedidoEntregueState extends PedidoState {
     public PedidoEntregueState(PedidoAbstract pedido) {
         super(pedido);
         if (!pedido.isPagamentoRegistrado()) {
-            throw new RuntimeException("Nao e possivel entregar um pedido sem pagamento registrado");
+            throw new RuntimeException(
+                    "Nao e possivel entregar um pedido sem pagamento registrado; registre o pagamento antes");
         }
     }
 

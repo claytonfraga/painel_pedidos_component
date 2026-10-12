@@ -92,10 +92,13 @@ public final class PainelPedidoFacade {
             IEstrategiaSom estrategiaSom,
             IRelogioService relogioService) {
 
-        this.pedidoRepository = Objects.requireNonNull(pedidoRepository, "pedidoRepository");
-        this.configuracao = Objects.requireNonNull(configuracao, "configuracao");
-        Objects.requireNonNull(estrategiaSom, "estrategiaSom");
-        this.relogioService = Objects.requireNonNull(relogioService, "relogioService");
+        this.pedidoRepository = Objects.requireNonNull(
+                pedidoRepository, "Informe um repositorio de pedidos valido");
+        this.configuracao = Objects.requireNonNull(
+                configuracao, "Informe uma configuracao do painel valida");
+        Objects.requireNonNull(estrategiaSom, "Informe uma estrategia de som valida");
+        this.relogioService = Objects.requireNonNull(
+                relogioService, "Informe um relogio de datas valido");
 
         this.painelPedido = new PainelPedidoPanel();
         IFabricaFiltroPeriodo fabricaFiltroPeriodo = new FabricaFiltroPeriodo();
@@ -115,19 +118,19 @@ public final class PainelPedidoFacade {
 
     public void setVisualizarPedidoListener(IVisualizarPedidoListener visualizarPedidoListener) {
         this.visualizarPedidoListener = Objects.requireNonNull(
-                visualizarPedidoListener, "visualizarPedidoListener");
+                visualizarPedidoListener, "Informe um IVisualizarPedidoListener valido");
         this.painelPedidoPresenter.setVisualizarPedidoListener(visualizarPedidoListener);
     }
 
     public void setConfirmarPagamentoListener(IConfirmarPagamentoListener confirmarPagamentoListener) {
         this.confirmarPagamentoListener = Objects.requireNonNull(
-                confirmarPagamentoListener, "confirmarPagamentoListener");
+                confirmarPagamentoListener, "Informe um IConfirmarPagamentoListener valido");
         this.painelPedidoPresenter.setConfirmarPagamentoListener(confirmarPagamentoListener);
     }
 
     public void setCriarNovoPedidoListener(ICriarNovoPedidoListener criarNovoPedidoListener) {
         this.criarNovoPedidoListener = Objects.requireNonNull(
-                criarNovoPedidoListener, "criarNovoPedidoListener");
+                criarNovoPedidoListener, "Informe um ICriarNovoPedidoListener valido");
         this.painelPedidoPresenter.setCriarNovoPedidoListener(criarNovoPedidoListener);
     }
 

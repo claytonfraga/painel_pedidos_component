@@ -11,7 +11,8 @@ public final class PedidoEmPreparoState extends PedidoState {
     public PedidoEmPreparoState(PedidoAbstract pedido) {
         super(pedido);
         if (!pedido.isPagamentoRegistrado()) {
-            throw new RuntimeException("Nao e possivel entrar em preparo sem pagamento registrado");
+            throw new RuntimeException(
+                    "Nao e possivel entrar em preparo sem pagamento registrado; registre o pagamento antes");
         }
     }
 

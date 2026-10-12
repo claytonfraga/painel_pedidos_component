@@ -12,7 +12,7 @@ public abstract class PedidoState {
     protected final PedidoAbstract pedido;
 
     public PedidoState(PedidoAbstract pedido) {
-        this.pedido = Objects.requireNonNull(pedido, "pedido");
+        this.pedido = Objects.requireNonNull(pedido, "Informe um pedido valido");
     }
 
     public abstract String getNome();
@@ -42,22 +42,27 @@ public abstract class PedidoState {
     }
 
     public void registrarPagamento(String formaPagamento) {
-        throw new RuntimeException("Nao e possivel registrar pagamento de um pedido " + getNome());
+        throw new RuntimeException("Nao e possivel registrar pagamento de um pedido " + getNome()
+                + "; registre o pagamento em um pedido Novo");
     }
 
     public void marcarProntoParaEntrega() {
-        throw new RuntimeException("Nao e possivel marcar como pronto para entrega um pedido " + getNome());
+        throw new RuntimeException("Nao e possivel marcar como pronto para entrega um pedido " + getNome()
+                + "; marque como pronto para entrega apenas um pedido Em preparo");
     }
 
     public void sairParaEntrega() {
-        throw new RuntimeException("Nao e possivel sair para entrega um pedido " + getNome());
+        throw new RuntimeException("Nao e possivel sair para entrega um pedido " + getNome()
+                + "; saia para entrega apenas um pedido Pronto para entrega");
     }
 
     public void marcarEntregue() {
-        throw new RuntimeException("Nao e possivel marcar como entregue um pedido " + getNome());
+        throw new RuntimeException("Nao e possivel marcar como entregue um pedido " + getNome()
+                + "; marque como entregue apenas um pedido Em rota de entrega");
     }
 
     public void cancelar() {
-        throw new RuntimeException("Nao e possivel cancelar um pedido " + getNome());
+        throw new RuntimeException("Nao e possivel cancelar um pedido " + getNome()
+                + "; o pedido ja esta cancelado e nao volta a nenhuma situacao anterior");
     }
 }

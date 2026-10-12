@@ -16,10 +16,10 @@ public final class SomTomStrategy implements IEstrategiaSom {
 
     public SomTomStrategy(int frequencia, int duracaoMilissegundos) {
         if (frequencia <= 0) {
-            throw new IllegalArgumentException("Frequencia deve ser positiva");
+            throw new IllegalArgumentException("Informe uma frequencia de som positiva");
         }
         if (duracaoMilissegundos <= 0) {
-            throw new IllegalArgumentException("Duracao deve ser positiva");
+            throw new IllegalArgumentException("Informe uma duracao de som positiva");
         }
         this.frequencia = frequencia;
         this.duracaoMilissegundos = duracaoMilissegundos;
@@ -46,7 +46,9 @@ public final class SomTomStrategy implements IEstrategiaSom {
             linha.write(buffer, 0, buffer.length);
             linha.drain();
         } catch (LineUnavailableException excecao) {
-            throw new IllegalStateException("Nao foi possivel reproduzir o som", excecao);
+            throw new IllegalStateException(
+                    "Nao foi possivel reproduzir o som; verifique o dispositivo de audio e tente novamente",
+                    excecao);
         } finally {
             if (linha != null) {
                 linha.stop();

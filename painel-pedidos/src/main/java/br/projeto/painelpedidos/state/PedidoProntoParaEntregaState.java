@@ -11,7 +11,9 @@ public final class PedidoProntoParaEntregaState extends PedidoState {
     public PedidoProntoParaEntregaState(PedidoAbstract pedido) {
         super(pedido);
         if (!pedido.isPagamentoRegistrado()) {
-            throw new RuntimeException("Nao e possivel marcar como pronto para entrega sem pagamento registrado");
+            throw new RuntimeException(
+                    "Nao e possivel marcar como pronto para entrega sem pagamento registrado; "
+                    + "registre o pagamento antes");
         }
     }
 

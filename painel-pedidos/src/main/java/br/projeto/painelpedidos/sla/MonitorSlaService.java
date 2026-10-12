@@ -16,13 +16,13 @@ public final class MonitorSlaService implements IMonitorSlaService {
     private final List<PrioridadeObserver> observers;
 
     public MonitorSlaService(List<RegraSlaHandler> regras) {
-        this.regras = Objects.requireNonNull(regras, "regras");
+        this.regras = Objects.requireNonNull(regras, "Informe ao menos uma regra de SLA valida");
         this.observers = new ArrayList<>();
     }
 
     @Override
     public void adicionarObserver(PrioridadeObserver observer) {
-        observers.add(Objects.requireNonNull(observer, "observer"));
+        observers.add(Objects.requireNonNull(observer, "Informe um observador de SLA valido"));
     }
 
     @Override

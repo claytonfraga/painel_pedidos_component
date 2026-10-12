@@ -19,7 +19,8 @@ public final class RegraSlaEstadoHandler implements RegraSlaHandler {
     private final Map<String, Duration> slaPorSituacao;
 
     public RegraSlaEstadoHandler(Map<String, Duration> slaPorSituacao) {
-        this.slaPorSituacao = Objects.requireNonNull(slaPorSituacao, "slaPorSituacao");
+        this.slaPorSituacao = Objects.requireNonNull(
+                slaPorSituacao, "Informe um mapa de SLA por situacao valido");
     }
 
     @Override

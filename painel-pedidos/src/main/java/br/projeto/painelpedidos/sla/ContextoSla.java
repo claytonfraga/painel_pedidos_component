@@ -17,8 +17,8 @@ public final class ContextoSla {
     private final List<PedidoAbstract> pedidosPriorizados;
 
     public ContextoSla(List<PedidoAbstract> pedidos, LocalDateTime agora) {
-        this.pedidos = Objects.requireNonNull(pedidos, "pedidos");
-        this.agora = Objects.requireNonNull(agora, "agora");
+        this.pedidos = Objects.requireNonNull(pedidos, "Informe uma lista de pedidos valida");
+        this.agora = Objects.requireNonNull(agora, "Informe a data e hora de referencia valida");
         this.pedidosPriorizados = new ArrayList<>();
     }
 

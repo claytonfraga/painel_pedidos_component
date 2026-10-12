@@ -13,7 +13,7 @@ public final class FiltroDataEspecifica implements IFiltroPeriodo {
     private final LocalDate data;
 
     public FiltroDataEspecifica(LocalDate data) {
-        this.data = Objects.requireNonNull(data, "data");
+        this.data = Objects.requireNonNull(data, "Informe uma data valida");
     }
 
     @Override

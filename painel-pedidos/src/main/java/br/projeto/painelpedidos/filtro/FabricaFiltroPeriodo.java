@@ -28,7 +28,8 @@ public final class FabricaFiltroPeriodo implements IFabricaFiltroPeriodo {
             }
             return new FiltroDataEspecifica(dataEspecifica);
         }
-        throw new IllegalArgumentException("Opcao de periodo invalida: " + indice);
+        throw new IllegalArgumentException(
+                "Escolha uma opcao de periodo valida (o indice " + indice + " nao existe)");
     }
 
     @Override

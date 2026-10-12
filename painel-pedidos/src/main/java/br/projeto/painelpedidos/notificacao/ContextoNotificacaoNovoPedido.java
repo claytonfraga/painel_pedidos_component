@@ -14,8 +14,9 @@ public final class ContextoNotificacaoNovoPedido {
     private final IAcaoNotificacaoNovoPedido acoes;
 
     public ContextoNotificacaoNovoPedido(List<PedidoAbstract> pedidos, IAcaoNotificacaoNovoPedido acoes) {
-        this.pedidos = Objects.requireNonNull(pedidos, "pedidos");
-        this.acoes = Objects.requireNonNull(acoes, "acoes");
+        this.pedidos = Objects.requireNonNull(pedidos, "Informe uma lista de pedidos valida");
+        this.acoes = Objects.requireNonNull(
+                acoes, "Informe uma lista de acoes de notificacao valida");
     }
 
     public List<PedidoAbstract> getPedidos() {

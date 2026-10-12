@@ -14,7 +14,8 @@ public final class FonteDataPedido implements IFonteDataPedido {
     private LocalDate dataEspecifica;
 
     public FonteDataPedido(IRelogioService relogioService) {
-        this.relogioService = Objects.requireNonNull(relogioService, "relogioService");
+        this.relogioService = Objects.requireNonNull(
+                relogioService, "Informe um relogio de datas valido");
     }
 
     @Override
@@ -24,7 +25,7 @@ public final class FonteDataPedido implements IFonteDataPedido {
 
     @Override
     public void usarData(LocalDate data) {
-        this.dataEspecifica = Objects.requireNonNull(data, "data");
+        this.dataEspecifica = Objects.requireNonNull(data, "Informe uma data valida");
     }
 
     @Override

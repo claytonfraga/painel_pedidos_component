@@ -14,7 +14,7 @@ public final class PainelPedidoPrioridadeObserver implements PrioridadeObserver 
 
     public PainelPedidoPrioridadeObserver(IPainelPedidoAtualizador painelPedidoAtualizador) {
         this.painelPedidoAtualizador = Objects.requireNonNull(
-                painelPedidoAtualizador, "painelPedidoAtualizador");
+                painelPedidoAtualizador, "Informe um atualizador do painel valido");
     }
 
     @Override
