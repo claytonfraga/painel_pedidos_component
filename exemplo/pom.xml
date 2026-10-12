@@ -20,8 +20,9 @@
         <project.build.outputTimestamp>2026-01-01T00:00:00Z</project.build.outputTimestamp>
         <maven.compiler.release>21</maven.compiler.release>
 
-        <painel-pedidos.groupId>com.github.claytonfraga.painel_pedidos_component</painel-pedidos.groupId>
-        <painel-pedidos.version>1.0.1</painel-pedidos.version>
+        <painel-pedidos.groupId>com.github.claytonfraga</painel-pedidos.groupId>
+        <painel-pedidos.artifactId>painel_pedidos_component</painel-pedidos.artifactId>
+        <painel-pedidos.version>v1.0.3</painel-pedidos.version>
 
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.enforcer.plugin.version>3.5.0</maven.enforcer.plugin.version>
@@ -61,7 +62,7 @@
     <dependencies>
         <dependency>
             <groupId>${painel-pedidos.groupId}</groupId>
-            <artifactId>painel-pedidos</artifactId>
+            <artifactId>${painel-pedidos.artifactId}</artifactId>
             <version>${painel-pedidos.version}</version>
         </dependency>
 

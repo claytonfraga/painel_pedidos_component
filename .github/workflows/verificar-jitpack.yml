@@ -49,21 +49,15 @@ jobs:
           REPO: ${{ github.event.repository.name }}
           TAG: ${{ steps.tag.outputs.tag }}
         run: |
-          # O JitPack constroi no primeiro pedido ("Get it"). A versao e a TAG
-          # (com o 'v'); a URL sem o 'v' da 404.
-          MOD="https://jitpack.io/com/github/${OWNER}/${REPO}/painel-pedidos/${TAG}/painel-pedidos-${TAG}.pom"
-          RAIZ="https://jitpack.io/com/github/${OWNER}/${REPO}/${TAG}/painel_pedidos_component-${TAG}.pom"
+          # O JitPack constroi no primeiro pedido ("Get it"). Sem pom na raiz, ele
+          # publica o repositorio como um artefato unico: o artifactId e o nome do
+          # repositorio. A versao e a TAG (com o 'v'); a URL sem o 'v' da 404.
+          URL="https://jitpack.io/com/github/${OWNER}/${REPO}/${TAG}/${REPO}-${TAG}.pom"
           sleep 30
           for tentativa in $(seq 1 20); do
-            CM="$(curl -s -o /dev/null -w '%{http_code}' "${MOD}" --max-time 60)"
-            CR="$(curl -s -o /dev/null -w '%{http_code}' "${RAIZ}" --max-time 60)"
-            echo "Tentativa ${tentativa}: modulo HTTP ${CM} | raiz HTTP ${CR}"
-            if [ "${CM}" = "200" ]; then
-              echo "coordenada=painel-pedidos" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            if [ "${CR}" = "200" ]; then
-              echo "coordenada=painel_pedidos_component" >> "$GITHUB_OUTPUT"
+            CODIGO="$(curl -s -o /dev/null -w '%{http_code}' "${URL}" --max-time 60)"
+            echo "Tentativa ${tentativa}: ${URL} HTTP ${CODIGO}"
+            if [ "${CODIGO}" = "200" ]; then
               exit 0
             fi
             sleep 30

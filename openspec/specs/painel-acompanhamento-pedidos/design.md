@@ -243,10 +243,12 @@ ponto de extensao. O componente nao possui nenhum campo `static`.
 
 ## 8. Empacotamento e distribuicao
 
-- Multi-modulo Maven: `painel-pedidos-parent` (agregador), `painel-pedidos`
-  (biblioteca) e `exemplo` (consumidor).
-- O jar de `painel-pedidos` e produzido com `maven-shade-plugin` e contem as
-  dependencias (dotenv incluso), para consumo como dependencia unica (JitPack).
+- Dois projetos Maven independentes, sem agregador na raiz: `painel-pedidos/`
+  (biblioteca) e `exemplo/` (consumidor, que resolve o componente publicado).
+- O jar do componente e produzido com `maven-shade-plugin` e contem as
+  dependencias (dotenv incluso). No JitPack a coordenada e
+  `com.github.<autor>:<repositorio>:<tag>` (sem pom na raiz, o repositorio e
+  publicado como um artefato unico).
 - Java 21 (`--release 21`, bytecode Java 21); o `maven-enforcer-plugin` exige
   JDK `[21,)`, permitindo rodar o Maven em JDK mais novo (ex.: 24).
 

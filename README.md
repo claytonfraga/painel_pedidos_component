@@ -72,21 +72,22 @@ usuário pelas suas** (veja a seção 1.1) e a versão pela que quiser:
 </repositories>
 
 <dependency>
-    <groupId>com.github.SEU-USUARIO.painel_pedidos_component</groupId>
-    <artifactId>painel-pedidos</artifactId>
-    <version>v1.0.1</version>
+    <groupId>com.github.SEU-USUARIO</groupId>
+    <artifactId>painel_pedidos_component</artifactId>
+    <version>v1.0.3</version>
 </dependency>
 ```
 
-O jar de `painel-pedidos` **já contém todas as dependências** (é empacotado com
+O jar do componente **já contém todas as dependências** (é empacotado com
 `maven-shade-plugin`), então esta é a única dependência necessária. O JitPack
 constrói **no primeiro pedido**, então a primeira resolução pode demorar um
 pouco mais.
 
 **Uso local** (antes de publicar): dentro de `painel-pedidos/`, rode
 `mvn -U clean install` e dependa de `br.projeto:painel-pedidos:1.0.0` - o
-`groupId` de desenvolvimento. No JitPack o `groupId` publicado é
-`com.github.<usuario>.<repositorio>`.
+`groupId` de desenvolvimento. No JitPack a coordenada publicada é
+`com.github.<usuario>:<repositorio>` (sem pom na raiz, o JitPack publica o
+repositório como um artefato único, com `artifactId` igual ao nome do repositório).
 
 ### 1.1 Publique o seu próprio componente (template)
 
@@ -95,16 +96,17 @@ própria conta do GitHub, e aponta o exemplo para ele. O ponto único de autoria
 um par de propriedades no [`exemplo/pom.xml`](exemplo/pom.xml):
 
 ```xml
-<painel-pedidos.groupId>com.github.SEU-USUARIO.painel_pedidos_component</painel-pedidos.groupId>
-<painel-pedidos.version>v1.0.1</painel-pedidos.version>
+<painel-pedidos.groupId>com.github.SEU-USUARIO</painel-pedidos.groupId>
+<painel-pedidos.artifactId>painel_pedidos_component</painel-pedidos.artifactId>
+<painel-pedidos.version>v1.0.3</painel-pedidos.version>
 ```
 
 1. Faça um fork (ou clone) do repositório no **seu** GitHub, mantendo-o público.
 2. Crie a sua tag e uma Release: `git tag v1.0.1 && git push origin v1.0.1`. O
    workflow de release alinha a versão, verifica e publica a Release; o JitPack
    constrói o artefato **no primeiro pedido**.
-3. Troque as duas propriedades acima para `com.github.<seu-usuario>.<seu-repo>` e
-   a sua versão. Pronto: o `exemplo` passa a resolver o **seu** artefato.
+3. Troque as três propriedades acima para `com.github.<seu-usuario>`, o nome do
+   seu repositório e a sua versão. Pronto: o `exemplo` passa a resolver o **seu** artefato.
 
 > O build do JitPack pode falhar na primeira tentativa com **HTTP 429** (limite
 > de requisições do Maven Central, compartilhado pela infraestrutura do JitPack);

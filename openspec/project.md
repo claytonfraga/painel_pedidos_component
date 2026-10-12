@@ -32,14 +32,19 @@ simulacao, geracao de pedidos, seed nem dados mockados.
   Presenter, o repositorio, as estrategias e os agendadores, e executa o painel.
 - Interface grafica em Swing; modulo de exemplo demonstra a integracao.
 
-## Modulos Maven
+## Projetos Maven
 
-- `painel-pedidos-parent`: agregador (packaging `pom`), Java 21 (bytecode
-  `--release 21`), enforcer `[21,)` (Maven pode rodar em JDK 21 ou superior).
-- `painel-pedidos`: a biblioteca. maven-shade embute as dependencias; o jar
+Nao ha pom agregador na raiz: sao dois projetos independentes.
+
+- `painel-pedidos/`: a biblioteca, com pom proprio (Java 21, bytecode
+  `--release 21`, enforcer `[21,)`). maven-shade embute as dependencias; o jar
   publicado contem tudo (dotenv incluso).
-- `exemplo`: consumidor de demonstracao (depende de `painel-pedidos`), com
-  repositorio em memoria, dados de exemplo estaticos e `painel_pedidos.env`.
+- `exemplo/`: consumidor de demonstracao independente, que resolve o componente
+  **publicado no JitPack** nao pelo codigo-fonte, com repositorio em memoria,
+  dados de exemplo estaticos e `painel_pedidos.env`.
+- O repositorio e um **template**: cada autor publica o proprio artefato e aponta
+  o exemplo para ele (propriedades `painel-pedidos.groupId`, `painel-pedidos.artifactId`
+  e `painel-pedidos.version` no `exemplo/pom.xml`).
 
 ## Material de referencia (indexado)
 

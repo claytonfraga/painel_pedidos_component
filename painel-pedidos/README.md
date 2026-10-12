@@ -19,9 +19,9 @@ que você implementa.
 </repositories>
 
 <dependency>
-    <groupId>com.github.SEU-USUARIO.painel_pedidos_component</groupId>
-    <artifactId>painel-pedidos</artifactId>
-    <version><versao></version>
+    <groupId>com.github.SEU-USUARIO</groupId>
+    <artifactId>painel_pedidos_component</artifactId>
+    <version>v1.0.3</version>
 </dependency>
 ```
 
