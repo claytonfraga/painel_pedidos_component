@@ -266,9 +266,9 @@ A View nao possui setters publicos.
 - Ao terminar qualquer entrega, espelhe o projeto COMPLETO (`pom.xml`, modulos,
   `openspec/`, `README.md`, `painel_pedidos.env.example`, `docs/`) para
   `/mnt/c/Users/clayt/Downloads/painel_pedidos_mvp`, sobrescrevendo o destino.
-- NAO sincronize `.git/`, `target/` nem pastas de ferramentas de agente
+- NAO sincronize `.git/`, `target/` nem pastas de ferramentas de agente/IDE
   (`.opencode/`, `.claude/`, `.cursor/`, `.windsurf/`, `.agents/`, `.gemini/`,
-  `.agent/`, `.codex/`).
+  `.agent/`, `.codex/`, `.github/`).
 - Nunca versione `desktop.ini`, `target/` nem imagens temporarias.
 - Depois de cada mudanca, remova imagens temporarias (`/tmp/opencode/`,
   `/tmp/*.png`) apos confirmar que a informacao foi extraida para codigo, specs
