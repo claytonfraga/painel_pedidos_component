@@ -1,12 +1,12 @@
 package br.projeto.painelpedidos.view;
 
 /**
- * Espiao de {@link PainelPedidoPanel} para os testes: registra se a Presenter
+ * Espiao de {@link PainelPedidoView} para os testes: registra se a Presenter
  * comandou a maximizacao da View.
  *
  * @author clayton
  */
-public final class PainelPedidoPanelEspiao extends PainelPedidoPanel {
+public final class PainelPedidoViewEspiao extends PainelPedidoView {
 
     private boolean maximizada;
 

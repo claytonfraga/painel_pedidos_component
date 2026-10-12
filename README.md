@@ -208,7 +208,7 @@ São API apenas estes tipos: `PainelPedidoFacade`, `PedidoAbstract`,
 `IPedidoRepository`, `ConfiguracaoPainelPedido`,
 `LeitorConfiguracaoPainelPedido`, os três listeners, `IEstrategiaSom`,
 `SomTomStrategy`, `IRelogioService`, `RelogioServiceSistema`,
-`IPainelPedidoView` e `PainelPedidoPanel`. Todo o resto vive sob
+`IPainelPedidoView` e `PainelPedidoView`. Todo o resto vive sob
 `br.projeto.painelpedidos.internal.*` e pode mudar entre versões — a lista é
 fixada por teste (`ContratoPublicoTest`), que falha nomeando o tipo que entrar
 ou sair.
@@ -255,8 +255,8 @@ sua (o componente apenas sinaliza).
 
 ### 4.3 Embutir em uma aplicação Swing existente
 
-Use `PainelPedidoPanel` (`JPanel`, implementa `IPainelPedidoView`) com um
-`PainelPedidoPresenter`. A `PainelPedidoView` é apenas um `JFrame` invólucro.
+Use `PainelPedidoView` (`JPanel`, implementa `IPainelPedidoView`) com um
+`PainelPedidoPresenter`. A `PainelPedidoJanela` é apenas um `JFrame` invólucro.
 
 ## 5. Comportamento do painel
 

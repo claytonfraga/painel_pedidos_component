@@ -13,7 +13,7 @@ import br.projeto.painelpedidos.model.PedidoAbstract;
 import br.projeto.painelpedidos.repositorio.IPedidoRepository;
 import br.projeto.painelpedidos.som.SomTomStrategy;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
-import br.projeto.painelpedidos.view.PainelPedidoPanel;
+import br.projeto.painelpedidos.view.PainelPedidoView;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -44,7 +44,7 @@ public final class PainelPedidoImagemTest {
 
         PainelPedidoFacade painelPedido = new PainelPedidoFacade(
                 repositorio, configuracao, new SomTomStrategy(880, 200), new RelogioServiceSistema());
-        PainelPedidoPanel painel = painelPedido.getPainelPedido();
+        PainelPedidoView painel = painelPedido.getPainelPedido();
 
         painel.getCmbPeriodo().setSelectedIndex(3);
         painel.getBtnAtualizarPainel().doClick();

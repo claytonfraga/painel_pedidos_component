@@ -35,8 +35,11 @@ import br.projeto.painelpedidos.internal.som.SomSilenciosoStrategy;
 import br.projeto.painelpedidos.internal.tempo.FonteDataPedido;
 import br.projeto.painelpedidos.internal.tempo.IFonteDataPedido;
 import br.projeto.painelpedidos.tempo.IRelogioService;
-import br.projeto.painelpedidos.view.PainelPedidoPanel;
-import br.projeto.painelpedidos.internal.view.PainelPedidoView;
+import br.projeto.painelpedidos.view.PainelPedidoView;
+
+import java.awt.Dimension;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.file.Path;
@@ -73,7 +76,7 @@ public final class PainelPedidoFacade {
 
     private final IPedidoRepository pedidoRepository;
     private final ConfiguracaoPainelPedido configuracao;
-    private final PainelPedidoPanel painelPedido;
+    private final PainelPedidoView painelPedido;
     private final PainelPedidoPresenter painelPedidoPresenter;
     private final IServicoNotificacaoNovoPedido servicoNotificacao;
     private final NovoPedidoObserver novoPedidoObserver;
@@ -83,7 +86,7 @@ public final class PainelPedidoFacade {
     private IVisualizarPedidoListener visualizarPedidoListener;
     private IConfirmarPagamentoListener confirmarPagamentoListener;
     private ICriarNovoPedidoListener criarNovoPedidoListener;
-    private PainelPedidoView janela;
+    private JFrame janela;
     private AgendadorMonitorSlaService agendadorMonitorSla;
     private TravaInstanciaUnicaArquivo travaInstanciaUnica;
 
@@ -101,7 +104,7 @@ public final class PainelPedidoFacade {
         this.relogioService = Objects.requireNonNull(
                 relogioService, "Informe um relogio de datas valido");
 
-        this.painelPedido = new PainelPedidoPanel();
+        this.painelPedido = new PainelPedidoView();
         IFabricaFiltroPeriodo fabricaFiltroPeriodo = new FabricaFiltroPeriodo();
         IOrdenacaoPedido ordenacaoPedidos = new OrdenacaoPedidoPorPrioridadeETempoNoEstado();
         IFonteDataPedido fonteDataPedido = new FonteDataPedido(relogioService);
@@ -141,7 +144,7 @@ public final class PainelPedidoFacade {
             return false;
         }
 
-        janela = new PainelPedidoView(painelPedido, configuracao.getTituloJanela());
+        janela = criarJanela();
         painelPedido.getBtnFechar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evento) {
@@ -152,6 +155,16 @@ public final class PainelPedidoFacade {
         janela.setVisible(true);
         iniciarMonitorSla();
         return true;
+    }
+
+    private JFrame criarJanela() {
+        JFrame janelaCriada = new JFrame(configuracao.getTituloJanela());
+        janelaCriada.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        janelaCriada.setMinimumSize(new Dimension(1180, 760));
+        janelaCriada.setPreferredSize(new Dimension(1380, 980));
+        janelaCriada.setContentPane(painelPedido);
+        janelaCriada.pack();
+        return janelaCriada;
     }
 
     /**
@@ -168,7 +181,7 @@ public final class PainelPedidoFacade {
         return true;
     }
 
-    public PainelPedidoPanel getPainelPedido() {
+    public PainelPedidoView getPainelPedido() {
         return painelPedido;
     }
 
