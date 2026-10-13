@@ -23,6 +23,42 @@ implementa um pequeno conjunto de **portas** (interfaces) e o painel chama de
 volta as **suas** telas. Não há simulação, geração de pedidos, seed nem dados
 mockados no componente — os dados e as telas são sempre seus.
 
+## Visão geral
+
+A figura abaixo é a tela real do componente em execução, ligada a um repositório
+de demonstração. Ela reúne, numa única imagem, tudo o que as seções seguintes
+detalham: as seis raias, o topo de filtros e a barra inferior de ações.
+
+![Painel de Acompanhamento de Pedidos em execução](assets/painel-pedidos.png)
+
+**Figura 1 — O painel em execução.** As faixas coloridas no topo da área de
+trabalho são as **seis situações** do ciclo de vida, na ordem em que o pedido
+caminha: *Novo*, *Em preparo*, *Pronto para entrega*, *Em rota de entrega*,
+*Entregue* e *Cancelado*. O número entre parênteses ao lado de cada título é a
+contagem de pedidos naquela raia no momento da renderização, e é o que dá ao
+operador a leitura imediata da fila.
+
+Cada **card** mostra os dados que o componente recebe do seu modelo — número do
+pedido (`#1003`), horário de abertura (`09:02`), cliente, endereço, valor total,
+forma de pagamento e crédito gerado — sem que o componente conheça a origem
+desses dados. Logo abaixo do valor, uma faixa dispensa o estado do pagamento
+("Aguardando pagamento", "Pagamento confirmado", "Pedido cancelado", "Sem crédito
+gerado"); quando o pedido **ultrapassa o SLA do estado**, essa faixa dá lugar ao
+rótulo vermelho **Prioridade** (visível, por exemplo, em `#1003` e `#1005`), que
+empurra o pedido para cima na raia. Os botões inferiores do card são a ação
+válida daquele estado ("Confirmar pagamento" em *Novo*, "Sair pra entrega" em
+*Pronto para entrega*, "Entregue" em *Em rota de entrega*) acompanhada de
+"Cancelar" — a única ação disponível em *Cancelado* é "Criar novo pedido".
+
+No topo, a barra de **Filtros** concentra a busca por pedido ou cliente, a
+seleção de **Período** e o botão **Atualizar painel**; é por ali que o operador
+restringe o que cada raia exibe. Por fim, a barra **Pedido selecionado**, no pé
+da janela, mostra o card em foco (`#1020 - Eduardo Mendes - Cancelado`) e reúne
+os botões **Novo Pedido**, **Visualizar pedido**, **Criar novo pedido** e
+**Fechar**. A distribuição de pedidos pelas raias, os nomes, valores e horários
+desta captura são do repositório de demonstração; no seu sistema, serão os seus
+dados — o componente apenas reflete o que o seu repositório entrega.
+
 ## O que você precisa fazer e saber
 
 **Fazer** — quatro passos, detalhados na seção 2:
