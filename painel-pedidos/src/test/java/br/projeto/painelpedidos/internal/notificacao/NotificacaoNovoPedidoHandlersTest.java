@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import br.projeto.painelpedidos.model.PedidoDeTeste;
+import br.projeto.painelpedidos.som.SomFake;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 /**
- * Cadeia de notificacao de novos pedidos (US26): cada handler recebe as acoes
- * pelo construtor e as aciona diretamente (Lei de Demeter); o contexto carrega
- * apenas os pedidos. Verifica o comportamento de cada regra e a cadeia inteira.
+ * Cadeia de notificacao de novos pedidos (US26): o contexto carrega apenas os
+ * pedidos; cada handler recebe o que precisa pelo construtor (as acoes do painel
+ * ou a estrategia de som) e o aciona diretamente (Lei de Demeter). Verifica o
+ * comportamento de cada regra e a cadeia inteira.
  *
  * @author clayton
  */
@@ -54,17 +56,17 @@ public final class NotificacaoNovoPedidoHandlersTest {
     }
 
     @Test
-    public void alertaSonoroHandlerAcionaEmitirAlertaSonoro() {
-        // given: o handler com as acoes injetadas
-        AcoesNotificacaoFake acoes = new AcoesNotificacaoFake();
-        AlertaSonoroHandler handler = new AlertaSonoroHandler(acoes);
+    public void alertaSonoroHandlerAcionaAEstrategiaDeSom() {
+        // given: o handler com a estrategia de som injetada
+        SomFake som = new SomFake();
+        AlertaSonoroHandler handler = new AlertaSonoroHandler(som);
 
         // when: a regra e executada
         handler.executar(new ContextoNotificacaoNovoPedido(umPedido()));
 
-        // then: o alerta sonoro foi emitido uma vez
+        // then: o alerta sonoro foi acionado uma vez
         assertThat(handler.seAplica(new ContextoNotificacaoNovoPedido(umPedido())), is(true));
-        assertThat(acoes.getAlertasSonoros(), is(1));
+        assertThat(som.getQuantidadeToques(), is(1));
     }
 
     @Test
@@ -181,63 +183,71 @@ public final class NotificacaoNovoPedidoHandlersTest {
     }
 
     @Test
-    public void todoHandlerExigeAcoesNoConstrutor() {
-        // given: o handler sem as acoes (nulo)
+    public void handlersDoPainelExigemAcoesNoConstrutor() {
+        // given: os handlers que agem pelo painel, sem as acoes (nulo)
 
         // when/then: cada construcao nula falha orientando o que informar
-        afirmarAcoesObrigatorias(new Executable() {
+        afirmarObrigatorio(new Executable() {
             @Override
             public void execute() {
                 new AtualizarPainelHandler(null);
             }
-        });
-        afirmarAcoesObrigatorias(new Executable() {
+        }, "Informe as acoes de notificacao do painel");
+        afirmarObrigatorio(new Executable() {
             @Override
             public void execute() {
                 new SalvarPedidoHandler(null);
             }
-        });
-        afirmarAcoesObrigatorias(new Executable() {
-            @Override
-            public void execute() {
-                new AlertaSonoroHandler(null);
-            }
-        });
-        afirmarAcoesObrigatorias(new Executable() {
+        }, "Informe as acoes de notificacao do painel");
+        afirmarObrigatorio(new Executable() {
             @Override
             public void execute() {
                 new SelecionarFocarHandler(null);
             }
-        });
-        afirmarAcoesObrigatorias(new Executable() {
+        }, "Informe as acoes de notificacao do painel");
+        afirmarObrigatorio(new Executable() {
             @Override
             public void execute() {
                 new MensagemUmPedidoHandler(null);
             }
-        });
-        afirmarAcoesObrigatorias(new Executable() {
+        }, "Informe as acoes de notificacao do painel");
+        afirmarObrigatorio(new Executable() {
             @Override
             public void execute() {
                 new MensagemMultiploPedidoHandler(null);
             }
-        });
-        afirmarAcoesObrigatorias(new Executable() {
+        }, "Informe as acoes de notificacao do painel");
+        afirmarObrigatorio(new Executable() {
             @Override
             public void execute() {
                 new DestaquePedidoHandler(null);
             }
-        });
+        }, "Informe as acoes de notificacao do painel");
+    }
+
+    @Test
+    public void alertaSonoroHandlerExigeEstrategiaNoConstrutor() {
+        // given: o handler de som sem a estrategia (nula)
+
+        // when/then: a construcao nula falha orientando informar a estrategia
+        afirmarObrigatorio(new Executable() {
+            @Override
+            public void execute() {
+                new AlertaSonoroHandler(null);
+            }
+        }, "Informe uma estrategia de som valida");
     }
 
     @Test
     public void cadeiaCompletaAplicaTodasAsRegrasParaUmPedido() {
-        // given: a cadeia montada como na fachada, com as acoes injetadas
+        // given: a cadeia montada como na fachada (som ligado), com as acoes e o som
         AcoesNotificacaoFake acoes = new AcoesNotificacaoFake();
+        SomFake som = new SomFake();
         List<RegraHandler> regras = new ArrayList<>();
         regras.add(new SalvarPedidoHandler(acoes));
         regras.add(new AtualizarPainelHandler(acoes));
         regras.add(new SelecionarFocarHandler(acoes));
-        regras.add(new AlertaSonoroHandler(acoes));
+        regras.add(new AlertaSonoroHandler(som));
         regras.add(new MensagemUmPedidoHandler(acoes));
         regras.add(new MensagemMultiploPedidoHandler(acoes));
         regras.add(new DestaquePedidoHandler(acoes));
@@ -251,17 +261,17 @@ public final class NotificacaoNovoPedidoHandlersTest {
         assertThat(acoes.getSalvos(), hasSize(1));
         assertThat(acoes.getAtualizacoes(), is(1));
         assertThat(acoes.getFocado(), sameInstance(pedidos.get(0)));
-        assertThat(acoes.getAlertasSonoros(), is(1));
+        assertThat(som.getQuantidadeToques(), is(1));
         assertThat(acoes.getMensagens(), contains("Novo Pedido #1"));
         assertThat(acoes.getDestacados(), hasSize(1));
     }
 
-    private void afirmarAcoesObrigatorias(Executable construcao) {
-        // given: uma construcao de handler sem acoes
+    private void afirmarObrigatorio(Executable construcao, String mensagemEsperada) {
+        // given: uma construcao de handler sem a dependencia obrigatoria
         // when: ela e executada
-        // then: falha orientando informar as acoes
+        // then: falha orientando informar o que falta
         NullPointerException excecao = assertThrows(NullPointerException.class, construcao);
-        assertThat(excecao.getMessage(), is("Informe as acoes de notificacao do painel"));
+        assertThat(excecao.getMessage(), is(mensagemEsperada));
     }
 
     private List<PedidoAbstract> umPedido() {

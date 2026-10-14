@@ -16,7 +16,6 @@ public final class AcoesNotificacaoFake implements IAcaoNotificacaoNovoPedido {
     private final List<PedidoAbstract> destacados = new ArrayList<>();
     private final List<String> mensagens = new ArrayList<>();
     private int atualizacoes;
-    private int alertasSonoros;
     private PedidoAbstract focado;
 
     @Override
@@ -32,11 +31,6 @@ public final class AcoesNotificacaoFake implements IAcaoNotificacaoNovoPedido {
     @Override
     public void selecionarFocar(PedidoAbstract pedido) {
         this.focado = pedido;
-    }
-
-    @Override
-    public void emitirAlertaSonoro() {
-        alertasSonoros++;
     }
 
     @Override
@@ -63,10 +57,6 @@ public final class AcoesNotificacaoFake implements IAcaoNotificacaoNovoPedido {
 
     public int getAtualizacoes() {
         return atualizacoes;
-    }
-
-    public int getAlertasSonoros() {
-        return alertasSonoros;
     }
 
     public PedidoAbstract getFocado() {

@@ -31,7 +31,6 @@ import br.projeto.painelpedidos.internal.sla.RegraSlaEstadoHandler;
 import br.projeto.painelpedidos.internal.sla.RegraSlaHandler;
 import br.projeto.painelpedidos.internal.sla.observer.PainelPedidoPrioridadeObserver;
 import br.projeto.painelpedidos.som.IEstrategiaSom;
-import br.projeto.painelpedidos.internal.som.SomSilenciosoStrategy;
 import br.projeto.painelpedidos.internal.tempo.FonteDataPedido;
 import br.projeto.painelpedidos.internal.tempo.IFonteDataPedido;
 import br.projeto.painelpedidos.tempo.IRelogioService;
@@ -108,13 +107,12 @@ public final class PainelPedidoFacade {
         IFabricaFiltroPeriodo fabricaFiltroPeriodo = new FabricaFiltroPeriodo();
         IOrdenacaoPedido ordenacaoPedidos = new OrdenacaoPedidoPorPrioridadeETempoNoEstado();
         IFonteDataPedido fonteDataPedido = new FonteDataPedido(relogioService);
-        IEstrategiaSom som = configuracao.isSomAtivo() ? estrategiaSom : new SomSilenciosoStrategy();
 
         this.painelPedidoPresenter = new PainelPedidoPresenter(
                 painelPedido, pedidoRepository, fonteDataPedido, fabricaFiltroPeriodo,
-                som, ordenacaoPedidos, relogioService, configuracao.getDuracaoNotificacaoSegundos());
+                ordenacaoPedidos, relogioService, configuracao.getDuracaoNotificacaoSegundos());
 
-        this.servicoNotificacao = new NotificacaoNovoPedidoService(criarRegrasNotificacao());
+        this.servicoNotificacao = new NotificacaoNovoPedidoService(criarRegrasNotificacao(estrategiaSom));
         this.novoPedidoObserver = new PainelPedidoNovoPedidoObserver(servicoNotificacao);
         this.painelPedidoPresenter.setNovoPedidoObserver(novoPedidoObserver);
         this.monitorSlaService = new MonitorSlaService(criarRegrasSla(configuracao));
@@ -255,12 +253,14 @@ public final class PainelPedidoFacade {
         }
     }
 
-    private List<RegraHandler> criarRegrasNotificacao() {
+    private List<RegraHandler> criarRegrasNotificacao(IEstrategiaSom estrategiaSom) {
         List<RegraHandler> regras = new ArrayList<>();
         regras.add(new SalvarPedidoHandler(painelPedidoPresenter));
         regras.add(new AtualizarPainelHandler(painelPedidoPresenter));
         regras.add(new SelecionarFocarHandler(painelPedidoPresenter));
-        regras.add(new AlertaSonoroHandler(painelPedidoPresenter));
+        if (configuracao.isSomAtivo()) {
+            regras.add(new AlertaSonoroHandler(estrategiaSom));
+        }
         regras.add(new MensagemUmPedidoHandler(painelPedidoPresenter));
         regras.add(new MensagemMultiploPedidoHandler(painelPedidoPresenter));
         regras.add(new DestaquePedidoHandler(painelPedidoPresenter));

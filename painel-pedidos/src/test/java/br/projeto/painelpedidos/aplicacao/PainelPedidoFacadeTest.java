@@ -16,7 +16,7 @@ import br.projeto.painelpedidos.listener.VisualizarPedidoListenerFake;
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import br.projeto.painelpedidos.model.PedidoDeTeste;
 import br.projeto.painelpedidos.repositorio.PedidoRepositoryFake;
-import br.projeto.painelpedidos.internal.som.SomSilenciosoStrategy;
+import br.projeto.painelpedidos.som.SomFake;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
 import br.projeto.painelpedidos.view.PainelPedidoView;
 import java.nio.file.Path;
@@ -147,7 +147,7 @@ public final class PainelPedidoFacadeTest {
             @Override
             public void execute() {
                 new PainelPedidoFacade(
-                        null, configuracao, new SomSilenciosoStrategy(), new RelogioServiceSistema());
+                        null, configuracao, new SomFake(), new RelogioServiceSistema());
             }
         };
 
@@ -174,6 +174,40 @@ public final class PainelPedidoFacadeTest {
         }
     }
 
+    @Test
+    public void somLigadoAcionaAEstrategiaDeSomAoReceberNovosPedidos() {
+        // given: fachada com som ligado e uma estrategia espia
+        PedidoRepositoryFake repositorio = new PedidoRepositoryFake();
+        SomFake som = new SomFake();
+        PainelPedidoFacade painelPedido = new PainelPedidoFacade(
+                repositorio, criarConfiguracaoComSom(true), som, new RelogioServiceSistema());
+
+        // when: o sistema integrado empurra um novo pedido
+        List<PedidoAbstract> novos = new ArrayList<>();
+        novos.add(criarPedido("1"));
+        painelPedido.receberNovosPedidos(novos);
+
+        // then: a estrategia de som foi acionada
+        assertThat(som.getQuantidadeToques(), is(1));
+    }
+
+    @Test
+    public void somDesligadoNaoAcionaAEstrategiaDeSomAoReceberNovosPedidos() {
+        // given: fachada com som desligado e uma estrategia espia
+        PedidoRepositoryFake repositorio = new PedidoRepositoryFake();
+        SomFake som = new SomFake();
+        PainelPedidoFacade painelPedido = new PainelPedidoFacade(
+                repositorio, criarConfiguracaoComSom(false), som, new RelogioServiceSistema());
+
+        // when: o sistema integrado empurra um novo pedido
+        List<PedidoAbstract> novos = new ArrayList<>();
+        novos.add(criarPedido("1"));
+        painelPedido.receberNovosPedidos(novos);
+
+        // then: a estrategia de som nao foi acionada
+        assertThat(som.getQuantidadeToques(), is(0));
+    }
+
     private PedidoAbstract criarPedido(String identificador) {
         return new PedidoDeTeste(identificador, LocalDateTime.of(2026, 1, 10, 12, 0),
                 "Ana Souza", "Rua das Flores, 120 - Centro", 42.90);
@@ -181,7 +215,7 @@ public final class PainelPedidoFacadeTest {
 
     private PainelPedidoFacade criarPainel(PedidoRepositoryFake repositorio) {
         return new PainelPedidoFacade(repositorio, criarConfiguracao(),
-                new SomSilenciosoStrategy(), new RelogioServiceSistema());
+                new SomFake(), new RelogioServiceSistema());
     }
 
     private PainelPedidoFacade criarPainelComListeners(PedidoRepositoryFake repositorio) {
@@ -198,6 +232,10 @@ public final class PainelPedidoFacadeTest {
     }
 
     private ConfiguracaoPainelPedido criarConfiguracao() {
-        return new ConfiguracaoDeTeste().criar(IDENTIDADE_DE_TESTE, false);
+        return criarConfiguracaoComSom(false);
+    }
+
+    private ConfiguracaoPainelPedido criarConfiguracaoComSom(boolean somAtivo) {
+        return new ConfiguracaoDeTeste().criar(IDENTIDADE_DE_TESTE, somAtivo);
     }
 }

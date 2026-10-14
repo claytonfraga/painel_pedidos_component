@@ -15,7 +15,6 @@ import br.projeto.painelpedidos.model.PedidoAbstract;
 import br.projeto.painelpedidos.model.PedidoDeTeste;
 import br.projeto.painelpedidos.internal.ordenacao.OrdenacaoPedidoPorPrioridadeETempoNoEstado;
 import br.projeto.painelpedidos.repositorio.PedidoRepositoryFake;
-import br.projeto.painelpedidos.internal.som.SomSilenciosoStrategy;
 import br.projeto.painelpedidos.internal.tempo.FonteDataPedido;
 import br.projeto.painelpedidos.tempo.RelogioServiceSistema;
 import br.projeto.painelpedidos.view.IPainelPedidoView;
@@ -183,7 +182,6 @@ public final class PainelPedidoPresenterTest {
                 repositorio,
                 new FonteDataPedido(new RelogioServiceSistema()),
                 new FabricaFiltroPeriodo(),
-                new SomSilenciosoStrategy(),
                 new OrdenacaoPedidoPorPrioridadeETempoNoEstado(),
                 new RelogioServiceSistema(),
                 10);

@@ -15,8 +15,6 @@ public interface IAcaoNotificacaoNovoPedido {
 
     void selecionarFocar(PedidoAbstract pedido);
 
-    void emitirAlertaSonoro();
-
     void exibirMensagem(String mensagem);
 
     void destacarPedidos(List<PedidoAbstract> pedidos);

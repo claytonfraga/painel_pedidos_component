@@ -273,7 +273,8 @@ cards por `NOTIFICACAO_DURACAO_SEGUNDOS`.
 ### 2.7 (Opcional) Som e relógio
 
 - `IEstrategiaSom` — como tocar o alerta. Default: `SomTomStrategy(frequencia,
-  duracaoMs)`. Desligue com `SOM_ATIVO=false` (usa `SomSilenciosoStrategy`).
+  duracaoMs)`. Desligue com `SOM_ATIVO=false` (o alerta sonoro deixa de ser
+  registrado na cadeia; nenhuma estrategia muda e necessaria).
 - `IRelogioService` — de onde vem "agora". Default: `RelogioServiceSistema`.
 
 Ambos têm implementação default; só informe se quiser trocar.

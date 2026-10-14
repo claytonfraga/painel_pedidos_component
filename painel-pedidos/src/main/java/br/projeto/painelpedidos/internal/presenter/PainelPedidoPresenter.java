@@ -12,7 +12,6 @@ import br.projeto.painelpedidos.internal.ordenacao.IOrdenacaoPedido;
 import br.projeto.painelpedidos.repositorio.IPedidoRepository;
 import br.projeto.painelpedidos.internal.tempo.IFonteDataPedido;
 import br.projeto.painelpedidos.internal.sla.observer.IPainelPedidoAtualizador;
-import br.projeto.painelpedidos.som.IEstrategiaSom;
 import br.projeto.painelpedidos.tempo.IRelogioService;
 import br.projeto.painelpedidos.view.IPainelPedidoView;
 import java.awt.Color;
@@ -60,7 +59,6 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
     private final ApresentacaoDoPedido apresentacao;
     private final IFonteDataPedido fonteDataPedido;
     private final IFabricaFiltroPeriodo fabricaFiltroPeriodo;
-    private final IEstrategiaSom estrategiaSom;
     private final IOrdenacaoPedido ordenacaoPedidos;
     private final IRelogioService relogioService;
     private final int duracaoNotificacaoSegundos;
@@ -81,7 +79,6 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
             IPedidoRepository pedidoRepository,
             IFonteDataPedido fonteDataPedido,
             IFabricaFiltroPeriodo fabricaFiltroPeriodo,
-            IEstrategiaSom estrategiaSom,
             IOrdenacaoPedido ordenacaoPedidos,
             IRelogioService relogioService,
             int duracaoNotificacaoSegundos) {
@@ -94,8 +91,6 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
                 fonteDataPedido, "Informe uma fonte de data do pedido valida");
         this.fabricaFiltroPeriodo = Objects.requireNonNull(
                 fabricaFiltroPeriodo, "Informe uma fabrica de filtro de periodo valida");
-        this.estrategiaSom = Objects.requireNonNull(
-                estrategiaSom, "Informe uma estrategia de som valida");
         this.ordenacaoPedidos = Objects.requireNonNull(
                 ordenacaoPedidos, "Informe uma ordenacao de pedidos valida");
         this.relogioService = Objects.requireNonNull(
@@ -149,11 +144,6 @@ public final class PainelPedidoPresenter implements IAcaoNotificacaoNovoPedido, 
     public void selecionarFocar(PedidoAbstract pedido) {
         selecionarPedido(pedido.getIdentificador());
         focarCartaoPedido(pedido.getIdentificador());
-    }
-
-    @Override
-    public void emitirAlertaSonoro() {
-        estrategiaSom.tocar();
     }
 
     @Override

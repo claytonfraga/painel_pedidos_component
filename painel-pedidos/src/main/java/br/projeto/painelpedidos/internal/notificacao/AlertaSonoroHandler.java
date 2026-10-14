@@ -1,5 +1,6 @@
 package br.projeto.painelpedidos.internal.notificacao;
 
+import br.projeto.painelpedidos.som.IEstrategiaSom;
 import java.util.Objects;
 
 /**
@@ -8,10 +9,11 @@ import java.util.Objects;
  */
 public final class AlertaSonoroHandler implements RegraHandler {
 
-    private final IAcaoNotificacaoNovoPedido acoes;
+    private final IEstrategiaSom estrategiaSom;
 
-    public AlertaSonoroHandler(IAcaoNotificacaoNovoPedido acoes) {
-        this.acoes = Objects.requireNonNull(acoes, "Informe as acoes de notificacao do painel");
+    public AlertaSonoroHandler(IEstrategiaSom estrategiaSom) {
+        this.estrategiaSom = Objects.requireNonNull(
+                estrategiaSom, "Informe uma estrategia de som valida");
     }
 
     @Override
@@ -21,6 +23,6 @@ public final class AlertaSonoroHandler implements RegraHandler {
 
     @Override
     public void executar(ContextoNotificacaoNovoPedido contexto) {
-        acoes.emitirAlertaSonoro();
+        estrategiaSom.tocar();
     }
 }
