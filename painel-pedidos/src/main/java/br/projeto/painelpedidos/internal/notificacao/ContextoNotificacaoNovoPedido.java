@@ -11,19 +11,12 @@ import java.util.Objects;
 public final class ContextoNotificacaoNovoPedido {
 
     private final List<PedidoAbstract> pedidos;
-    private final IAcaoNotificacaoNovoPedido acoes;
 
-    public ContextoNotificacaoNovoPedido(List<PedidoAbstract> pedidos, IAcaoNotificacaoNovoPedido acoes) {
+    public ContextoNotificacaoNovoPedido(List<PedidoAbstract> pedidos) {
         this.pedidos = Objects.requireNonNull(pedidos, "Informe uma lista de pedidos valida");
-        this.acoes = Objects.requireNonNull(
-                acoes, "Informe uma lista de acoes de notificacao valida");
     }
 
     public List<PedidoAbstract> getPedidos() {
         return pedidos;
-    }
-
-    public IAcaoNotificacaoNovoPedido getAcoes() {
-        return acoes;
     }
 }

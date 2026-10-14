@@ -2,7 +2,6 @@ package br.projeto.painelpedidos.internal.ingestao.observer;
 
 import br.projeto.painelpedidos.model.PedidoAbstract;
 import br.projeto.painelpedidos.internal.notificacao.ContextoNotificacaoNovoPedido;
-import br.projeto.painelpedidos.internal.notificacao.IAcaoNotificacaoNovoPedido;
 import br.projeto.painelpedidos.internal.notificacao.IServicoNotificacaoNovoPedido;
 import java.util.List;
 import java.util.Objects;
@@ -13,22 +12,16 @@ import java.util.Objects;
  */
 public final class PainelPedidoNovoPedidoObserver implements NovoPedidoObserver {
 
-    private final IAcaoNotificacaoNovoPedido acoesNotificacao;
     private final IServicoNotificacaoNovoPedido servicoNotificacao;
 
-    public PainelPedidoNovoPedidoObserver(
-            IAcaoNotificacaoNovoPedido acoesNotificacao,
-            IServicoNotificacaoNovoPedido servicoNotificacao) {
-
-        this.acoesNotificacao = Objects.requireNonNull(
-                acoesNotificacao, "Informe uma lista de acoes de notificacao valida");
+    public PainelPedidoNovoPedidoObserver(IServicoNotificacaoNovoPedido servicoNotificacao) {
         this.servicoNotificacao = Objects.requireNonNull(
                 servicoNotificacao, "Informe um servico de notificacao valido");
     }
 
     @Override
     public void receberNovosPedidos(List<PedidoAbstract> pedidos) {
-        ContextoNotificacaoNovoPedido contexto = new ContextoNotificacaoNovoPedido(pedidos, acoesNotificacao);
+        ContextoNotificacaoNovoPedido contexto = new ContextoNotificacaoNovoPedido(pedidos);
         servicoNotificacao.processar(contexto);
     }
 }

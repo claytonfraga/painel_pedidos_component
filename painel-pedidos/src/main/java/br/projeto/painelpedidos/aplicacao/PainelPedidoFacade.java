@@ -115,7 +115,7 @@ public final class PainelPedidoFacade {
                 som, ordenacaoPedidos, relogioService, configuracao.getDuracaoNotificacaoSegundos());
 
         this.servicoNotificacao = new NotificacaoNovoPedidoService(criarRegrasNotificacao());
-        this.novoPedidoObserver = new PainelPedidoNovoPedidoObserver(painelPedidoPresenter, servicoNotificacao);
+        this.novoPedidoObserver = new PainelPedidoNovoPedidoObserver(servicoNotificacao);
         this.painelPedidoPresenter.setNovoPedidoObserver(novoPedidoObserver);
         this.monitorSlaService = new MonitorSlaService(criarRegrasSla(configuracao));
         this.monitorSlaService.adicionarObserver(new PainelPedidoPrioridadeObserver(painelPedidoPresenter));
@@ -257,13 +257,13 @@ public final class PainelPedidoFacade {
 
     private List<RegraHandler> criarRegrasNotificacao() {
         List<RegraHandler> regras = new ArrayList<>();
-        regras.add(new SalvarPedidoHandler());
-        regras.add(new AtualizarPainelHandler());
-        regras.add(new SelecionarFocarHandler());
-        regras.add(new AlertaSonoroHandler());
-        regras.add(new MensagemUmPedidoHandler());
-        regras.add(new MensagemMultiploPedidoHandler());
-        regras.add(new DestaquePedidoHandler());
+        regras.add(new SalvarPedidoHandler(painelPedidoPresenter));
+        regras.add(new AtualizarPainelHandler(painelPedidoPresenter));
+        regras.add(new SelecionarFocarHandler(painelPedidoPresenter));
+        regras.add(new AlertaSonoroHandler(painelPedidoPresenter));
+        regras.add(new MensagemUmPedidoHandler(painelPedidoPresenter));
+        regras.add(new MensagemMultiploPedidoHandler(painelPedidoPresenter));
+        regras.add(new DestaquePedidoHandler(painelPedidoPresenter));
         return regras;
     }
 
